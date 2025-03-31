@@ -1,4 +1,3 @@
-import fs from "fs";
 import { promises as fsPromises } from "fs";
 
 export const getProductList = async () => {
@@ -15,15 +14,15 @@ export const getProductList = async () => {
   }
 };
 
-// const generateId = () => {
-//   return Date.now().toString(36) + Math.random().toString(36).substring(2);
-// };
+const generateId = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
 // console.log(generateId());
 
 export const addAProduct = async (name, price) => {
   try {
     const products = await getProductList();
-    const id = products.length + 1;
+    const id = generateId();
 
     const newProduct = { id, name, price };
     const totalProducts = [...products, newProduct];
@@ -56,7 +55,6 @@ export const updateAProduct = async (id, name, price) => {
     } else {
       console.log("No products to update");
     }
-    console.log(object);
     await fsPromises.writeFile(
       "./src/database/data/products.json",
       JSON.stringify(newProducts, null, 2)

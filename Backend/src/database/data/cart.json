@@ -10,5 +10,11 @@
     "name": "Laptop Pro 15",
     "price": 1200,
     "quantity": 20
+  },
+  {
+    "id": 5,
+    "name": "Bluetooth Headphones",
+    "price": 120,
+    "quantity": 10
   }
 ]

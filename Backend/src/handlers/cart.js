@@ -6,7 +6,7 @@ import {
   updateAProduct,
   deleteAProduct,
   updateAProductInventory,
-} from "../handlers/product.js";
+} from "./product.js";
 
 export const viewCart = async () => {
   try {
