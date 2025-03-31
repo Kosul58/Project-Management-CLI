@@ -3,7 +3,10 @@ import { promises as fsPromises } from "fs";
 
 export const getProductList = async () => {
   try {
-    const data = await fsPromises.readFile("./data/products.json", "utf8");
+    const data = await fsPromises.readFile(
+      "./src/database/data/products.json",
+      "utf8"
+    );
     const result = await JSON.parse(data);
     return result;
   } catch (err) {
@@ -26,7 +29,7 @@ export const addAProduct = async (name, price) => {
     const totalProducts = [...products, newProduct];
     // const totalProducts = products.push(newProduct);
     await fsPromises.writeFile(
-      "./data/products.json",
+      "./src/database/data/products.json",
       JSON.stringify(totalProducts, null, 2)
     );
 
@@ -55,7 +58,7 @@ export const updateAProduct = async (id, name, price) => {
     }
     console.log(object);
     await fsPromises.writeFile(
-      "./data/products.json",
+      "./src/database/data/products.json",
       JSON.stringify(newProducts, null, 2)
     );
   } catch (err) {
@@ -68,7 +71,7 @@ export const deleteAProduct = async (id) => {
     const products = await getProductList();
     const totalProducts = products.filter((product) => product.id !== id);
     await fsPromises.writeFile(
-      "./data/products.json",
+      "./src/database/data/products.json",
       JSON.stringify(totalProducts, null, 2)
     );
     if (products.length === totalProducts.length) {
@@ -95,7 +98,7 @@ export const updateAProductInventory = async (id, quantity) => {
       return product;
     });
     await fsPromises.writeFile(
-      "./data/products.json",
+      "./src/database/data/products.json",
       JSON.stringify(products)
     );
   } catch (err) {

@@ -6,7 +6,15 @@ import {
   updateAProduct,
   deleteAProduct,
   updateAProductInventory,
-} from "./productHandler/product.js";
+} from "./src/handlers/product.js";
+
+import {
+  viewCart,
+  addProductToCart,
+  removeProductFromCart,
+  calcTotal,
+  updateAProductCart,
+} from "./src/handlers/cart.js";
 
 // Product Operations
 
@@ -28,76 +36,111 @@ import {
 
 // Cart operations
 
-const viewCart = async () => {
-  try {
-    const data = await fsPromises.readFile("./data/cart.json", "utf8");
-    const result = await JSON.parse(data);
-    // console.log(result);
-    return result;
-  } catch (err) {
-    console.log("Error in viewCart", err);
-  }
-};
-
-const addProductToCart = async (productId, quantity) => {
-  try {
-    // get all products form the products.json file
-    const products = await getProductList();
-    // search for a product to add in cart
-    const productToAdd = products.find((product) => product.id === productId);
-
-    if (!productToAdd) {
-      console.log("No matching products found");
-      return;
-    }
-
-    if (productToAdd.inventory < quantity) {
-      console.log("Not enough inventory");
-      return;
-    }
-
-    //get all items in the cart
-    let cartItems = await viewCart();
-
-    //search if the product is already in the cart
-    const productIndex = cartItems.findIndex((item) => item.id === productId);
-
-    if (productIndex < 0) {
-      //if no product in the cart add the product to cart
-      const itemToCart = {
-        id: productToAdd.id,
-        name: productToAdd.name,
-        price: productToAdd.price,
-        quantity: quantity,
-      };
-      cartItems.push(itemToCart);
-    } else {
-      //if product in the cart update the product to cart
-      cartItems = cartItems.map((item) => {
-        if (item.id === productId) {
-          return {
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity + quantity,
-          };
-        }
-        return item;
-      });
-    }
-    console.log(cartItems);
-
-    await fsPromises.writeFile(
-      "./data/cart.json",
-      JSON.stringify(cartItems, null, 2)
-    );
-  } catch (err) {
-    console.log("Error in addProductToCart", err);
-  }
-};
-
 // View all products in the cart
-// console.log(viewCart())
+// const data = await viewCart();
+// console.log(data);
 
 // Add a product to the cart
-// addProductToCart(2, 2);
+// addProductToCart(1, 10);
+
+// update a product in the cart
+// updateAProductCart(1, { price: 1500, quantity: 50 });
+
+// to remove a product from the cart
+// removeProductFromCart(2);
+
+// to calculate total cost
+// const total = await calcTotal();
+// console.log(`Total price = $${total}`);
+
+// Order Operations
+
+const viewOrders = async (userid) => {
+  try {
+    const orders = await fsPromises.readFile(
+      "./src/database/data/orders.json",
+      "utf8"
+    );
+    const result = await JSON.parse(orders);
+    if (!userid) {
+      return result;
+    } else {
+      const data = result.filter((order) => order.userid === userid);
+      return data;
+    }
+  } catch (err) {
+    console.log("Error in viewOrders", err);
+  }
+};
+
+function getCurrentDateTimeStamp() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}-${hours}:${minutes}`;
+}
+
+// products = [productId1 , productId2]
+const createOrder = async (userid, products) => {
+  try {
+    let orders = await viewOrders();
+
+    const order = {};
+    order.id = orders.length + 1;
+    order.userid = userid;
+
+    const cartItems = await viewCart();
+
+    const items = cartItems.filter((item) => products.includes(item.id));
+
+    if (items.length === 0) {
+      console.error("No matching products found in cart.");
+      return;
+    }
+
+    order.items = items;
+
+    const total = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    order.total = total;
+    order.timestamp = getCurrentDateTimeStamp();
+    order.status = "";
+    orders.push(order);
+    await fsPromises.writeFile(
+      "./src/database/data/orders.json",
+      JSON.stringify(orders)
+    );
+  } catch (err) {
+    console.log("Error in createOrder", err);
+  }
+};
+
+const updateOrderStatus = async (orderid, userid) => {
+  try {
+  } catch (err) {
+    console.log("Error in updateOrderStatus", err);
+  }
+};
+
+const cancelOrder = async (orderid, userid) => {
+  try {
+  } catch (err) {
+    console.log("Error in cancelOrder", err);
+  }
+};
+
+// to view total orders
+// console.log(await viewOrders())
+
+// to view orders based on userid
+// console.log(await viewOrders(1125));
+
+// to create a new order
+// createOrder(2015, [1]);

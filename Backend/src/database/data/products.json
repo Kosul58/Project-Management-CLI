@@ -5,7 +5,7 @@
     "price": 1200,
     "description": "A high-performance laptop with a 15-inch display and powerful specs.",
     "category": "Electronics",
-    "inventory": 25
+    "inventory": 230
   },
   {
     "id": 2,
@@ -13,7 +13,7 @@
     "price": 35,
     "description": "Ergonomic wireless mouse with adjustable DPI and long battery life.",
     "category": "Accessories",
-    "inventory": 46
+    "inventory": 196
   },
   {
     "id": 3,
@@ -21,7 +21,7 @@
     "price": 80,
     "description": "RGB mechanical keyboard with blue switches for a satisfying typing experience.",
     "category": "Accessories",
-    "inventory": 30
+    "inventory": 200
   },
   {
     "id": 4,
@@ -29,7 +29,7 @@
     "price": 999,
     "description": "A flagship smartphone with an amazing camera and all-day battery life.",
     "category": "Electronics",
-    "inventory": 15
+    "inventory": 150
   },
   {
     "id": 5,
@@ -37,7 +37,7 @@
     "price": 120,
     "description": "Noise-canceling over-ear Bluetooth headphones with deep bass.",
     "category": "Audio",
-    "inventory": 40
+    "inventory": 400
   },
   {
     "id": 6,
@@ -45,7 +45,7 @@
     "price": 300,
     "description": "27-inch gaming monitor with a 144Hz refresh rate and 1ms response time.",
     "category": "Electronics",
-    "inventory": 20
+    "inventory": 200
   },
   {
     "id": 7,
@@ -53,7 +53,7 @@
     "price": 250,
     "description": "Waterproof action camera with 4K video recording and image stabilization.",
     "category": "Cameras",
-    "inventory": 18
+    "inventory": 180
   },
   {
     "id": 8,
@@ -61,7 +61,7 @@
     "price": 50,
     "description": "10,000mAh power bank with fast charging and dual USB ports.",
     "category": "Accessories",
-    "inventory": 60
+    "inventory": 600
   },
   {
     "id": 9,
@@ -69,7 +69,7 @@
     "price": 350,
     "description": "Advanced smartwatch with fitness tracking, heart rate monitoring, and GPS.",
     "category": "Wearables",
-    "inventory": 22
+    "inventory": 220
   },
   {
     "id": 10,
@@ -77,6 +77,6 @@
     "price": 99,
     "description": "True wireless earbuds with touch controls and noise isolation.",
     "category": "Audio",
-    "inventory": 35
+    "inventory": 350
   }
 ]
