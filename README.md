@@ -8,7 +8,7 @@
 - Cart data is stored in data/cart.json
 - Order data is stored in data/orders.json
 
-// Product functions are in product.js
+# Product functions are in product.js
 
 ## Description of all fucntions in product.js
 
@@ -62,7 +62,7 @@
 // update a product Inventory (productid , quantity)
 // updateAProductInventory('20254sd5fs', 2);
 
-// Cart functions are in cart.js
+# Cart functions are in cart.js
 
 ## Description of all fucntions in product.js
 
@@ -116,13 +116,48 @@
 // const total = await calcTotal();
 // console.log(`Total price = $${total}`);
 
-// Order functions are in order.js
+# Order functions are in order.js
 
-// file read and write functions are exported from fileFuncs.js in handlers folder
+## Description of all fucntions in order.js
 
-// Cart operations
+1. viewOrders()
+   -argument -> userid
+   -return -> an array of all the orders in the order.json file for a given user based on userid if userid else it returns an array of all the orders in the order.json file
 
-// Order Operations
+2) createOrder()
+   -argument -> userid , products
+   products = [productid1 , productid2]
+
+   -return -> none
+
+   createOrder(userid , products)
+   -> used to create an order for a user in the order.json file
+   -> creates order based on cart.json file
+   -> update product inventory also
+
+3) updateOrderStatus()
+   -argument -> orderid , userid , newstatus
+   -return -> none
+
+   updateOrderStatus(orderid , userid , status)
+   -> used to update the status of an order in the order.json file
+
+4) cancelOrder()
+   -argument -> (orderid , userid)
+   -return -> none
+
+   cancelOrder(orderid,userid)
+   -> used to cancel an order of products based on the order id and user id
+   -> changes product inventory based on order quanity
+
+5) cancelAOrder()
+   -argument -> orderid , userid , productid
+   -return -> none
+
+   cancelAOrder(orderid , userid , productid)
+   -> used to cancel the order of a single product based on orderid , userid and productid
+
+## Order Operations
 
 // to view total orders
 // console.log(await viewOrders())
@@ -138,3 +173,31 @@
 
 // to cancel order
 // cancelOrder(4, 2015);
+
+## file read and write functions are exported from fileFuncs.js in handlers folder
+
+### Functions in fileFunc.js
+
+1. readCartFile()
+   -> used to read data from the cart.json file
+
+2) writeCartFile()
+   -> used to write data to the cart.json file
+
+3) readProductFile()
+   -> used to read data from the products.json file
+
+4) writeProductFile()
+   -> used to write data to the products.josn file
+
+5) readOrderfile()
+   -> used to read data from the orders.json file
+
+6) writeOrderFile()
+   -> used to wrtie data to the orders.json file
+
+7) generateId()
+   -> used to generate a unique id based on present data and a random number string
+
+8) getCurrentDateTImeStamp()
+   -> used to generate a date+time stamp
