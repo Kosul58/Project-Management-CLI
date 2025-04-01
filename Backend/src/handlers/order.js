@@ -1,4 +1,5 @@
 import { promises as fsPromises } from "fs";
+
 import {
   viewCart,
   addProductToCart,
@@ -13,7 +14,7 @@ import {
   generateId,
   getCurrentDateTimeStamp,
 } from "./fileFuncs.js";
-import { json } from "stream/consumers";
+import { updateAProductInventory } from "./product.js";
 
 export const viewOrders = async (userid) => {
   try {
@@ -37,6 +38,7 @@ export const createOrder = async (userid, products) => {
     order.orderid = generateId();
     order.userid = userid;
     let cartItems = await viewCart();
+
     cartItems = cartItems.filter((item) => item.userid === userid);
     let items;
     products
@@ -67,6 +69,11 @@ export const createOrder = async (userid, products) => {
         await removeProductFromCart(userid, products[i]);
       }
     }
+
+    for (let { productid, quantity } of items) {
+      // console.log(productid, quantity);
+      await updateAProductInventory(productid, quantity);
+    }
   } catch (err) {
     console.log("Error in createOrder", err);
   }
@@ -95,11 +102,24 @@ export const updateOrderStatus = async (orderid, userid, status) => {
 export const cancelOrder = async (orderid, userid) => {
   try {
     let orders = await viewOrders();
+
+    let canceledORder = orders.find(
+      (order) => order.orderid === orderid && order.userid === userid
+    );
+
+    console.log(canceledORder);
+
     orders = orders.filter((order) => {
       if (order.orderid !== orderid && order.userid !== userid) {
         return order;
       }
     });
+
+    for (let { productid, quantity } of canceledORder.items) {
+      console.log(productid, quantity);
+      await updateAProductInventory(productid, `${quantity}`);
+    }
+
     // console.log(orders);
 
     await writeOrderFile(orders);
@@ -110,15 +130,18 @@ export const cancelOrder = async (orderid, userid) => {
 };
 
 // cancels a specific order based on orderid + userid + productid
-export const cancelAORder = async (orderid, userid, productid) => {
+export const cancelAOrder = async (orderid, userid, productid) => {
   try {
     let orders = await viewOrders();
-    console.log(orders);
+    // console.log(orders);
     let order = orders.filter(
       (order) => order.orderid === orderid && order.userid === userid
     );
     let items = order[0].items.filter((item) => item.productid !== productid);
-
+    for (let { productid, quantity } of items) {
+      console.log(productid, quantity);
+      await updateAProductInventory(productid, `${quantity}`);
+    }
     orders = orders.map((order) => {
       if (order.orderid === orderid && order.userid === userid) {
         return { ...order, items };

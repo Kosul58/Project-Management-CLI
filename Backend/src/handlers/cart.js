@@ -39,8 +39,8 @@ export const addProductToCart = async (userid, productId, quantity) => {
     //get all items in the cart
     let cartItems = await viewCart();
 
-    // update the inventory in products.json file
-    await updateAProductInventory(productId, quantity);
+    // // update the inventory in products.json file
+    // await updateAProductInventory(productId, quantity);
 
     //search if the product is already in the cart
     const productIndex = cartItems.findIndex(
@@ -88,7 +88,6 @@ export const removeProductFromCart = async (userid, id) => {
   try {
     const cartitems = await viewCart();
     let newCart;
-
     if (!userid) {
       console.log("userid required");
       return;
@@ -116,14 +115,14 @@ export const updateAProductCart = async (userid, id, update) => {
   try {
     const cartItems = await viewCart();
     const { price, quantity } = update;
-    let quanityChange;
+    // let quanityChange;
     const updatedCart = cartItems.map((product) => {
       if (product.productid === id && product.userid === userid) {
-        if (product.quantity <= quantity) {
-          quanityChange = quantity - product.quantity;
-        } else if (product.quantity > quantity) {
-          quanityChange = `${product.quantity - quantity}`;
-        }
+        // if (product.quantity <= quantity) {
+        //   quanityChange = quantity - product.quantity;
+        // } else if (product.quantity > quantity) {
+        //   quanityChange = `${product.quantity - quantity}`;
+        // }
         return { ...product, ...update };
       }
       return product;
@@ -134,7 +133,7 @@ export const updateAProductCart = async (userid, id, update) => {
     }
 
     // console.log(quanityChange);
-    await updateAProductInventory(id, quanityChange);
+    // await updateAProductInventory(id, quanityChange);
     await writeCartFile(updatedCart);
 
     console.log("Cart updated succesfully");

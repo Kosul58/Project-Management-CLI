@@ -11,11 +11,11 @@ export const getProductList = async () => {
   }
 };
 
-export const addAProduct = async (name, price) => {
+export const addAProduct = async (name, price, inventory) => {
   try {
     const products = await getProductList();
     const productid = generateId();
-    const newProduct = { productid, name, price };
+    const newProduct = { productid, name, price, inventory };
     const totalProducts = [...products, newProduct];
     // const totalProducts = products.push(newProduct);
 

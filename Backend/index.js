@@ -21,7 +21,7 @@ import {
   viewOrders,
   updateOrderStatus,
   cancelOrder,
-  cancelAORder,
+  cancelAOrder,
 } from "./src/handlers/order.js";
 
 const args = process.argv.slice(2);
@@ -45,11 +45,12 @@ if (x === "product" || x.toLowerCase() === "product") {
     const data = await getProductList();
     console.log(data);
   } else if (y === "add") {
-    //node index.js product add --name "Laptop" --price 999.99
+    //node index.js product add --name "Laptop" --price 999.99 --inventory 500
+    let inventory = args[7];
     name = args[3];
     price = Number(args[5]);
     console.log(name, price);
-    if (productid && name && price) addAProduct(name, price);
+    if (productid && name && price) addAProduct(name, price, inventory);
   } else if (y === "update") {
     // node index.js product update <productId> --name "Gaming Laptop" --price 1299.99
     console.log(`productid ${productid} name ${name} price ${price}`);
@@ -97,6 +98,8 @@ if (x === "product" || x.toLowerCase() === "product") {
     let orderid = args[3];
     let status = args[5];
     if (userid && orderid && status) updateOrderStatus(orderid, userid, status);
+  } else {
+    console.log("wrong comand");
   }
 } else if (x === "cart" || x.toLowerCase() === "cart") {
   console.log("cart part");
@@ -127,6 +130,8 @@ if (x === "product" || x.toLowerCase() === "product") {
     update.quantity = Number(args[7]);
     await updateAProductCart(userid, productid, update);
     // if (update) console.log("update:", update);
+  } else {
+    console.log("wrong comand");
   }
 } else {
   console.log("Invalid command");

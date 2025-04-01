@@ -91,5 +91,11 @@
     "productid": "m8y37dhk55cciektu46",
     "name": "Fantech Microphone",
     "price": 5000
+  },
+  {
+    "productid": "122",
+    "name": "Laptop Pro 15",
+    "price": 1200,
+    "inventory": 50
   }
 ]
