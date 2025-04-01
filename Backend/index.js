@@ -21,58 +21,113 @@ import {
   viewOrders,
   updateOrderStatus,
   cancelOrder,
+  cancelAORder,
 } from "./src/handlers/order.js";
 
-// Product Operations
+const args = process.argv.slice(2);
 
-// Display all products
-// const data = await getProductList();
-// console.log(data);
+// node ra index.js remove garna
+console.log(args);
 
-// Add a new product
-// addAProduct("Kosul", 55);
+// product || cart || order differentiator
+let x = args[0];
 
-// Update a product
-// updateAProduct("m8wzk6l9p5npgvh17qj", "kaspers", 555);
+// operations differentiator
+let y = args[1];
 
-// Delete a product
-// deleteAProduct(10);
-
-// update a product Inventory
-// updateAProductInventory(2, 2);
-
-// Cart operations
-
-// View all products in the cart
-// const data = await viewCart();
-// console.log(data);
-
-// Add a product to the cart
-// addProductToCart(5, 10);
-
-// update a product in the cart
-// updateAProductCart(1, { price: 1500, quantity: 50 });
-
-// to remove a product from the cart
-// removeProductFromCart(5);
-
-// to calculate total cost
-// const total = await calcTotal();
-// console.log(`Total price = $${total}`);
-
-// Order Operations
-
-// to view total orders
-// console.log(await viewOrders())
-
-// to view orders based on userid
-// console.log(await viewOrders(1125));
-
-// to create a new order
-// createOrder(2018, [1, 5]);
-
-// to update a order status
-// updateOrderStatus(3, 1015, "done");
-
-// to cancel order
-// cancelOrder(4, 2015);
+if (x === "product" || x.toLowerCase() === "product") {
+  console.log("product part");
+  let productid = args[2];
+  let name = args[4];
+  let price = Number(args[6]);
+  if (y === "list") {
+    // node index.js product list
+    const data = await getProductList();
+    console.log(data);
+  } else if (y === "add") {
+    //node index.js product add --name "Laptop" --price 999.99
+    name = args[3];
+    price = Number(args[5]);
+    console.log(name, price);
+    if (productid && name && price) addAProduct(name, price);
+  } else if (y === "update") {
+    // node index.js product update <productId> --name "Gaming Laptop" --price 1299.99
+    console.log(`productid ${productid} name ${name} price ${price}`);
+    if (productid && name && price) updateAProduct(productid, name, price);
+  } else if (y === "delete") {
+    // node index.js product delete <productId>
+    if (productid) deleteAProduct(productid);
+  } else {
+    console.log("wrong comand");
+  }
+} else if (x === "order" || x.toLowerCase() === "order") {
+  let userid = args[3];
+  let productid = args[5];
+  console.log("order part");
+  if (y === "create") {
+    // node index.js order create --userId user123 --productid product123
+    if (productid && userid) {
+      // console.log(userid, productid);
+      createOrder(userid, [productid]);
+    } else if (userid) {
+      // console.log(userid);
+      createOrder(userid);
+    }
+  } else if (y === "list") {
+    // node index.js order list
+    const data = await viewOrders();
+    console.log(data);
+  } else if (y === "cancel") {
+    // node index.js order cancel <userid> <orderid>
+    //cancels all order for a given orderid and userid
+    userid = args[2];
+    let orderid = args[3];
+    if (orderid && userid) cancelOrder(orderid, userid);
+  } else if (y === "cancelaorder") {
+    // node index.js order cancelaorder <userid> <orderid> <productid>
+    userid = args[2];
+    let orderid = args[3];
+    productid = args[4];
+    if (userid && orderid && productid)
+      cancelAORder(orderid, userid, productid);
+    // cancelAORder("m8wzroo6dpruojup3tv", "2018", "1");
+  } else if (y === "statusupdate") {
+    // node index.js order statusupdate <userid> <orderid> --status pending
+    userid = args[2];
+    let orderid = args[3];
+    let status = args[5];
+    if (userid && orderid && status) updateOrderStatus(orderid, userid, status);
+  }
+} else if (x === "cart" || x.toLowerCase() === "cart") {
+  console.log("cart part");
+  let productid, userid, quantity;
+  productid = args[3];
+  userid = args[2];
+  quantity = Number(args[5]);
+  if (y === "add") {
+    // node index.js cart add <userId> <productId> --quantity 2
+    if (productid && userid && quantity)
+      addProductToCart(userid, productid, quantity);
+  } else if (y === "remove") {
+    // node index.js cart remove <userId> <productId>
+    if (userid && !productid) removeProductFromCart(userid);
+    if (userid && productid) removeProductFromCart(userid, productid);
+  } else if (y === "view") {
+    // node index.js cart view
+    const data = await viewCart();
+    console.log(data);
+  } else if (y === "total") {
+    // node index.js cart total
+    const data = await calcTotal();
+    console.log(`The total cost of all the items in the cart file is $${data}`);
+  } else if (y === "update") {
+    // node index.js cart update <userid> <productid> --price 1000 --quanity 5
+    let update = {};
+    update.price = Number(args[5]);
+    update.quantity = Number(args[7]);
+    await updateAProductCart(userid, productid, update);
+    // if (update) console.log("update:", update);
+  }
+} else {
+  console.log("Invalid command");
+}

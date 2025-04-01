@@ -8,32 +8,29 @@ import {
   updateAProductInventory,
 } from "./product.js";
 
+import { readCartFile, writeCartFile } from "./fileFuncs.js";
+
 export const viewCart = async () => {
   try {
-    const data = await fsPromises.readFile(
-      "./src/database/data/cart.json",
-      "utf8"
-    );
-    const result = await JSON.parse(data);
-    // console.log(result);
+    const result = await readCartFile();
     return result;
   } catch (err) {
     console.log("Error in viewCart", err);
   }
 };
 
-export const addProductToCart = async (productId, quantity) => {
+export const addProductToCart = async (userid, productId, quantity) => {
   try {
     // get all products form the products.json file
     const products = await getProductList();
     // search for a product to add in cart
-    const productToAdd = products.find((product) => product.id === productId);
-
+    const productToAdd = products.find(
+      (product) => product.productid === productId
+    );
     if (!productToAdd) {
       console.log("No matching products found");
       return;
     }
-
     if (productToAdd.inventory < quantity) {
       console.log("Not enough inventory");
       return;
@@ -46,12 +43,15 @@ export const addProductToCart = async (productId, quantity) => {
     await updateAProductInventory(productId, quantity);
 
     //search if the product is already in the cart
-    const productIndex = cartItems.findIndex((item) => item.id === productId);
+    const productIndex = cartItems.findIndex(
+      (item) => item.productid === productId && item.userid === userid
+    );
 
     if (productIndex < 0) {
       //if no product in the cart add the product to cart
       const itemToCart = {
-        id: productToAdd.id,
+        userid: userid,
+        productid: productToAdd.productid,
         name: productToAdd.name,
         price: productToAdd.price,
         quantity: quantity,
@@ -60,9 +60,10 @@ export const addProductToCart = async (productId, quantity) => {
     } else {
       //if product in the cart update the product to cart
       cartItems = cartItems.map((item) => {
-        if (item.id === productId) {
+        if (item.productid === productId) {
           return {
-            id: item.id,
+            userid: userid,
+            productid: item.productid,
             name: item.name,
             price: item.price,
             quantity: item.quantity + quantity,
@@ -73,10 +74,8 @@ export const addProductToCart = async (productId, quantity) => {
     }
     // console.log(cartItems);
 
-    await fsPromises.writeFile(
-      "./src/database/data/cart.json",
-      JSON.stringify(cartItems, null, 2)
-    );
+    await writeCartFile(cartItems);
+
     console.log(
       `Product with product id ${productId} and name ${productToAdd.name} added to cart`
     );
@@ -85,19 +84,26 @@ export const addProductToCart = async (productId, quantity) => {
   }
 };
 
-export const removeProductFromCart = async (id) => {
+export const removeProductFromCart = async (userid, id) => {
   try {
     const cartitems = await viewCart();
-    const newCart = cartitems.filter((item) => item.id !== id);
+    let newCart;
+
+    if (!userid) {
+      console.log("userid required");
+      return;
+    }
+    if (!id) {
+      newCart = cartitems.filter((item) => item.userid !== userid);
+    } else if (id) {
+      newCart = cartitems.filter((item) => {
+        if (item.userid !== userid || item.productid !== id) return item;
+      });
+    }
     if (cartitems.length === newCart.length) {
       console.log("No Items to remove from the cart");
     }
-
-    await fsPromises.writeFile(
-      "./src/database/data/cart.json",
-      JSON.stringify(newCart, null, 2)
-    );
-
+    await writeCartFile(newCart);
     console.log(`Product with id ${id} removed successfully`);
   } catch (err) {
     console.log("Error in removeProductFromCart", err);
@@ -106,12 +112,18 @@ export const removeProductFromCart = async (id) => {
 
 // update = { price, quantity };
 
-export const updateAProductCart = async (id, update) => {
+export const updateAProductCart = async (userid, id, update) => {
   try {
     const cartItems = await viewCart();
     const { price, quantity } = update;
+    let quanityChange;
     const updatedCart = cartItems.map((product) => {
-      if (product.id === id) {
+      if (product.productid === id && product.userid === userid) {
+        if (product.quantity <= quantity) {
+          quanityChange = quantity - product.quantity;
+        } else if (product.quantity > quantity) {
+          quanityChange = `${product.quantity - quantity}`;
+        }
         return { ...product, ...update };
       }
       return product;
@@ -121,10 +133,10 @@ export const updateAProductCart = async (id, update) => {
       console.log("Product not found in the cart");
     }
 
-    await fsPromises.writeFile(
-      "./src/database/data/cart.json",
-      JSON.stringify(updatedCart)
-    );
+    // console.log(quanityChange);
+    await updateAProductInventory(id, quanityChange);
+    await writeCartFile(updatedCart);
+
     console.log("Cart updated succesfully");
   } catch (err) {
     console.log("Error in updateAProduct", err);

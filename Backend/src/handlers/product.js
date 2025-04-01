@@ -1,12 +1,9 @@
 import { promises as fsPromises } from "fs";
+import { readProductFile, writeProductFile, generateId } from "./fileFuncs.js";
 
 export const getProductList = async () => {
   try {
-    const data = await fsPromises.readFile(
-      "./src/database/data/products.json",
-      "utf8"
-    );
-    const result = await JSON.parse(data);
+    const result = await readProductFile();
     return result;
   } catch (err) {
     console.error("Error in getProductList", err);
@@ -14,24 +11,15 @@ export const getProductList = async () => {
   }
 };
 
-const generateId = () => {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
-};
-// console.log(generateId());
-
 export const addAProduct = async (name, price) => {
   try {
     const products = await getProductList();
-    const id = generateId();
-
-    const newProduct = { id, name, price };
+    const productid = generateId();
+    const newProduct = { productid, name, price };
     const totalProducts = [...products, newProduct];
     // const totalProducts = products.push(newProduct);
-    await fsPromises.writeFile(
-      "./src/database/data/products.json",
-      JSON.stringify(totalProducts, null, 2)
-    );
 
+    await writeProductFile(totalProducts);
     console.log("Product added successfully!");
   } catch (err) {
     console.error("Error in addAProduct", err);
@@ -42,7 +30,7 @@ export const updateAProduct = async (id, name, price) => {
   try {
     const products = await getProductList();
     const newProducts = products.map((product) => {
-      if (product.id === id) {
+      if (product.productid === id) {
         return { ...product, name, price };
       }
       // if (product.id === id) {
@@ -55,10 +43,8 @@ export const updateAProduct = async (id, name, price) => {
     } else {
       console.log("No products to update");
     }
-    await fsPromises.writeFile(
-      "./src/database/data/products.json",
-      JSON.stringify(newProducts, null, 2)
-    );
+
+    await writeProductFile(newProducts);
   } catch (err) {
     console.log("Error in updateAProduct", err);
   }
@@ -67,11 +53,11 @@ export const updateAProduct = async (id, name, price) => {
 export const deleteAProduct = async (id) => {
   try {
     const products = await getProductList();
-    const totalProducts = products.filter((product) => product.id !== id);
-    await fsPromises.writeFile(
-      "./src/database/data/products.json",
-      JSON.stringify(totalProducts, null, 2)
+    const totalProducts = products.filter(
+      (product) => product.productid !== id
     );
+
+    await writeProductFile(totalProducts);
     if (products.length === totalProducts.length) {
       console.log("No Products to delete");
     } else {
@@ -86,8 +72,13 @@ export const updateAProductInventory = async (id, quantity) => {
   try {
     let products = await getProductList();
     products = products.map((product) => {
-      if (product.id === id) {
-        let inventory = product.inventory - quantity;
+      if (product.productid === id) {
+        let inventory;
+        if (typeof quantity == "string") {
+          inventory = product.inventory + Number(quantity);
+        } else {
+          inventory = product.inventory - quantity;
+        }
         return {
           ...product,
           inventory,
@@ -95,10 +86,8 @@ export const updateAProductInventory = async (id, quantity) => {
       }
       return product;
     });
-    await fsPromises.writeFile(
-      "./src/database/data/products.json",
-      JSON.stringify(products)
-    );
+
+    await writeProductFile(products);
   } catch (err) {
     console.log("Error in updateAProduct Inventory", err);
   }
