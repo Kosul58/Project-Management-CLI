@@ -90,7 +90,7 @@ if (x === "product" || x.toLowerCase() === "product") {
     let orderid = args[3];
     productid = args[4];
     if (userid && orderid && productid)
-      cancelAORder(orderid, userid, productid);
+      cancelAOrder(orderid, userid, productid);
     // cancelAORder("m8wzroo6dpruojup3tv", "2018", "1");
   } else if (y === "statusupdate") {
     // node index.js order statusupdate <userid> <orderid> --status pending
