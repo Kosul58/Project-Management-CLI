@@ -1,47 +1,41 @@
-import { promises as fsPromises } from "fs";
+import { readToFile, writeToFile } from "../repository/fileManager.js";
+import { cartPath, productPath } from "../utils/utils.js";
 
-import {
-  getProductList,
-  addAProduct,
-  updateAProduct,
-  deleteAProduct,
-  updateAProductInventory,
-} from "./product.js";
-
-import { readCartFile, writeCartFile } from "./fileFuncs.js";
-
-export const viewCart = async () => {
+export const cartDisplayer = async () => {
   try {
-    const result = await readCartFile();
+    const result = await readToFile(cartPath);
     return result;
   } catch (err) {
-    console.log("Error in viewCart", err);
+    console.log("Error in cartDisplayer", err);
+    throw err;
   }
 };
 
-export const addProductToCart = async (userid, productId, quantity) => {
+const validateProductAvailability = (productToAdd, quantity) => {
+  if (!productToAdd) {
+    throw new Error("No matching products found");
+  }
+  if (productToAdd.inventory < quantity) {
+    throw new Error("Not enough inventory");
+  }
+};
+
+export const cartAdder = async (userid, productId, quantity) => {
   try {
     // get all products form the products.json file
-    const products = await getProductList();
+    const products = await readToFile(productPath);
     // search for a product to add in cart
     const productToAdd = products.find(
       (product) => product.productid === productId
     );
-    if (!productToAdd) {
-      console.log("No matching products found");
-      return;
-    }
-    if (productToAdd.inventory < quantity) {
-      console.log("Not enough inventory");
-      return;
-    }
+
+    validateProductAvailability(productToAdd, quantity);
 
     //get all items in the cart
-    let cartItems = await viewCart();
+    let cartItems = await readToFile(cartPath);
 
     // // update the inventory in products.json file
     // await updateAProductInventory(productId, quantity);
-
     //search if the product is already in the cart
     const productIndex = cartItems.findIndex(
       (item) => item.productid === productId && item.userid === userid
@@ -73,49 +67,55 @@ export const addProductToCart = async (userid, productId, quantity) => {
       });
     }
     // console.log(cartItems);
-
-    await writeCartFile(cartItems);
-
-    console.log(
-      `Product with product id ${productId} and name ${productToAdd.name} added to cart`
-    );
+    await writeToFile(cartPath, cartItems);
+    return cartItems;
   } catch (err) {
-    console.log("Error in addProductToCart", err);
+    console.log("Error in cartAdder", err);
+    throw err;
   }
 };
 
-export const removeProductFromCart = async (userid, id) => {
+export const cartDeleter = async (userid, productid) => {
   try {
-    const cartitems = await viewCart();
+    const cartitems = await readToFile(cartPath);
     let newCart;
-    if (!userid) {
-      console.log("userid required");
-      return;
-    }
-    if (!id) {
+
+    if (!productid) {
       newCart = cartitems.filter((item) => item.userid !== userid);
-    } else if (id) {
+    } else if (productid) {
       newCart = cartitems.filter((item) => {
-        if (item.userid !== userid || item.productid !== id) return item;
+        if (item.userid !== userid || item.productid !== productid) return item;
       });
     }
     if (cartitems.length === newCart.length) {
-      console.log("No Items to remove from the cart");
+      throw new Error("No Items to remove from the cart");
     }
-    await writeCartFile(newCart);
-    console.log(`Product with id ${id} removed successfully`);
+    await writeToFile(cartPath, newCart);
+    productid
+      ? console.log(`Product with id ${productid} removed successfully`)
+      : console.log(`Product removed successfully`);
+    return newCart;
   } catch (err) {
-    console.log("Error in removeProductFromCart", err);
+    console.log("Error in cartDeleter", err);
+    throw err;
   }
 };
 
-// update = { price, quantity };
+const productInCart = (cartItems, productid) => {
+  const productIndex = cartItems.find((p) => p.productid === productid);
+  if (productIndex < 0) {
+    throw new Error("Product not found");
+  }
+};
 
-export const updateAProductCart = async (userid, id, update) => {
+export const cartUpdater = async (userid, id, update) => {
   try {
-    const cartItems = await viewCart();
+    const cartItems = await readToFile(cartPath);
     const { price, quantity } = update;
     // let quanityChange;
+
+    productInCart(cartItems, id);
+
     const updatedCart = cartItems.map((product) => {
       if (product.productid === id && product.userid === userid) {
         // if (product.quantity <= quantity) {
@@ -127,29 +127,29 @@ export const updateAProductCart = async (userid, id, update) => {
       }
       return product;
     });
-    // check if the product is in the cart or not
-    if (cartItems.length !== updatedCart.length) {
-      console.log("Product not found in the cart");
-    }
-
     // console.log(quanityChange);
     // await updateAProductInventory(id, quanityChange);
-    await writeCartFile(updatedCart);
-
+    await writeToFile(cartPath, updatedCart);
     console.log("Cart updated succesfully");
+    return updatedCart;
   } catch (err) {
-    console.log("Error in updateAProduct", err);
+    console.log("Error in cartUpdater", err);
+    throw err;
   }
 };
 
-export const calcTotal = async () => {
+export const cartTotal = async (userid) => {
   try {
-    const cartItems = await viewCart();
+    let cartItems = await readToFile(cartPath);
+    if (userid) {
+      cartItems = cartItems.filter((p) => p.userid === userid);
+    }
     const total = cartItems.reduce((a, item) => {
       return (a = a + item.quantity * item.price);
     }, 0);
     return total;
   } catch (err) {
-    console.log("error in calcTotal", err);
+    console.log("Error in cartTotal", err);
+    throw err;
   }
 };

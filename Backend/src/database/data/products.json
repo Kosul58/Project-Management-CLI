@@ -1,9 +1,9 @@
 [
   {
     "productid": "1",
-    "name": "Laptop Pro 15",
-    "price": 1200,
-    "description": "A high-performance laptop with a 15-inch display and powerful specs.",
+    "name": "Tablet",
+    "price": 800,
+    "description": "Samsung tablet",
     "category": "Electronics",
     "inventory": 230
   },
@@ -37,7 +37,7 @@
     "price": 120,
     "description": "Noise-canceling over-ear Bluetooth headphones with deep bass.",
     "category": "Audio",
-    "inventory": 385
+    "inventory": 355
   },
   {
     "productid": "6",
@@ -96,6 +96,6 @@
     "productid": "122",
     "name": "Laptop Pro 15",
     "price": 1200,
-    "inventory": 50
+    "inventory": 100
   }
 ]
