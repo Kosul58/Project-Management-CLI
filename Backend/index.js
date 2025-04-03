@@ -1,20 +1,27 @@
 import { promises as fsPromises } from "fs";
 import {
   getProductList,
+  getProductByID,
   addAProduct,
+  addABatchOfProducts,
   updateAProduct,
   deleteAProduct,
   updateAProductInventory,
 } from "./src/controllers/product.js";
 import {
   viewCart,
+  viewACartProductByUserId,
+  viewAllCartProductByUserId,
   addProductToCart,
-  removeProductFromCart,
+  removeAProductFromCartForUser,
+  removeSomeProductFromCartForUser,
+  removeAllProductFromCartForUser,
   calcTotal,
   updateAProductCart,
 } from "./src/controllers/cart.js";
 import {
-  createOrder,
+  createSingleOrder,
+  createBatchOrder,
   viewOrders,
   updateOrderStatus,
   cancelOrder,

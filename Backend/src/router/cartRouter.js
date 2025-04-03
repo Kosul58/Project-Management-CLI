@@ -22,6 +22,7 @@ const cartRouter = (Command_Prompt) => {
 
     default:
       console.log("Wrong command");
+      console.log("Type 'node index.js help' to view all avialable prompts");
       break;
   }
 };

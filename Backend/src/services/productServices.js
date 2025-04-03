@@ -1,14 +1,21 @@
-import { response } from "express";
-import {
-  readToFile,
-  writeToFile,
-  appendToFile,
-} from "../repository/fileManager.js";
+// import { response } from "express";
+// import { readToFile, writeToFile, appendToFile } from "../utils/fileManager.js";
 import { generateId, productPath } from "../utils/utils.js";
+import {
+  addABatchOfProductInDb,
+  addProductToDb,
+  checkProductAlreadyInDb,
+  deleteProductFromDb,
+  getAllProductFromDb,
+  getProductByIDFromDb,
+  increaseAProductInventoryInDb,
+  decreaseAProductInventoryInDb,
+  updateProductInDb,
+} from "../repository/productRepositroy.js";
 
-export const productDisplayer = async () => {
+export const getAllProduct = async () => {
   try {
-    const result = await readToFile(productPath);
+    let result = await getAllProductFromDb();
     return result;
   } catch (err) {
     console.log("error in productDisplayer", err);
@@ -16,16 +23,31 @@ export const productDisplayer = async () => {
   }
 };
 
-const productCreator = (name, price, inventory) => {
+export const getProductByIDService = async (prouctid) => {
+  try {
+    const data = await getProductByIDFromDb(prouctid);
+    return data;
+  } catch (err) {
+    console.log("error in getProductByIDService", err);
+    throw err;
+  }
+};
+
+const createAProduct = (name, price, inventory) => {
   return { productid: generateId(), name, price, inventory };
 };
 
-export const productAdder = async (name, price, inventory) => {
+export const addAProductService = async (name, price, inventory) => {
   try {
-    const products = await readToFile(productPath);
-    const newProduct = productCreator(name, price, inventory);
-    const totalProducts = [...products, newProduct];
-    await writeToFile(productPath, totalProducts);
+    //create a new product
+    const newProduct = createAProduct(name, price, inventory);
+    //check if the product is already in the database
+    const productindex = await checkProductAlreadyInDb(newProduct);
+    if (productindex) {
+      throw new Error("Product already exists in the database");
+    }
+    //send product data to repository to add to file
+    const totalProducts = await addProductToDb(newProduct);
     // await appendToFile(productPath, newProduct);
     console.log("Product added successfully!");
     return { newProduct, totalProducts };
@@ -35,17 +57,23 @@ export const productAdder = async (name, price, inventory) => {
   }
 };
 
-export const productUpdater = async (productid, update) => {
+// productsarray = [{name: , price: , inventory: }]
+export const addABatchOfProductService = async (productsarray) => {
   try {
-    const products = await readToFile(productPath);
-    const { name, price } = update;
-    const newProducts = products.map((product) => {
-      if (product.productid === productid) {
-        return { ...product, ...update };
-      }
-      return product;
-    });
-    await writeToFile(productPath, newProducts);
+    for (let product of productsarray) {
+      product.productid = generateId();
+    }
+    const data = await addABatchOfProductInDb(productsarray);
+    // console.log(productsarray);
+  } catch (err) {
+    console.log("errror in addABatchOfProductService", err);
+    throw err;
+  }
+};
+
+export const updateAProductService = async (productid, update) => {
+  try {
+    const newProducts = await updateProductInDb(productid, update);
     return newProducts;
   } catch (err) {
     console.log("error in productAdder", err);
@@ -53,22 +81,10 @@ export const productUpdater = async (productid, update) => {
   }
 };
 
-export const productDeleter = async (productid) => {
+export const deleteAProductService = async (productid) => {
   try {
-    const products = await readToFile(productPath);
-    const totalProducts = products.filter(
-      (product) => product.productid !== productid
-    );
-    await writeToFile(productPath, totalProducts);
-
-    if (products.length === totalProducts.length) {
-      return { message: "No Products to delete", response: totalProducts };
-    } else {
-      return {
-        message: `Product with product id: ${productid} deleted successfully`,
-        response: totalProducts,
-      };
-    }
+    const data = await deleteProductFromDb(productid);
+    return data;
   } catch (err) {
     console.log("error in productAdder", err);
     throw err;
@@ -77,23 +93,12 @@ export const productDeleter = async (productid) => {
 
 export const productInventoryUpdater = async (id, quantity) => {
   try {
-    let products = await readToFile(productPath);
-    products = products.map((product) => {
-      if (product.productid === id) {
-        let inventory;
-        if (typeof quantity == "string") {
-          inventory = product.inventory + Number(quantity);
-        } else {
-          inventory = product.inventory - quantity;
-        }
-        return {
-          ...product,
-          inventory,
-        };
-      }
-      return product;
-    });
-    await writeToFile(productPath, products);
+    let products;
+    if (typeof quantity === "string") {
+      products = await increaseAProductInventoryInDb(id, quantity);
+    } else {
+      products = await decreaseAProductInventoryInDb(id, quantity);
+    }
     return products;
   } catch (err) {
     console.log("error in productAdder", err);

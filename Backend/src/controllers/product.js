@@ -1,14 +1,17 @@
+import { response } from "express";
 import {
-  productDisplayer,
-  productAdder,
-  productUpdater,
-  productDeleter,
+  getAllProduct,
+  addAProductService,
+  updateAProductService,
+  deleteAProductService,
   productInventoryUpdater,
+  getProductByIDService,
+  addABatchOfProductService,
 } from "../services/productServices.js";
 
 export const getProductList = async () => {
   try {
-    const response = await productDisplayer();
+    const response = await getAllProduct();
     if (response.length === 0) {
       return {
         message: "Product search failed",
@@ -26,12 +29,31 @@ export const getProductList = async () => {
   }
 };
 
+export const getProductByID = async (productid) => {
+  try {
+    const data = await getProductByIDService(productid);
+    if (data.length > 0) {
+      return {
+        message: "Product search successfull",
+        response: data,
+      };
+    } else {
+      return {
+        message: "Product search unsuccessfull",
+        response: [],
+      };
+    }
+  } catch (err) {
+    console.log("error in getProdutByID controller", err);
+  }
+};
+
 export const addAProduct = async (name, price, inventory) => {
   try {
     if (!name || !price || !inventory) {
       return { message: "Enter all fields", response: [] };
     }
-    const result = await productAdder(name, price, inventory);
+    const result = await addAProductService(name, price, inventory);
     if (!result) {
       return {
         message: "Error adding product",
@@ -48,12 +70,37 @@ export const addAProduct = async (name, price, inventory) => {
   }
 };
 
+export const addABatchOfProducts = async (productsarray) => {
+  try {
+    if (productsarray.length == 0) {
+      return {
+        message: "empty products array",
+        response: [],
+      };
+    }
+    const data = addABatchOfProductService(productsarray);
+    if (data.length > 0) {
+      return {
+        message: "Batch addition of products successfull",
+        response: data,
+      };
+    } else {
+      return {
+        message: "Batch addition of products unsuccessfull",
+        response: [],
+      };
+    }
+  } catch (err) {
+    console.log("error in addABatchOfProduct", err);
+  }
+};
+
 export const updateAProduct = async (productid, update) => {
   try {
     if (!productid || !update) {
       return { message: "Enter all field" };
     }
-    const result = await productUpdater(productid, update);
+    const result = await updateAProductService(productid, update);
 
     if (result.length > 0) {
       return {
@@ -78,7 +125,7 @@ export const deleteAProduct = async (productid) => {
       console.log("Product id required");
       return;
     }
-    const result = await productDeleter(productid);
+    const result = await deleteAProductService(productid);
     return result;
   } catch (err) {
     console.log("Error in deleteAProduct", err);

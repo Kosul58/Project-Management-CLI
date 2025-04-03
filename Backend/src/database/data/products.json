@@ -5,7 +5,7 @@
     "price": 800,
     "description": "Samsung tablet",
     "category": "Electronics",
-    "inventory": 230
+    "inventory": 225
   },
   {
     "productid": "2",
@@ -61,7 +61,7 @@
     "price": 50,
     "description": "10,000mAh power bank with fast charging and dual USB ports.",
     "category": "Accessories",
-    "inventory": 600
+    "inventory": 545
   },
   {
     "productid": "9",
@@ -97,5 +97,11 @@
     "name": "Laptop Pro 15",
     "price": 1200,
     "inventory": 100
+  },
+  {
+    "productid": "m90xrstm0qj9ahgvht4",
+    "name": "kaper",
+    "price": 55,
+    "inventory": 55
   }
 ]

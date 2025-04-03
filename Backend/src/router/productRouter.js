@@ -14,6 +14,7 @@ const productRouter = (Command_Prompt) => {
       break;
     default:
       console.log("Wrong Command");
+      console.log("Type 'node index.js help' to view all avialable prompts");
       break;
   }
 };

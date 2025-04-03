@@ -22,6 +22,7 @@ const orderRouter = (Command_Prompt) => {
 
     default:
       console.log("wrong command");
+      console.log("Type 'node index.js help' to view all avialable prompts");
       break;
   }
 };
