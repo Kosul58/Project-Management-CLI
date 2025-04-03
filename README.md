@@ -213,24 +213,33 @@
    -> node index.js product list
 
 3. update a product
-   -> node index.js product update productid --name 'Gaming Laptop' --price 1299.99
+   ->node index.js product update --productid 10 --name Fantech Mouse --price 5000 --inventory 80
 
 4. delete a product
-   -> node index.js product delete productid
+   -> node index.js product delete --productid 10
 
 ## Cart part
 
 1. add a product to the cart
-   -> node index.js cart add userid productid --quantity 20
+   -> node index.js cart add --userid kos7 --productid 3 --quantity 10
 
 2. view products in the cart
-   -> node index.js cart view
+   -> node index.js cart view --userid kos7 --productid 3 (view a product in the cart of a user)
+   -> node index.js cart view --userid kos7 (view all products in the cart of a user)
+   -> node index.js cart view (view all products in the cart)
 
-3. remove a product from the cart for a user
-   -> node index.js cart remove userid productid
+3. remove product from the cart for a user
+   -> node index.js cart remove --userid kos7 --productid 9
+   (removes a product by matching productid and userid)
+
+   -> node index.js cart remove --userid kos7
+   (removes products by matching userid)
 
 4. update a product for a user in the cart
-   -> node index.js cart update userid productid --price 200 --quantity 5
+   -> node index.js cart update --userid kos7 --productid 3 --price 90
+
+5. calculate total price of all products in the cart of a user
+   -> node index.js cart total --userid kos7
 
 ## Order part
 

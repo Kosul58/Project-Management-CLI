@@ -1,3 +1,19 @@
+export function parseOptions(args) {
+  const options = {};
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith("--")) {
+      const key = args[i].slice(2);
+      const nextArg = args[i + 1];
+      // Check if next argument exists and isn't another option
+      if (nextArg !== undefined && !nextArg.startsWith("--")) {
+        options[key] = nextArg;
+        i++;
+      }
+    }
+  }
+  return options;
+}
+
 export const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };

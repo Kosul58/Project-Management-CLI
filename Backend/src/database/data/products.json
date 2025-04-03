@@ -27,7 +27,7 @@
     "productid": "4",
     "name": "Smartphone X",
     "price": 999,
-    "description": "A flagship smartphone with an amazing camera and all-day battery life.",
+    "description": "A flagship smsartphone with an amazing camera and all-day battery life.",
     "category": "Electronics",
     "inventory": 150
   },
@@ -103,5 +103,11 @@
     "name": "kaper",
     "price": 55,
     "inventory": 55
+  },
+  {
+    "productid": "m918xpqsq9d1u6sgx3",
+    "name": "momoss",
+    "price": 2222,
+    "inventory": 10222
   }
 ]
