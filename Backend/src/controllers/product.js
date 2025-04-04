@@ -133,13 +133,13 @@ export const deleteProduct = async (productid) => {
   }
 };
 
-export const updateProductInventory = async (id, quantity) => {
+export const increaseProductInventory = async (id, quantity) => {
   try {
     if (!id || !quantity) {
       console.log("Both productid and qunatity required");
       return;
     }
-    let result = await productService.updateProductInventory(id, quantity);
+    let result = await productService.increaseProductInventory(id, quantity);
     if (result.length > 0) {
       return {
         message: "Inventory Update Successfully",
@@ -157,6 +157,29 @@ export const updateProductInventory = async (id, quantity) => {
   }
 };
 
+export const decreaseProductInventory = async (id, quantity) => {
+  try {
+    if (!id || !quantity) {
+      console.log("Both productid and qunatity required");
+      return;
+    }
+    let result = await productService.decreaseProductInventory(id, quantity);
+    if (result.length > 0) {
+      return {
+        message: "Inventory Update Successfully",
+        response: result,
+      };
+    } else {
+      return {
+        message: "Invetory Update Unsuccessfull",
+        response: [],
+      };
+    }
+  } catch (err) {
+    console.error("Error in Controller", err);
+    return [];
+  }
+};
 // Display all products
 // const data = await getProductList();
 // console.log(data);

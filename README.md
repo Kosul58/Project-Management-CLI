@@ -185,3 +185,5 @@
 
 4. to cancel the order of a single product
    -> node index.js order cancelaorder --userid user123 --orderid order123 --productid product123
+
+   //node index.js order cancelaorder --userid k202 --orderid m915m0be3l0refd77p4 --productid 8

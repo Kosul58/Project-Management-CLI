@@ -69,17 +69,24 @@ const deleteProduct = async (productid) => {
   }
 };
 
-const updateProductInventory = async (id, quantity) => {
+const increaseProductInventory = async (id, quantity) => {
   try {
     let products;
-    if (typeof quantity === "string") {
-      products = await productRepository.increaseProductInventory(id, quantity);
-    } else {
-      products = await productRepository.decreaseProductInventory(id, quantity);
-    }
+    products = await productRepository.increaseProductInventory(id, quantity);
     return products;
   } catch (err) {
-    console.log("error in product Services product inventory", err);
+    console.log("error in product Services product inventory increase", err);
+    throw err;
+  }
+};
+
+const decreaseProductInventory = async (id, quantity) => {
+  try {
+    let products;
+    products = await productRepository.decreaseProductInventory(id, quantity);
+    return products;
+  } catch (err) {
+    console.log("error in product Services product inventory decrease", err);
     throw err;
   }
 };
@@ -91,5 +98,6 @@ export default {
   addProducts,
   updateProduct,
   deleteProduct,
-  updateProductInventory,
+  increaseProductInventory,
+  decreaseProductInventory,
 };

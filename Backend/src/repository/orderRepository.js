@@ -1,7 +1,10 @@
 import { readToFile, writeToFile } from "../utils/fileManager.js";
 import { cartPath, orderPath } from "../utils/utils.js";
 import { removeProduct } from "../controllers/cart.js";
-import { updateProductInventory } from "../controllers/product.js";
+import {
+  increaseProductInventory,
+  decreaseProductInventory,
+} from "../controllers/product.js";
 import { generateId, getCurrentDateTimeStamp } from "../utils/utils.js";
 
 const getOrder = async (userid) => {
@@ -37,10 +40,16 @@ const cartUpdate = async (products, userid) => {
   }
 };
 
-const inventoryChange = async (items) => {
+const inventoryIncrease = async (items) => {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
-    await updateProductInventory(productid, quantity);
+    await increaseProductInventory(productid, quantity);
+  }
+};
+const inventoryDecrease = async (items) => {
+  for (let { productid, quantity } of items) {
+    // console.log(productid, quantity);
+    await decreaseProductInventory(productid, quantity);
   }
 };
 
@@ -69,7 +78,7 @@ const addOrder = async (userid, productid) => {
     await writeToFile(orderPath, orders);
     await cartUpdate([productid], userid);
     console.log("Order createad sucessfully");
-    await inventoryChange(items);
+    await inventoryDecrease(items);
     return order;
   } catch (err) {
     console.log("error in order repository addOrder", err);
@@ -93,7 +102,7 @@ const addOrders = async (userid, products) => {
     await writeToFile(orderPath, orders);
     await cartUpdate(products, userid);
     console.log("Order createad sucessfully");
-    await inventoryChange(items);
+    await inventoryDecrease(items);
     return order;
   } catch (err) {
     console.log("error in order repository addOrders", err);
@@ -125,12 +134,6 @@ const updateOrderStatus = async (orderid, userid, status) => {
   }
 };
 
-async function updateInventory(items) {
-  for (let { productid, quantity } of items) {
-    // console.log(productid, quantity);
-    await updateProductInventory(productid, `${quantity}`);
-  }
-}
 const removeOrders = async (orderid, userid) => {
   try {
     let orders = await readToFile(orderPath);
@@ -142,7 +145,7 @@ const removeOrders = async (orderid, userid) => {
         return order;
       }
     });
-    await updateInventory(canceledORder.items);
+    await inventoryIncrease(canceledORder.items);
     // console.log(orders);
     await writeToFile(orderPath, orders);
     console.log(`order canceled for order id ${orderid} and user id ${userid}`);
@@ -158,24 +161,29 @@ const removeOrder = async (orderid, userid, productid) => {
     // console.log(orderid, userid, productid);
     let orders = await readToFile(orderPath);
     // console.log(orders);
+    console.log(orders);
     let order = orders.filter(
       (order) => order.orderid === orderid && order.userid === userid
     );
+    console.log(order);
     let items = order[0].items.filter((item) => item.productid !== productid);
+    console.log(items);
     let canceledItems = order[0].items.filter(
       (item) => item.productid === productid
     );
 
     // console.log(items, canceledItems);
 
-    orders = orders.map((order) => {
-      if (order.orderid === orderid && order.userid === userid) {
-        return { ...order, items };
-      }
-      return order;
-    });
+    orders = orders
+      .map((order) => {
+        if (order.orderid === orderid && order.userid === userid) {
+          return items.length !== 0 ? { ...order, items } : null;
+        }
+        return order;
+      })
+      .filter(Boolean);
 
-    await updateInventory(canceledItems);
+    await inventoryIncrease(canceledItems);
     await writeToFile(orderPath, orders);
     return orders;
   } catch (err) {
