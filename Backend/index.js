@@ -1,32 +1,3 @@
-import { promises as fsPromises } from "fs";
-import {
-  getProductList,
-  getProductByID,
-  addAProduct,
-  addABatchOfProducts,
-  updateAProduct,
-  deleteAProduct,
-  updateAProductInventory,
-} from "./src/controllers/product.js";
-import {
-  viewCart,
-  viewACartProductByUserId,
-  viewAllCartProductByUserId,
-  addProductToCart,
-  removeAProductFromCartForUser,
-  removeSomeProductFromCartForUser,
-  removeAllProductFromCartForUser,
-  calcTotal,
-  updateAProductCart,
-} from "./src/controllers/cart.js";
-import {
-  createSingleOrder,
-  createBatchOrder,
-  viewOrders,
-  updateOrderStatus,
-  cancelOrder,
-  cancelAOrder,
-} from "./src/controllers/order.js";
 import cartRouter from "./src/router/cartRouter.js";
 import orderRouter from "./src/router/orderRouter.js";
 import productRouter from "./src/router/productRouter.js";
@@ -55,6 +26,35 @@ switch (Command_Prompt[0]) {
     console.log("Type 'node index.js help' to view all avialable prompts");
 }
 
+// import { promises as fsPromises } from "fs";
+// import {
+//   getProductList,
+//   getProductByID,
+//   addAProduct,
+//   addABatchOfProducts,
+//   updateAProduct,
+//   deleteAProduct,
+//   updateAProductInventory,
+// } from "./src/controllers/product.js";
+// import {
+//   viewCart,
+//   viewACartProductByUserId,
+//   viewAllCartProductByUserId,
+//   addProductToCart,
+//   removeAProductFromCartForUser,
+//   removeSomeProductFromCartForUser,
+//   removeAllProductFromCartForUser,
+//   calcTotal,
+//   updateAProductCart,
+// } from "./src/controllers/cart.js";
+// import {
+//   createSingleOrder,
+//   createBatchOrder,
+//   viewOrders,
+//   updateOrderStatus,
+//   cancelOrder,
+//   cancelAOrder,
+// } from "./src/controllers/order.js";
 // let args = process.argv.slice(2);
 // // node ra index.js remove garna
 // console.log(args);

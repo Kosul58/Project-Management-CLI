@@ -1,9 +1,9 @@
 import {
-  addAProduct,
-  deleteAProduct,
-  getProductByID,
+  addProduct,
+  deleteProduct,
+  getProductById,
   getProductList,
-  updateAProduct,
+  updateProduct,
 } from "../controllers/product.js";
 
 import { parseOptions } from "../utils/utils.js";
@@ -13,7 +13,6 @@ const productRouter = async (Command_Prompt) => {
 
   // console.log(values);
   let { productid, name, price, inventory } = values;
-
   price = Number(price);
 
   inventory = Number(inventory);
@@ -24,12 +23,12 @@ const productRouter = async (Command_Prompt) => {
       let list;
       !productid
         ? (list = await getProductList())
-        : (list = await getProductByID(productid));
+        : (list = await getProductById(productid));
       console.log(list);
       break;
 
     case "add":
-      const add = await addAProduct(name, price, inventory);
+      const add = await addProduct(name, price, inventory);
       console.log(add);
       break;
 
@@ -39,11 +38,11 @@ const productRouter = async (Command_Prompt) => {
 
     case "update":
       const update = { ...values };
-      const updateResult = await updateAProduct(productid, update);
+      const updateResult = await updateProduct(productid, update);
       console.log(updateResult);
       break;
     case "delete":
-      const deleteResult = await deleteAProduct(productid);
+      const deleteResult = await deleteProduct(productid);
       console.log(deleteResult);
       break;
     default:

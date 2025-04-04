@@ -1,17 +1,8 @@
-import { response } from "express";
-import {
-  getAllProduct,
-  addAProductService,
-  updateAProductService,
-  deleteAProductService,
-  productInventoryUpdater,
-  getProductByIDService,
-  addABatchOfProductService,
-} from "../services/productServices.js";
+import productService from "../services/productServices.js";
 
 export const getProductList = async () => {
   try {
-    const response = await getAllProduct();
+    const response = await productService.getAllProduct();
     if (response.length === 0) {
       return {
         message: "Product search failed",
@@ -24,14 +15,14 @@ export const getProductList = async () => {
       };
     }
   } catch (err) {
-    console.error("Error in getProductList", err);
+    console.error("Error in Controller", err);
     return [];
   }
 };
 
-export const getProductByID = async (productid) => {
+export const getProductById = async (productid) => {
   try {
-    const data = await getProductByIDService(productid);
+    const data = await productService.getProductById(productid);
     if (data.length > 0) {
       return {
         message: "Product search successfull",
@@ -44,16 +35,17 @@ export const getProductByID = async (productid) => {
       };
     }
   } catch (err) {
-    console.log("error in getProdutByID controller", err);
+    console.error("Error in Controller", err);
+    return [];
   }
 };
 
-export const addAProduct = async (name, price, inventory) => {
+export const addProduct = async (name, price, inventory) => {
   try {
     if (!name || !price || !inventory) {
       return { message: "Enter all fields", response: [] };
     }
-    const result = await addAProductService(name, price, inventory);
+    const result = await productService.addProduct(name, price, inventory);
     if (!result) {
       return {
         message: "Error adding product",
@@ -65,12 +57,12 @@ export const addAProduct = async (name, price, inventory) => {
       response: result.totalProducts,
     };
   } catch (err) {
-    console.error("Error in addAProduct", err);
+    console.error("Error in Controller", err);
     return [];
   }
 };
 
-export const addABatchOfProducts = async (productsarray) => {
+export const addProducts = async (productsarray) => {
   try {
     if (productsarray.length == 0) {
       return {
@@ -78,7 +70,7 @@ export const addABatchOfProducts = async (productsarray) => {
         response: [],
       };
     }
-    const data = addABatchOfProductService(productsarray);
+    const data = productService.addProducts(productsarray);
     if (data.length > 0) {
       return {
         message: "Batch addition of products successfull",
@@ -91,16 +83,17 @@ export const addABatchOfProducts = async (productsarray) => {
       };
     }
   } catch (err) {
-    console.log("error in addABatchOfProduct", err);
+    console.error("Error in Controller", err);
+    return [];
   }
 };
 
-export const updateAProduct = async (productid, update) => {
+export const updateProduct = async (productid, update) => {
   try {
     if (!productid || !update) {
       return { message: "Enter all field" };
     }
-    const result = await updateAProductService(productid, update);
+    const result = await productService.updateProduct(productid, update);
 
     if (result.length > 0) {
       return {
@@ -114,32 +107,32 @@ export const updateAProduct = async (productid, update) => {
       };
     }
   } catch (err) {
-    console.log("Error in updateAProduct", err);
+    console.error("Error in Controller", err);
     return [];
   }
 };
 
-export const deleteAProduct = async (productid) => {
+export const deleteProduct = async (productid) => {
   try {
     if (!productid) {
       console.log("Product id required");
       return;
     }
-    const result = await deleteAProductService(productid);
+    const result = await productService.deleteProduct(productid);
     return result;
   } catch (err) {
-    console.log("Error in deleteAProduct", err);
+    console.error("Error in Controller", err);
     return [];
   }
 };
 
-export const updateAProductInventory = async (id, quantity) => {
+export const updateProductInventory = async (id, quantity) => {
   try {
     if (!id || !quantity) {
       console.log("Both productid and qunatity required");
       return;
     }
-    let result = await productInventoryUpdater(id, quantity);
+    let result = await productService.updateProductInventory(id, quantity);
 
     if (result.length > 0) {
       return {
@@ -153,7 +146,7 @@ export const updateAProductInventory = async (id, quantity) => {
       };
     }
   } catch (err) {
-    console.log("Error in updateAProduct Inventory", err);
+    console.error("Error in Controller", err);
     return [];
   }
 };

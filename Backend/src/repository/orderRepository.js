@@ -1,16 +1,17 @@
 import { readToFile, writeToFile } from "../utils/fileManager.js";
 import { cartPath, orderPath } from "../utils/utils.js";
-import { removeAProductFromCartForUser } from "../controllers/cart.js";
-import { updateAProductInventory } from "../controllers/product.js";
+import { removeProduct } from "../controllers/cart.js";
+import { updateProductInventory } from "../controllers/product.js";
+import { generateId, getCurrentDateTimeStamp } from "../utils/utils.js";
 
-export const getOrderForUserFromDb = async (userid) => {
+const getOrder = async (userid) => {
   try {
     const data = await readToFile(orderPath);
     const userdata = data.filter((order) => order.userid === userid);
     if (userdata.length === 0) return "No Order Found for the User";
     return userdata;
   } catch (err) {
-    console.log("error in getOrderForUserFromDb", err);
+    console.log("error in order repository getOrder", err);
     throw err;
   }
 };
@@ -32,19 +33,29 @@ const orderTotal = (items) => {
 
 const cartUpdate = async (products, userid) => {
   for (let i = 0; i < products.length; i++) {
-    await removeAProductFromCartForUser(userid, products[i]);
+    await removeProduct(userid, products[i]);
   }
 };
 
 const inventoryChange = async (items) => {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
-    await updateAProductInventory(productid, quantity);
+    await updateProductInventory(productid, quantity);
   }
 };
 
-export const addAOrderToDb = async (order, userid, productid) => {
+const myOrder = (userid) => {
+  return {
+    orderid: generateId(),
+    userid,
+    timestamp: getCurrentDateTimeStamp(),
+    status: "Order Successfully Placed",
+  };
+};
+
+const addOrder = async (userid, productid) => {
   try {
+    let order = myOrder(userid);
     let orders = await readToFile(orderPath);
     let cartItems = await readToFile(cartPath);
     let items = singleCartFilter(cartItems, userid, productid);
@@ -61,13 +72,14 @@ export const addAOrderToDb = async (order, userid, productid) => {
     await inventoryChange(items);
     return order;
   } catch (err) {
-    console.log("error in addAOrderToDb", err);
+    console.log("error in order repository addOrder", err);
     throw err;
   }
 };
 
-export const addBatchOrderToDb = async (order, userid, products) => {
+const addOrders = async (userid, products) => {
   try {
+    let order = myOrder(userid);
     let orders = await readToFile(orderPath);
     let cartItems = await readToFile(cartPath);
     let items = multipleCartFilter(cartItems, userid, products);
@@ -84,7 +96,7 @@ export const addBatchOrderToDb = async (order, userid, products) => {
     await inventoryChange(items);
     return order;
   } catch (err) {
-    console.log("error in addBatchOrderToDb", err);
+    console.log("error in order repository addOrders", err);
     throw err;
   }
 };
@@ -98,7 +110,7 @@ const orderFilter = (orders, orderid, userid, status) => {
   });
 };
 
-export const updateOrderStatusInDb = async (orderid, userid, status) => {
+const updateOrderStatus = async (orderid, userid, status) => {
   try {
     let orders = await readToFile(orderPath);
     orders = orderFilter(orders, orderid, userid, status);
@@ -108,17 +120,18 @@ export const updateOrderStatusInDb = async (orderid, userid, status) => {
     );
     return orders;
   } catch (err) {
-    console.log("error in updateOrderStatusInDb", err);
+    console.log("error in order repository updateOrderStatus", err);
     throw err;
   }
 };
+
 async function updateInventory(items) {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
-    await updateAProductInventory(productid, `${quantity}`);
+    await updateProductInventory(productid, `${quantity}`);
   }
 }
-export const removeOrderFromDb = async (orderid, userid) => {
+const removeOrders = async (orderid, userid) => {
   try {
     let orders = await readToFile(orderPath);
     let canceledORder = orders.find(
@@ -135,12 +148,12 @@ export const removeOrderFromDb = async (orderid, userid) => {
     console.log(`order canceled for order id ${orderid} and user id ${userid}`);
     return orders;
   } catch (err) {
-    console.log("error in removeOrderFromDb", err);
+    console.log("error in order repostitory removeOrders", err);
     throw err;
   }
 };
 
-export const removeSingleOrderFromDb = async (orderid, userid, productid) => {
+const removeOrder = async (orderid, userid, productid) => {
   try {
     // console.log(orderid, userid, productid);
     let orders = await readToFile(orderPath);
@@ -166,7 +179,16 @@ export const removeSingleOrderFromDb = async (orderid, userid, productid) => {
     await writeToFile(orderPath, orders);
     return orders;
   } catch (err) {
-    console.log("error in removeSingleOrderFromDb", err);
+    console.log("error in order repository removeOrder", err);
     throw err;
   }
+};
+
+export default {
+  addOrder,
+  addOrders,
+  getOrder,
+  removeOrder,
+  removeOrders,
+  updateOrderStatus,
 };

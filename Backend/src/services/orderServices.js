@@ -1,82 +1,74 @@
-import { generateId, getCurrentDateTimeStamp } from "../utils/utils.js";
+import orderRepository from "../repository/orderRepository.js";
 
-import {
-  addAOrderToDb,
-  addBatchOrderToDb,
-  getOrderForUserFromDb,
-  removeOrderFromDb,
-  removeSingleOrderFromDb,
-  updateOrderStatusInDb,
-} from "../repository/orderRepository.js";
-
-export const getOrderForUser = async (userid) => {
+const getOrder = async (userid) => {
   try {
-    const data = await getOrderForUserFromDb(userid);
+    const data = await orderRepository.getOrder(userid);
     return data;
   } catch (err) {
-    console.log("Error in getOrderForUser", err);
+    console.log("Error in order service getOrder", err);
     throw err;
   }
 };
-
-const myOrder = (userid) => {
-  return {
-    orderid: generateId(),
-    userid,
-    timestamp: getCurrentDateTimeStamp(),
-    status: "Order Successfully Placed",
-  };
-};
-
-export const addAOrderService = async (userid, productid) => {
+const addOrder = async (userid, productid) => {
   try {
-    const order = myOrder(userid);
-    const result = await addAOrderToDb(order, userid, productid);
+    const result = await orderRepository.addOrder(userid, productid);
     return result;
   } catch (err) {
-    console.log("Error in addOrderService", err);
+    console.log("Error in order service addOrder", err);
     throw err;
   }
 };
 
-export const addBatchOrderService = async (userid, products) => {
+const addOrders = async (userid, products) => {
   try {
-    const order = myOrder(userid);
-    const result = await addBatchOrderToDb(order, userid, products);
+    const result = await orderRepository.addOrders(userid, products);
     return result;
   } catch (err) {
-    console.log("Error in addBatchOrderService", err);
+    console.log("Error in order service addOrders", err);
     throw err;
   }
 };
 
-export const updateOrderStatusService = async (orderid, userid, status) => {
+const updateOrderStatus = async (orderid, userid, status) => {
   try {
-    let orders = await updateOrderStatusInDb(orderid, userid, status);
+    let orders = await orderRepository.updateOrderStatus(
+      orderid,
+      userid,
+      status
+    );
     return orders;
   } catch (err) {
-    console.log("Error in updateOrderStatusService", err);
+    console.log("Error in order service updateOrderStatus", err);
     throw err;
   }
 };
 
-export const removeOrderService = async (orderid, userid) => {
+const removeOrders = async (orderid, userid) => {
   try {
-    let orders = await removeOrderFromDb(orderid, userid);
+    let orders = await orderRepository.removeOrders(orderid, userid);
     return orders;
   } catch (err) {
-    console.log("Error in removeOrderService", err);
+    console.log("Error in order service removeOrders", err);
     throw err;
   }
 };
 
-export const removeASingleOrderService = async (orderid, userid, productid) => {
+const removeOrder = async (orderid, userid, productid) => {
   try {
     // console.log(orderid, userid, productid);
-    let orders = await removeSingleOrderFromDb(orderid, userid, productid);
+    let orders = await orderRepository.removeOrder(orderid, userid, productid);
     return orders;
   } catch (err) {
-    console.log("Error in removeASingleOrderService", err);
+    console.log("Error in order service removeOrder", err);
     throw err;
   }
+};
+
+export default {
+  getOrder,
+  addOrder,
+  addOrders,
+  removeOrders,
+  removeOrder,
+  updateOrderStatus,
 };

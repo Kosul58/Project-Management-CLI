@@ -1,27 +1,27 @@
 import { readToFile, writeToFile } from "../utils/fileManager.js";
-import { productPath } from "../utils/utils.js";
+import { generateId, productPath } from "../utils/utils.js";
 
-export const getAllProductFromDb = async () => {
+const getProducts = async () => {
   try {
     const result = await readToFile(productPath);
     return result;
   } catch (err) {
-    console.log("Error in displayProductFromDb", err);
+    console.log("Error in product repository getProducts", err);
     throw err;
   }
 };
 
-export const getProductByIDFromDb = async (productid) => {
+const getProductById = async (productid) => {
   try {
     const data = await readToFile(productPath);
     return data.filter((p) => p.productid === productid);
   } catch (err) {
-    console.log("Error in getProductByIdFromDb", err);
+    console.log("Error in product repository getProductByID", err);
     throw err;
   }
 };
 
-export const checkProductAlreadyInDb = async (product) => {
+const productExists = async (product) => {
   try {
     const products = await readToFile(productPath);
     const prdoductIndex = products.find(
@@ -31,29 +31,35 @@ export const checkProductAlreadyInDb = async (product) => {
     //   throw new Error("Product already exists in the database");
     return prdoductIndex;
   } catch (err) {
-    console.log("Error in checkProductAlreadyInDb", err);
+    console.log("Error in product repository productExists", err);
     throw err;
   }
 };
 
-export const addProductToDb = async (product) => {
+const addProduct = async (product) => {
   try {
     const products = await readToFile(productPath);
+    product.productid = generateId();
+    const productindex = await productExists(product);
+    if (productindex) {
+      throw new Error("Product already exists in the database");
+    }
     let totalProducts = [...products, product];
     await writeToFile(productPath, totalProducts);
     return totalProducts;
   } catch (err) {
-    console.log("Error in addProdcitToDb", err);
+    console.log("Error in product repository addProduct", err);
     throw err;
   }
 };
 
-export const addABatchOfProductInDb = async (products) => {
+const addProducts = async (products) => {
   try {
     const productsInDb = await readToFile(productPath);
     let totalProducts = [...productsInDb];
     for (let product of products) {
-      const productindex = await checkProductAlreadyInDb(product);
+      product.productid = generateId();
+      const productindex = await productExists(product);
       if (!productindex) {
         console.log(product);
         totalProducts = [...totalProducts, product];
@@ -62,12 +68,12 @@ export const addABatchOfProductInDb = async (products) => {
     await writeToFile(productPath, totalProducts);
     return totalProducts;
   } catch (err) {
-    console.log("error in addABatchOfProductInDb", err);
+    console.log("Error in product repository addProducts", err);
     throw err;
   }
 };
 
-export const updateProductInDb = async (productid, update) => {
+const updateProduct = async (productid, update) => {
   try {
     const products = await readToFile(productPath);
     const { name, price } = update;
@@ -80,12 +86,12 @@ export const updateProductInDb = async (productid, update) => {
     await writeToFile(productPath, newProducts);
     return newProducts;
   } catch (err) {
-    console.log("Error in updateProductInDb", err);
+    console.log("Error in product repository update", err);
     throw err;
   }
 };
 
-export const deleteProductFromDb = async (productid) => {
+const deleteProduct = async (productid) => {
   try {
     const products = await readToFile(productPath);
     const totalProducts = products.filter(
@@ -102,12 +108,12 @@ export const deleteProductFromDb = async (productid) => {
       };
     }
   } catch (err) {
-    console.log("error in productAdder", err);
+    console.log("Error in product repository delete", err);
     throw err;
   }
 };
 
-export const increaseAProductInventoryInDb = async (id, quantity) => {
+const increaseProductInventory = async (id, quantity) => {
   try {
     let products = await readToFile(productPath);
     products = products.map((product) => {
@@ -124,12 +130,12 @@ export const increaseAProductInventoryInDb = async (id, quantity) => {
     await writeToFile(productPath, products);
     return products;
   } catch (err) {
-    console.log("error in increaseAProductInventoryInDb", err);
+    console.log("Error in product repository invenotry++", err);
     throw err;
   }
 };
 
-export const decreaseAProductInventoryInDb = async (id, quantity) => {
+const decreaseProductInventory = async (id, quantity) => {
   try {
     let products = await readToFile(productPath);
     products = products.map((product) => {
@@ -146,7 +152,18 @@ export const decreaseAProductInventoryInDb = async (id, quantity) => {
     await writeToFile(productPath, products);
     return products;
   } catch (err) {
-    console.log("error in decreaseAProductInventoryInDb", err);
+    console.log("Error in product repository invenotry--", err);
     throw err;
   }
+};
+
+export default {
+  getProducts,
+  getProductById,
+  addProduct,
+  addProducts,
+  updateProduct,
+  deleteProduct,
+  increaseProductInventory,
+  decreaseProductInventory,
 };

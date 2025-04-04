@@ -1,15 +1,8 @@
-import {
-  addAOrderService,
-  getOrderForUser,
-  removeOrderService,
-  updateOrderStatusService,
-  removeASingleOrderService,
-  addBatchOrderService,
-} from "../services/orderServices.js";
+import orderServices from "../services/orderServices.js";
 
 export const viewOrders = async (userid) => {
   try {
-    const result = await getOrderForUser(userid);
+    const result = await orderServices.getOrder(userid);
     if (!result) {
       throw new Error("error fetching order data");
     }
@@ -20,34 +13,34 @@ export const viewOrders = async (userid) => {
   }
 };
 
-export const createSingleOrder = async (userid, productid) => {
+export const createOrder = async (userid, productid) => {
   try {
     if (!userid) return { message: "Userid required", response: [] };
-    const result = await addAOrderService(userid, productid);
+    const result = await orderServices.addOrder(userid, productid);
     if (!result || Object.keys(result).length === 0) {
       return { message: "Order creation unsuccessfull", response: [] };
     }
     return { message: "Order creation successfull", response: result };
   } catch (err) {
-    console.log("Error in createOrder", err);
+    console.log("Error in order controller createOrder", err);
     return [];
   }
 };
 
 // products = [productId1 , productId2]
-export const createBatchOrder = async (userid, products) => {
+export const createOrders = async (userid, products) => {
   try {
     if (!userid || products.length < 1)
       return { message: "Userid and products array required", response: [] };
 
-    const result = await addBatchOrderService(userid, products);
+    const result = await orderServices.addOrders(userid, products);
 
     if (!result || Object.keys(result).length === 0) {
       return { message: "Order creation unsuccessfull", response: [] };
     }
     return { message: "Order creation successfull", response: result };
   } catch (err) {
-    console.log("Error in createOrder", err);
+    console.log("Error in order controller createOrder", err);
     return [];
   }
 };
@@ -60,7 +53,11 @@ export const updateOrderStatus = async (orderid, userid, status) => {
         response: [],
       };
     }
-    const result = await updateOrderStatusService(orderid, userid, status);
+    const result = await orderServices.updateOrderStatus(
+      orderid,
+      userid,
+      status
+    );
     if (result.length > 0) {
       return {
         message: "Order status update successfull",
@@ -73,7 +70,7 @@ export const updateOrderStatus = async (orderid, userid, status) => {
       };
     }
   } catch (err) {
-    console.log("Error in updateOrderStatus", err);
+    console.log("Error in order controller updateOrderStatus", err);
     return [];
   }
 };
@@ -86,7 +83,7 @@ export const cancelOrder = async (orderid, userid) => {
         message: "Enter all fields",
         response: [],
       };
-    const result = await removeOrderService(orderid, userid);
+    const result = await orderServices.removeOrders(orderid, userid);
     // console.log(result);
     if (result.length >= 0) {
       return {
@@ -100,7 +97,7 @@ export const cancelOrder = async (orderid, userid) => {
       };
     }
   } catch (err) {
-    console.log("Error in cancelOrder", err);
+    console.log("Error in order controller cancelOrder", err);
     return [];
   }
 };
@@ -114,9 +111,9 @@ export const cancelAOrder = async (orderid, userid, productid) => {
         response: [],
       };
     }
-    const result = await removeASingleOrderService(orderid, userid, productid);
+    const result = await orderServices.removeOrder(orderid, userid, productid);
     return result;
   } catch (err) {
-    console.log("Error in cancelAOrder", err);
+    console.log("Error in order controller cancelAOrder", err);
   }
 };

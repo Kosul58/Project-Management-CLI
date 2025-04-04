@@ -1,107 +1,95 @@
-// import { response } from "express";
-// import { readToFile, writeToFile, appendToFile } from "../utils/fileManager.js";
-import { generateId, productPath } from "../utils/utils.js";
-import {
-  addABatchOfProductInDb,
-  addProductToDb,
-  checkProductAlreadyInDb,
-  deleteProductFromDb,
-  getAllProductFromDb,
-  getProductByIDFromDb,
-  increaseAProductInventoryInDb,
-  decreaseAProductInventoryInDb,
-  updateProductInDb,
-} from "../repository/productRepositroy.js";
+import productRepository from "../repository/productRepositroy.js";
 
-export const getAllProduct = async () => {
+const getAllProduct = async () => {
   try {
-    let result = await getAllProductFromDb();
+    let result = await productRepository.getProducts();
     return result;
   } catch (err) {
-    console.log("error in productDisplayer", err);
+    console.log("error in product Services getAllProduct", err);
     throw err;
   }
 };
 
-export const getProductByIDService = async (prouctid) => {
+const getProductById = async (prouctid) => {
   try {
-    const data = await getProductByIDFromDb(prouctid);
+    const data = await productRepository.getProductById(prouctid);
     return data;
   } catch (err) {
-    console.log("error in getProductByIDService", err);
+    console.log("error in product Services getProductById", err);
     throw err;
   }
 };
 
-const createAProduct = (name, price, inventory) => {
-  return { productid: generateId(), name, price, inventory };
-};
-
-export const addAProductService = async (name, price, inventory) => {
+const addProduct = async (name, price, inventory) => {
   try {
     //create a new product
-    const newProduct = createAProduct(name, price, inventory);
-    //check if the product is already in the database
-    const productindex = await checkProductAlreadyInDb(newProduct);
-    if (productindex) {
-      throw new Error("Product already exists in the database");
-    }
+    const newProduct = { name, price, inventory };
     //send product data to repository to add to file
-    const totalProducts = await addProductToDb(newProduct);
+    const totalProducts = await productRepository.addProduct(newProduct);
     // await appendToFile(productPath, newProduct);
     console.log("Product added successfully!");
     return { newProduct, totalProducts };
   } catch (err) {
-    console.log("error in productAdder", err);
+    console.log("error in product Services addProduct", err);
     throw err;
   }
 };
 
 // productsarray = [{name: , price: , inventory: }]
-export const addABatchOfProductService = async (productsarray) => {
+const addProducts = async (productsarray) => {
   try {
-    for (let product of productsarray) {
-      product.productid = generateId();
-    }
-    const data = await addABatchOfProductInDb(productsarray);
+    const data = await productRepository.addProducts(productsarray);
     // console.log(productsarray);
   } catch (err) {
-    console.log("errror in addABatchOfProductService", err);
+    console.log("error in product Services addProducts", err);
     throw err;
   }
 };
 
-export const updateAProductService = async (productid, update) => {
+const updateProduct = async (productid, update) => {
   try {
-    const newProducts = await updateProductInDb(productid, update);
+    const newProducts = await productRepository.updateProduct(
+      productid,
+      update
+    );
     return newProducts;
   } catch (err) {
-    console.log("error in productAdder", err);
+    console.log("error in product Services updateProduct", err);
     throw err;
   }
 };
 
-export const deleteAProductService = async (productid) => {
+const deleteProduct = async (productid) => {
   try {
-    const data = await deleteProductFromDb(productid);
+    const data = await productRepository.deleteProduct(productid);
     return data;
   } catch (err) {
-    console.log("error in productAdder", err);
+    console.log("error in product Services delete", err);
     throw err;
   }
 };
 
-export const productInventoryUpdater = async (id, quantity) => {
+const updateProductInventory = async (id, quantity) => {
   try {
     let products;
     if (typeof quantity === "string") {
-      products = await increaseAProductInventoryInDb(id, quantity);
+      products = await productRepository.increaseProductInventory(id, quantity);
     } else {
-      products = await decreaseAProductInventoryInDb(id, quantity);
+      products = await productRepository.decreaseProductInventory(id, quantity);
     }
     return products;
   } catch (err) {
-    console.log("error in productAdder", err);
+    console.log("error in product Services product inventory", err);
     throw err;
   }
+};
+
+export default {
+  getAllProduct,
+  getProductById,
+  addProduct,
+  addProducts,
+  updateProduct,
+  deleteProduct,
+  updateProductInventory,
 };

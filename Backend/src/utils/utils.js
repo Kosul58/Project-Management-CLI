@@ -3,9 +3,11 @@ export function parseOptions(args) {
   for (let i = 0; i < args.length; i++) {
     if (args[i].startsWith("--")) {
       const key = args[i].slice(2);
-      const nextArg = args[i + 1];
-      // Check if next argument exists and isn't another option
+      let nextArg = args[i + 1];
       if (nextArg !== undefined && !nextArg.startsWith("--")) {
+        if (key === "price" || key === "inventory") {
+          nextArg = Number(nextArg);
+        }
         options[key] = nextArg;
         i++;
       }

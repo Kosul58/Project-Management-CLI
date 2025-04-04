@@ -1,39 +1,39 @@
 import { readToFile, writeToFile } from "../utils/fileManager.js";
 import { cartPath, productPath } from "../utils/utils.js";
 
-export const getAllCartProductsFromDb = async () => {
+const getProducts = async () => {
   try {
     const result = await readToFile(cartPath);
     return result;
   } catch (err) {
-    console.log("Error in getAllCartProductsFromDb", err);
+    console.log("Error in cart repository", err);
     throw err;
   }
 };
 
-export const getAProductFromCartForUserInDb = async (productid, userid) => {
+const getProductById = async (productid, userid) => {
   try {
     let result = await readToFile(cartPath);
     return result.filter(
       (p) => p.userid === userid && p.productid === productid
     );
   } catch (err) {
-    console.log("Error in getAProductFromCartForUserInDb", err);
+    console.log("Error in cart repository", err);
     throw err;
   }
 };
 
-export const getAllProductFromCartForUserInDb = async (userid) => {
+const getProduct = async (userid) => {
   try {
     let result = await readToFile(cartPath);
     return result.filter((p) => p.userid === userid);
   } catch (err) {
-    console.log("Error in getAllProductFromCartForUserInDb", err);
+    console.log("Error in cart repository", err);
     throw err;
   }
 };
 
-export const isProductAlreadyInCart = async (productid, userid) => {
+const cartCheck = async (productid, userid) => {
   // get all products form the products.json file
   const products = await readToFile(cartPath);
   // search for a product to add in cart
@@ -43,7 +43,7 @@ export const isProductAlreadyInCart = async (productid, userid) => {
   return productToAdd;
 };
 
-export const validateProductAvailability = async (productid, quantity) => {
+const productAvailable = async (productid, quantity) => {
   const products = await readToFile(productPath);
   const productToAdd = products.find(
     (product) => product.productid === productid
@@ -59,13 +59,13 @@ export const validateProductAvailability = async (productid, quantity) => {
   return productToAdd;
 };
 
-export const addAProductToCartInDb = async (userid, productId, quantity) => {
+const addProduct = async (userid, productId, quantity) => {
   try {
     //check if product is in product.json file or not
-    const productToAdd = await validateProductAvailability(productId, quantity);
+    const productToAdd = await productAvailable(productId, quantity);
 
     //check if product is already in cart or not
-    const isProoductInCart = await isProductAlreadyInCart(productId, userid);
+    const isProoductInCart = await cartCheck(productId, userid);
 
     //get all items in the cart
     let cartItems = await readToFile(cartPath);
@@ -99,12 +99,12 @@ export const addAProductToCartInDb = async (userid, productId, quantity) => {
     await writeToFile(cartPath, cartItems);
     return cartItems;
   } catch (err) {
-    console.log("Error in addAProductToCartInDb", err);
+    console.log("Error in cart repository addproduct", err);
     throw err;
   }
 };
 
-export const removeAProductInCartFromDb = async (userid, productid) => {
+const removeProduct = async (userid, productid) => {
   try {
     const cartitems = await readToFile(cartPath);
     let newCart;
@@ -118,12 +118,12 @@ export const removeAProductInCartFromDb = async (userid, productid) => {
     console.log(`Product with id ${productid} removed successfully`);
     return newCart;
   } catch (err) {
-    console.log("Error in removeAProductInCartFromDb", err);
+    console.log("Error in cart repository removeproduct", err);
     throw err;
   }
 };
 
-export const removeSomeProductInCartFromDb = async (userid, products) => {
+const removeSomeProduct = async (userid, products) => {
   try {
     const cartitems = await readToFile(cartPath);
     let newCart;
@@ -139,12 +139,12 @@ export const removeSomeProductInCartFromDb = async (userid, products) => {
     console.log(`Product with id ${productid} removed successfully`);
     return newCart;
   } catch (err) {
-    console.log("Error in removeSomeProductInCartFromDb", err);
+    console.log("Error in cart repository removesome", err);
     throw err;
   }
 };
 
-export const removeAllProductInCartFromDb = async (userid) => {
+const removeAllProduct = async (userid) => {
   try {
     const cartitems = await readToFile(cartPath);
     let newCart;
@@ -158,17 +158,17 @@ export const removeAllProductInCartFromDb = async (userid) => {
     console.log(`Product removed successfully`);
     return newCart;
   } catch (err) {
-    console.log("Error in removeAllProductInCartFromDb", err);
+    console.log("Error in cart repository removeall", err);
     throw err;
   }
 };
 
-export const updateAProductInCartInDb = async (userid, id, update) => {
+const updateProduct = async (userid, id, update) => {
   try {
     const cartItems = await readToFile(cartPath);
     const { price, quantity } = update;
 
-    const productToUpdate = await isProductAlreadyInCart(id, userid);
+    const productToUpdate = await cartCheck(id, userid);
     if (!productToUpdate) throw new Error("No product to update");
 
     const updatedCart = cartItems.map((product) => {
@@ -188,12 +188,12 @@ export const updateAProductInCartInDb = async (userid, id, update) => {
     console.log("Cart updated succesfully");
     return updatedCart;
   } catch (err) {
-    console.log("Error in updateAProductInCartInDb", err);
+    console.log("Error in cart repository update", err);
     throw err;
   }
 };
 
-export const totalCartPrice = async (userid) => {
+const totalCartPrice = async (userid) => {
   try {
     let cartItems = await readToFile(cartPath);
     cartItems = cartItems.filter((p) => p.userid === userid);
@@ -202,7 +202,19 @@ export const totalCartPrice = async (userid) => {
     }, 0);
     return total;
   } catch (err) {
-    console.log("Error in totalCartPrice", err);
+    console.log("Error in cart repository total", err);
     throw err;
   }
+};
+
+export default {
+  totalCartPrice,
+  getProducts,
+  getProductById,
+  getProduct,
+  addProduct,
+  removeProduct,
+  removeSomeProduct,
+  removeAllProduct,
+  updateProduct,
 };

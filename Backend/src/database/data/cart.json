@@ -14,13 +14,6 @@
     "quantity": 10
   },
   {
-    "userid": "1515",
-    "productid": "5",
-    "name": "Bluetooth Headphones",
-    "price": 120,
-    "quantity": 15
-  },
-  {
     "userid": "0505",
     "productid": "10",
     "name": "Wireless Earbuds",
@@ -67,13 +60,13 @@
     "productid": "9",
     "name": "Smartwatch Series 5",
     "price": 350,
-    "quantity": "10"
+    "quantity": 10
   },
   {
     "userid": "kos7",
     "productid": "3",
     "name": "Mechanical Keyboard",
     "price": 80,
-    "quantity": "10"
+    "quantity": 10
   }
 ]

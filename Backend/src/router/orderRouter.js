@@ -1,24 +1,38 @@
+import {
+  cancelAOrder,
+  cancelOrder,
+  createOrder,
+  updateOrderStatus,
+  viewOrders,
+} from "../controllers/order.js";
 import { parseOptions } from "../utils/utils.js";
-const orderRouter = (Command_Prompt) => {
+const orderRouter = async (Command_Prompt) => {
+  const values = parseOptions(Command_Prompt.slice(2));
+  let { orderid, productid, userid, status } = values;
   switch (Command_Prompt[1]) {
     case "create":
-      console.log("create");
+      const createResult = await createOrder(userid, productid);
+      console.log(createResult);
       break;
 
     case "list":
-      console.log("list");
+      const listResult = await viewOrders(userid);
+      console.log(listResult);
       break;
 
     case "cancel":
-      console.log("cancel");
+      const cancelResult = await cancelOrder(orderid, userid);
+      console.log(cancelResult);
       break;
 
     case "cancelaorder":
-      console.log("cancel a order");
+      const cancelOneOrder = await cancelAOrder(orderid, userid, productid);
+      console.log(cancelOneOrder);
       break;
 
     case "statusupdate":
-      console.log("update a order status");
+      const statusResult = await updateOrderStatus(orderid, userid, status);
+      console.log(statusResult);
       break;
 
     default:

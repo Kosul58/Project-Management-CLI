@@ -1,104 +1,107 @@
-import {
-  addAProductToCartInDb,
-  getAllCartProductsFromDb,
-  getAllProductFromCartForUserInDb,
-  getAProductFromCartForUserInDb,
-  totalCartPrice,
-  updateAProductInCartInDb,
-  removeAProductInCartFromDb,
-  removeAllProductInCartFromDb,
-  removeSomeProductInCartFromDb,
-} from "../repository/cartRepository.js";
+import cartRepositroy from "../repository/cartRepository.js";
 
-export const getAllCartProducts = async () => {
+export const getProducts = async () => {
   try {
-    const result = await getAllCartProductsFromDb();
+    const result = await cartRepositroy.getProducts();
     return result;
   } catch (err) {
-    console.log("Error in getAllCartProducts", err);
+    console.log("Error in cart service getProducts", err);
     throw err;
   }
 };
 
-export const getAProductFromCartForAUser = async (productid, userid) => {
+export const getProductById = async (productid, userid) => {
   try {
-    const result = await getAProductFromCartForUserInDb(productid, userid);
+    const result = await cartRepositroy.getProductById(productid, userid);
     return result;
   } catch (err) {
-    console.log("Error in getAProductFromCart", err);
+    console.log("Error in cart service getProductById", err);
     throw err;
   }
 };
 
-export const getAllProductFromCartForAUser = async (userid) => {
+export const getProduct = async (userid) => {
   try {
-    const result = await getAllProductFromCartForUserInDb(userid);
+    const result = await cartRepositroy.getProduct(userid);
     return result;
   } catch (err) {
-    console.log("Error in getAProductFromCart", err);
+    console.log("Error in cart service getProduct", err);
     throw err;
   }
 };
 
-export const addAProductToCartService = async (userid, productId, quantity) => {
+export const addProduct = async (userid, productId, quantity) => {
   try {
-    const cartItems = await addAProductToCartInDb(userid, productId, quantity);
+    const cartItems = await cartRepositroy.addProduct(
+      userid,
+      productId,
+      quantity
+    );
     return cartItems;
   } catch (err) {
-    console.log("Error in addAProductToCartService", err);
+    console.log("Error in cart service addProduct", err);
     throw err;
   }
 };
 
-export const removeAProductFromCartService = async (userid, productid) => {
+export const removeProduct = async (userid, productid) => {
   try {
-    const newCart = await removeAProductInCartFromDb(userid, productid);
+    const newCart = await cartRepositroy.removeProduct(userid, productid);
     return newCart;
   } catch (err) {
-    console.log("Error in removeAProductFromCartService", err);
+    console.log("Error in cart service removeProduct", err);
     throw err;
   }
 };
 
-export const removeSomeProductFromCartForUserService = async (
-  userid,
-  products
-) => {
+export const removeSomeProduct = async (userid, products) => {
   try {
-    const newCart = await removeSomeProductInCartFromDb(userid, products);
+    const newCart = await cartRepositroy.removeSomeProduct(userid, products);
     return newCart;
   } catch (err) {
-    console.log("Error in removeAProductFromCartService", err);
+    console.log("Error in cart service removeSomeProduct", err);
     throw err;
   }
 };
 
-export const removeAllProductFromCartForUserService = async (userid) => {
+export const removeAllProduct = async (userid) => {
   try {
-    const newCart = await removeAllProductInCartFromDb(userid);
+    const newCart = await cartRepositroy.removeAllProduct(userid);
     return newCart;
   } catch (err) {
-    console.log("Error in removeAllProductFromCartForUserService", err);
+    console.log("Error in cart service removeAllProduct", err);
     throw err;
   }
 };
 
-export const updateAProductInCartService = async (userid, id, update) => {
+export const updateProduct = async (userid, id, update) => {
   try {
-    const updatedCart = await updateAProductInCartInDb(userid, id, update);
+    const updatedCart = await cartRepositroy.updateProduct(userid, id, update);
     return updatedCart;
   } catch (err) {
-    console.log("Error in removeAProductFromCartService", err);
+    console.log("Error in cart service updateProduct", err);
     throw err;
   }
 };
 
 export const cartTotal = async (userid) => {
   try {
-    let total = await totalCartPrice(userid);
+    let total = await cartRepositroy.totalCartPrice(userid);
     return total;
   } catch (err) {
-    console.log("Error in cartTotal", err);
+    console.log("Error in cart servie cartTotal", err);
     throw err;
   }
+};
+
+export default {
+  getProducts,
+  cartTotal,
+  getProductById,
+  getProduct,
+  addProduct,
+  removeProduct,
+  removeSomeProduct,
+  removeAllProduct,
+  updateProduct,
 };
