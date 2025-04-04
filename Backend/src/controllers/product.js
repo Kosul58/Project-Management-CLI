@@ -23,7 +23,8 @@ export const getProductList = async () => {
 export const getProductById = async (productid) => {
   try {
     const data = await productService.getProductById(productid);
-    if (data.length > 0) {
+    const result = [data];
+    if (result.length > 0) {
       return {
         message: "Product search successfull",
         response: data,

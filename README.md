@@ -10,10 +10,25 @@
 
 ## Folder Structure
 
--> router
--> controllers
--> services
--> repository
+1. router
+   -> to handle routing of user command
+
+2. controllers
+   -> used to handle request from router and send response
+   -> sends data to services
+
+3. services
+   -> used to handle business logic
+   -> sends data to repository
+
+4. repository
+   -> used to store data to files in database/data folder files
+
+5. utils
+   -> used to provide commonly used functions to all
+
+6. database
+   -> used to store data
 
 # Product
 
@@ -23,17 +38,23 @@
 // const data = await getProductList();
 // console.log(data);
 
+// display product by id
+// console.log(await getProductById(productid123))
+
 // Add a new product (name, price , inventory)
 // addAProduct("Mouse", 55 , 200);
 
+// add a batch of products
+// addProducts([{name , price , inventory} , {...} , {...} ,...])
+
 // Update a product (productid , newname , newprice)
-// updateAProduct("m8wzk6l9p5npgvh17qj", "kaspers", 555);
+// updateProduct("m8wzk6l9p5npgvh17qj", "kaspers", 555);
 
 // Delete a product (productid)
-// deleteAProduct('10');
+// deleteProduct('10');
 
 // update a product Inventory (productid , quantity)
-// updateAProductInventory('20254sd5fs', 2);
+// updateProductInventory('20254sd5fs', 2);
 
 # Cart
 
@@ -43,14 +64,26 @@
 // const data = await viewCart();
 // console.log(data);
 
+// view all products in the cart of a user
+// viewCartProducts(userid)
+
+// view a product in the cart of a user
+// viewCartProduct(productid , userid)
+
 // Add a product to the cart (userid , productid , quantity)
 // addProductToCart('1515', '5' , 10);
 
 // update a product in the cart (userid , productid , update)
-// updateAProductCart('1515', '1', { price: 1500, quantity: 50 });
+// updateProduct('1515', '1', { price: 1500, quantity: 50 });
 
 // to remove a product from the cart (userid , productid)
-// removeProductFromCart('1515' ,'5');
+// removeProduct('1515' ,'5');
+
+// to remove some products from the cart (userid , products)
+// removeSomeProduct(userid , productsarray)
+
+// to remove all products from the cart (userid)
+// removeAllProduct(userid)
 
 // to calculate total cost
 // const total = await calcTotal();
@@ -60,20 +93,23 @@
 
 ## Order Operations
 
-// to view total orders
-// console.log(await viewOrders())
+// to view all orders for a user
+// console.log(await viewOrders(userid))
 
-// to view orders based on userid
-// console.log(await viewOrders(1125));
+// to create a new order (userid , productid)
+// createOrder('2018', '5');
 
-// to create a new order
-// createOrder(2018, [1, 5]);
+// to create a order of multiple products
+// createOrders(userid , productsarray)
 
-// to update a order status
-// updateOrderStatus(3, 1015, "done");
+// to update a order status (orderid , userid , status)
+// updateOrderStatus('3', '1015' , "done");
 
-// to cancel order
-// cancelOrder(4, 2015);
+// to cancel order for a user (orderid , userid)
+// cancelOrder('4', '2015');
+
+// to cancel the order of a single product
+// cancelAOrder ('orderid' , 'userid' , 'productid' )
 
 ## file read and write functions are exported from fileManager.js in utils folder
 
@@ -103,12 +139,12 @@
 1. add a product
    -> node index.js product add --name "Laptop" --price 999.99 --inventory 500
 
-2. list all products
-   -> node index.js product list
-   -> node index.js product list --productid 5
+2. list products
+   -> node index.js product list (list of all products)
+   -> node index.js product list --productid 5 (product based on product id)
 
 3. update a product
-   ->node index.js product update --productid 10 --name Fantech Mouse --price 5000 --inventory 80
+   -> node index.js product update --productid 10 --name Fantech Mouse --price 5000 --inventory 80
 
 4. delete a product
    -> node index.js product delete --productid 10

@@ -39,7 +39,6 @@ export const addProduct = async (userid, productId, quantity) => {
         response: [],
       };
     }
-
     const result = await cartServices.addProduct(userid, productId, quantity);
 
     if (result.length > 0) {

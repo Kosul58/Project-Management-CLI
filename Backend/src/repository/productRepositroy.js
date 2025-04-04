@@ -11,27 +11,21 @@ const getProducts = async () => {
   }
 };
 
+const getProductIndex = (products, productid) => {
+  const productIndex = products.findIndex(
+    (product) => product.productid === productid
+  );
+  return productIndex;
+};
+
 const getProductById = async (productid) => {
   try {
     const data = await readToFile(productPath);
-    return data.filter((p) => p.productid === productid);
+    const productIndex = getProductIndex(data, productid);
+    console.log(productIndex);
+    return data[productIndex];
   } catch (err) {
     console.log("Error in product repository getProductByID", err);
-    throw err;
-  }
-};
-
-const productExists = async (product) => {
-  try {
-    const products = await readToFile(productPath);
-    const prdoductIndex = products.find(
-      (p) => p.productid === product.productid
-    );
-    // if (prdoductIndex > 0)
-    //   throw new Error("Product already exists in the database");
-    return prdoductIndex;
-  } catch (err) {
-    console.log("Error in product repository productExists", err);
     throw err;
   }
 };
@@ -40,8 +34,8 @@ const addProduct = async (product) => {
   try {
     const products = await readToFile(productPath);
     product.productid = generateId();
-    const productindex = await productExists(product);
-    if (productindex) {
+    const productindex = getProductIndex(products, product.productid);
+    if (productindex >= 0) {
       throw new Error("Product already exists in the database");
     }
     let totalProducts = [...products, product];
@@ -59,10 +53,12 @@ const addProducts = async (products) => {
     let totalProducts = [...productsInDb];
     for (let product of products) {
       product.productid = generateId();
-      const productindex = await productExists(product);
-      if (!productindex) {
+      const productindex = getProductIndex(products, product.productid);
+      if (productindex < 0) {
         console.log(product);
         totalProducts = [...totalProducts, product];
+      } else {
+        console.log("Product Already exists");
       }
     }
     await writeToFile(productPath, totalProducts);
@@ -76,15 +72,25 @@ const addProducts = async (products) => {
 const updateProduct = async (productid, update) => {
   try {
     const products = await readToFile(productPath);
-    const { name, price } = update;
-    const newProducts = products.map((product) => {
-      if (product.productid === productid) {
-        return { ...product, ...update };
-      }
-      return product;
-    });
-    await writeToFile(productPath, newProducts);
-    return newProducts;
+    const { name, price, description, category, inventory } = update;
+    let productIndex = await getProductIndex(products, productid);
+    let product = products[productIndex];
+    if (productIndex < 0) {
+      throw new Error("No product found");
+    }
+    if (name) product.name = name;
+    if (price) product.price = price;
+    if (description) product.description = description;
+    if (category) product.category = category;
+    if (inventory) product.inventory = inventory;
+    // const newProducts = products.map((product) => {
+    //   if (product.productid === productid) {
+    //     return { ...product, ...update };
+    //   }
+    //   return product;
+    // });
+    await writeToFile(productPath, products);
+    return products;
   } catch (err) {
     console.log("Error in product repository update", err);
     throw err;
@@ -98,7 +104,6 @@ const deleteProduct = async (productid) => {
       (product) => product.productid !== productid
     );
     await writeToFile(productPath, totalProducts);
-
     if (products.length === totalProducts.length) {
       return { message: "No Products to delete", response: totalProducts };
     } else {
