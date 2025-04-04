@@ -58,20 +58,23 @@ export const addProduct = async (name, price, inventory) => {
       response: result.totalProducts,
     };
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error(
+      "Error in product Controller addProduct. Failed to add product",
+      err
+    );
     return [];
   }
 };
 
-export const addProducts = async (productsarray) => {
+export const addProducts = async (products) => {
   try {
-    if (productsarray.length == 0) {
+    if (products.length == 0) {
       return {
         message: "empty products array",
         response: [],
       };
     }
-    const data = productService.addProducts(productsarray);
+    const data = productService.addProducts(products);
     if (data.length > 0) {
       return {
         message: "Batch addition of products successfull",
@@ -108,7 +111,10 @@ export const updateProduct = async (productid, update) => {
       };
     }
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error(
+      "Error in product Controller updateProduct. Failed to update product",
+      err
+    );
     return [];
   }
 };
@@ -134,7 +140,6 @@ export const updateProductInventory = async (id, quantity) => {
       return;
     }
     let result = await productService.updateProductInventory(id, quantity);
-
     if (result.length > 0) {
       return {
         message: "Inventory Update Successfully",

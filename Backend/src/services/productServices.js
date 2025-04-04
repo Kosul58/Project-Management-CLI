@@ -36,9 +36,9 @@ const addProduct = async (name, price, inventory) => {
 };
 
 // productsarray = [{name: , price: , inventory: }]
-const addProducts = async (productsarray) => {
+const addProducts = async (products) => {
   try {
-    const data = await productRepository.addProducts(productsarray);
+    const data = await productRepository.addProducts(products);
     // console.log(productsarray);
   } catch (err) {
     console.log("error in product Services addProducts", err);
