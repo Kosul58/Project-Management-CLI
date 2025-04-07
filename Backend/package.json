@@ -8,7 +8,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "ts": "ts-node server.ts",
+    "tsx": "tsx server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
