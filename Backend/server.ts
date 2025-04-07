@@ -28,3 +28,5 @@ const addStudent = (args: preson): boolean => {
 
 console.log(addStudent({ name: "kk", age: 55 }));
 console.log(x);
+
+export {};
