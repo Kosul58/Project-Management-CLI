@@ -86,7 +86,7 @@ export const removeProduct = async (userid, productid) => {
 };
 
 // products = [productid1 , productid2 , ...]
-export const removeSomeProduct = async (userid, products) => {
+export const removeProducts = async (userid, productids) => {
   try {
     if (!userid || products.length === 0) {
       return {
@@ -94,7 +94,7 @@ export const removeSomeProduct = async (userid, products) => {
         response: [],
       };
     }
-    const result = await cartServices.removeSomeProduct(userid, products);
+    const result = await cartServices.removeProducts(userid, products);
     if (result.length > 0) {
       return {
         message: "Products removal successfull",
@@ -112,32 +112,32 @@ export const removeSomeProduct = async (userid, products) => {
   }
 };
 
-export const removeAllProduct = async (userid) => {
-  try {
-    if (!userid) {
-      return {
-        message: "no userid",
-        response: [],
-      };
-    }
-    const result = await cartServices.removeAllProduct(userid);
+// export const removeAllProduct = async (userid) => {
+//   try {
+//     if (!userid) {
+//       return {
+//         message: "no userid",
+//         response: [],
+//       };
+//     }
+//     const result = await cartServices.removeAllProduct(userid);
 
-    if (result.length > 0) {
-      return {
-        message: "Products removal successfull",
-        response: result,
-      };
-    } else {
-      return {
-        message: "Products removal unsuccessfull",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.log("Error in cart controller removeAllProduct", err);
-    return [];
-  }
-};
+//     if (result.length > 0) {
+//       return {
+//         message: "Products removal successfull",
+//         response: result,
+//       };
+//     } else {
+//       return {
+//         message: "Products removal unsuccessfull",
+//         response: [],
+//       };
+//     }
+//   } catch (err) {
+//     console.log("Error in cart controller removeAllProduct", err);
+//     return [];
+//   }
+// };
 
 // update = { price, quantity };
 

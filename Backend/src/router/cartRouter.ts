@@ -1,6 +1,6 @@
 import {
   addProduct,
-  removeAllProduct,
+  removeProducts,
   removeProduct,
   viewCartProduct,
   calcTotal,
@@ -9,12 +9,18 @@ import {
   viewCart,
 } from "../controllers/cart.js";
 
-import { parseOptions } from "../utils/utils.js";
-const cartRouter = async (Command_Prompt) => {
-  const values = parseOptions(Command_Prompt.slice(2));
-  let { productid, userid, price, quantity } = values;
-  price = Number(price);
-  quantity = Number(quantity);
+import { ProductOptions } from "../types.ts";
+
+import { parseOptions } from "../utils/utils.ts";
+
+const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
+  console.log(Command_Prompt);
+  const values: ProductOptions = parseOptions(Command_Prompt.slice(2));
+  // console.log(Command_Prompt);
+  console.log("vals", values);
+  let { productid, userid, price, quantity, productids } = values;
+  if (price !== undefined) price = Number(price);
+  if (quantity !== undefined) quantity = Number(quantity);
   let update = { ...values };
   switch (Command_Prompt[1]) {
     case "add":
@@ -25,7 +31,7 @@ const cartRouter = async (Command_Prompt) => {
       let removeResult;
       productid && userid
         ? (removeResult = await removeProduct(userid, productid))
-        : (removeResult = await removeAllProduct(userid));
+        : (removeResult = await removeProducts(userid, productids));
       console.log(removeResult);
       break;
     case "view":
@@ -40,7 +46,7 @@ const cartRouter = async (Command_Prompt) => {
       const totalResult = await calcTotal(userid);
       console.log(totalResult);
       console.log(
-        `Total price of all products in the cart of a user ${userid} is $${totalResult.response}`
+        `Total price of all products in the cart of a user ${userid} is $${totalResult}`
       );
       break;
 

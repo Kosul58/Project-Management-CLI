@@ -1,197 +1,309 @@
-import productService from "../services/productServices.js";
-
-export const getProductList = async () => {
-  try {
-    const response = await productService.getAllProduct();
-    if (response.length === 0) {
-      return {
-        message: "Product search failed",
-        response: "No products found in file",
-      };
-    } else {
-      return {
-        message: "Product search successfull",
-        response: response,
-      };
-    }
-  } catch (err) {
-    console.error("Error in Controller", err);
-    return [];
-  }
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-
-export const getProductById = async (productid) => {
-  try {
-    const data = await productService.getProductById(productid);
-    const result = [data];
-    if (result.length > 0) {
-      return {
-        message: "Product search successfull",
-        response: data,
-      };
-    } else {
-      return {
-        message: "Product search unsuccessfull",
-        response: [],
-      };
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
-  } catch (err) {
-    console.error("Error in Controller", err);
-    return [];
-  }
 };
-
-export const addProduct = async (name, price, inventory) => {
-  try {
-    if (!name || !price || !inventory) {
-      return { message: "Enter all fields", response: [] };
-    }
-    const result = await productService.addProduct(name, price, inventory);
-    if (!result) {
-      return {
-        message: "Error adding product",
-        response: [],
-      };
-    }
-    return {
-      message: `Product with name ${result.newProduct.name} and price $${result.newProduct.price} added successfully with productid ${result.newProduct.productid}`,
-      response: result.totalProducts,
-    };
-  } catch (err) {
-    console.error(
-      "Error in product Controller addProduct. Failed to add product",
-      err
-    );
-    return [];
-  }
-};
-
-export const addProducts = async (products) => {
-  try {
-    if (products.length == 0) {
-      return {
-        message: "empty products array",
-        response: [],
-      };
-    }
-    const data = productService.addProducts(products);
-    if (data.length > 0) {
-      return {
-        message: "Batch addition of products successfull",
-        response: data,
-      };
-    } else {
-      return {
-        message: "Batch addition of products unsuccessfull",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.error("Error in Controller", err);
-    return [];
-  }
-};
-
-export const updateProduct = async (productid, update) => {
-  try {
-    if (!productid || !update) {
-      return { message: "Enter all field" };
-    }
-    const result = await productService.updateProduct(productid, update);
-
-    if (result.length > 0) {
-      return {
-        message: `Product with id ${productid} updated successfully`,
-        response: result,
-      };
-    } else {
-      return {
-        message: "No products to update",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.error(
-      "Error in product Controller updateProduct. Failed to update product",
-      err
-    );
-    return [];
-  }
-};
-
-export const deleteProduct = async (productid) => {
-  try {
-    if (!productid) {
-      console.log("Product id required");
-      return;
-    }
-    const result = await productService.deleteProduct(productid);
-    return result;
-  } catch (err) {
-    console.error("Error in Controller", err);
-    return [];
-  }
-};
-
-export const increaseProductInventory = async (id, quantity) => {
-  try {
-    if (!id || !quantity) {
-      console.log("Both productid and qunatity required");
-      return;
-    }
-    let result = await productService.increaseProductInventory(id, quantity);
-    if (result.length > 0) {
-      return {
-        message: "Inventory Update Successfully",
-        response: result,
-      };
-    } else {
-      return {
-        message: "Invetory Update Unsuccessfull",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.error("Error in Controller", err);
-    return [];
-  }
-};
-
-export const decreaseProductInventory = async (id, quantity) => {
-  try {
-    if (!id || !quantity) {
-      console.log("Both productid and qunatity required");
-      return;
-    }
-    let result = await productService.decreaseProductInventory(id, quantity);
-    if (result.length > 0) {
-      return {
-        message: "Inventory Update Successfully",
-        response: result,
-      };
-    } else {
-      return {
-        message: "Invetory Update Unsuccessfull",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.error("Error in Controller", err);
-    return [];
-  }
-};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.decreaseProductInventory = exports.increaseProductInventory = exports.deleteProduct = exports.updateProduct = exports.addProducts = exports.addProduct = exports.getProductById = exports.getProducts = void 0;
+var productServices_js_1 = require("../services/productServices.js");
+var getProducts = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, productServices_js_1.default.getProducts()];
+            case 1:
+                response = _a.sent();
+                if (response.length === 0) {
+                    return [2 /*return*/, {
+                            message: "Product search failed",
+                            response: "No products found in file",
+                        }];
+                }
+                else {
+                    return [2 /*return*/, {
+                            message: "Product search successfull",
+                            response: response,
+                        }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                console.error("Error in Controller", err_1);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getProducts = getProducts;
+var getProductById = function (productid) { return __awaiter(void 0, void 0, void 0, function () {
+    var data, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, productServices_js_1.default.getProductById(productid)];
+            case 1:
+                data = _a.sent();
+                if (Object.keys(data).length > 0) {
+                    return [2 /*return*/, {
+                            message: "Product search successfull",
+                            response: data,
+                        }];
+                }
+                else {
+                    return [2 /*return*/, {
+                            message: "Product search unsuccessfull",
+                            response: [],
+                        }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _a.sent();
+                console.error("Error in Controller", err_2);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getProductById = getProductById;
+var addProduct = function (restData) { return __awaiter(void 0, void 0, void 0, function () {
+    var name_1, price, inventory, result, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                name_1 = restData.name, price = restData.price, inventory = restData.inventory;
+                if (!name_1 || !price || !inventory) {
+                    return [2 /*return*/, { message: "Enter all fields", response: [] }];
+                }
+                return [4 /*yield*/, productServices_js_1.default.addProduct(restData)];
+            case 1:
+                result = _a.sent();
+                if (!result) {
+                    return [2 /*return*/, {
+                            message: "Error adding product",
+                            response: [],
+                        }];
+                }
+                return [2 /*return*/, {
+                        message: "Product with name ".concat(result.newProduct.name, " and price $").concat(result.newProduct.price, " added successfully with productid ").concat(result.newProduct.productid),
+                        response: result.totalProducts,
+                    }];
+            case 2:
+                err_3 = _a.sent();
+                console.error("Error in product Controller addProduct. Failed to add product", err_3);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.addProduct = addProduct;
+var addProducts = function (products) { return __awaiter(void 0, void 0, void 0, function () {
+    var data, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                if (products.length == 0) {
+                    return [2 /*return*/, {
+                            message: "empty products array",
+                            response: [],
+                        }];
+                }
+                return [4 /*yield*/, productServices_js_1.default.addProducts(products)];
+            case 1:
+                data = _a.sent();
+                if (data.length > 0) {
+                    return [2 /*return*/, {
+                            message: "Batch addition of products successfull",
+                            response: data,
+                        }];
+                }
+                else {
+                    return [2 /*return*/, {
+                            message: "Batch addition of products unsuccessfull",
+                            response: [],
+                        }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_4 = _a.sent();
+                console.error("Error in Controller", err_4);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.addProducts = addProducts;
+var updateProduct = function (productid, update) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, err_5;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                if (!productid || !update) {
+                    return [2 /*return*/, { message: "Enter all field" }];
+                }
+                return [4 /*yield*/, productServices_js_1.default.updateProduct(productid, update)];
+            case 1:
+                result = _a.sent();
+                if (result.length > 0) {
+                    return [2 /*return*/, {
+                            message: "Product with id ".concat(productid, " updated successfully"),
+                            response: result,
+                        }];
+                }
+                else {
+                    return [2 /*return*/, {
+                            message: "No products to update",
+                            response: [],
+                        }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_5 = _a.sent();
+                console.error("Error in product Controller updateProduct. Failed to update product", err_5);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.updateProduct = updateProduct;
+var deleteProduct = function (productid) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, err_6;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                if (!productid) {
+                    console.log("Product id required");
+                    return [2 /*return*/];
+                }
+                return [4 /*yield*/, productServices_js_1.default.deleteProduct(productid)];
+            case 1:
+                result = _a.sent();
+                return [2 /*return*/, result];
+            case 2:
+                err_6 = _a.sent();
+                console.error("Error in Controller", err_6);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.deleteProduct = deleteProduct;
+var increaseProductInventory = function (id, quantity) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, err_7;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                if (!id || !quantity) {
+                    console.log("Both productid and qunatity required");
+                    return [2 /*return*/];
+                }
+                return [4 /*yield*/, productServices_js_1.default.increaseProductInventory(id, quantity)];
+            case 1:
+                result = _a.sent();
+                if (result.length > 0) {
+                    return [2 /*return*/, {
+                            message: "Inventory Update Successfully",
+                            response: result,
+                        }];
+                }
+                else {
+                    return [2 /*return*/, {
+                            message: "Invetory Update Unsuccessfull",
+                            response: [],
+                        }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_7 = _a.sent();
+                console.error("Error in Controller", err_7);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.increaseProductInventory = increaseProductInventory;
+var decreaseProductInventory = function (id, quantity) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, err_8;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                if (!id || !quantity) {
+                    console.log("Both productid and qunatity required");
+                    return [2 /*return*/];
+                }
+                return [4 /*yield*/, productServices_js_1.default.decreaseProductInventory(id, quantity)];
+            case 1:
+                result = _a.sent();
+                if (result.length > 0) {
+                    return [2 /*return*/, {
+                            message: "Inventory Update Successfully",
+                            response: result,
+                        }];
+                }
+                else {
+                    return [2 /*return*/, {
+                            message: "Invetory Update Unsuccessfull",
+                            response: [],
+                        }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_8 = _a.sent();
+                console.error("Error in Controller", err_8);
+                return [2 /*return*/, []];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.decreaseProductInventory = decreaseProductInventory;
 // Display all products
 // const data = await getProductList();
 // console.log(data);
-
 // Add a new product
 // addAProduct("Kosul", 55);
-
 // Update a product
 // updateAProduct(11, "kaspers", 555);
-
 // Delete a product
 // deleteAProduct(11);
-
 // update a product Inventory
 // updateAProductQuantity(2,2)

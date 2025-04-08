@@ -5,10 +5,14 @@ import {
   updateOrderStatus,
   viewOrders,
 } from "../controllers/order.js";
-import { parseOptions } from "../utils/utils.js";
-const orderRouter = async (Command_Prompt) => {
-  const values = parseOptions(Command_Prompt.slice(2));
+import { parseOptions } from "../utils/utils.ts";
+
+import { ProductOptions } from "../types.ts";
+
+const orderRouter = async (Command_Prompt: string[]): Promise<void> => {
+  const values: ProductOptions = parseOptions(Command_Prompt.slice(2));
   let { orderid, productid, userid, status } = values;
+
   switch (Command_Prompt[1]) {
     case "create":
       const createResult = await createOrder(userid, productid);

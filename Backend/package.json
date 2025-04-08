@@ -9,16 +9,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "ts": "ts-node server.ts",
-    "tsx": "tsx server.ts"
+    "ts": "ts-node index.ts",
+    "tsx": "tsx index.ts"
   },
   "dependencies": {
+    "@types/node": "^22.14.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "nodemon": "^3.1.9"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"

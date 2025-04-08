@@ -123,7 +123,7 @@ const removeProduct = async (userid, productid) => {
   }
 };
 
-const removeSomeProduct = async (userid, products) => {
+const removeProducts = async (userid, products) => {
   try {
     const cartitems = await readToFile(cartPath);
     let newCart;
@@ -144,24 +144,24 @@ const removeSomeProduct = async (userid, products) => {
   }
 };
 
-const removeAllProduct = async (userid) => {
-  try {
-    const cartitems = await readToFile(cartPath);
-    let newCart;
+// const removeAllProduct = async (userid) => {
+//   try {
+//     const cartitems = await readToFile(cartPath);
+//     let newCart;
 
-    newCart = cartitems.filter((item) => item.userid !== userid);
+//     newCart = cartitems.filter((item) => item.userid !== userid);
 
-    if (cartitems.length === newCart.length) {
-      throw new Error("No Items to remove from the cart");
-    }
-    await writeToFile(cartPath, newCart);
-    console.log(`Product removed successfully`);
-    return newCart;
-  } catch (err) {
-    console.log("Error in cart repository removeall", err);
-    throw err;
-  }
-};
+//     if (cartitems.length === newCart.length) {
+//       throw new Error("No Items to remove from the cart");
+//     }
+//     await writeToFile(cartPath, newCart);
+//     console.log(`Product removed successfully`);
+//     return newCart;
+//   } catch (err) {
+//     console.log("Error in cart repository removeall", err);
+//     throw err;
+//   }
+// };
 
 const updateProduct = async (userid, id, update) => {
   try {
@@ -214,7 +214,6 @@ export default {
   getProduct,
   addProduct,
   removeProduct,
-  removeSomeProduct,
-  removeAllProduct,
+  removeProducts,
   updateProduct,
 };

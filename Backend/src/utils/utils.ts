@@ -1,10 +1,14 @@
-export function parseOptions(args) {
-  const options = {};
+interface Options {
+  [key: string]: string | number;
+}
 
+export function parseOptions(args: string[]) {
+  const options: Options = {};
   for (let i = 0; i < args.length; i++) {
     if (args[i].startsWith("--")) {
       const key = args[i].slice(2);
-      let nextArg = args[i + 1];
+      console.log(key);
+      let nextArg: string | number = args[i + 1];
       if (nextArg !== undefined && !nextArg.startsWith("--")) {
         if (key === "price" || key === "inventory") {
           nextArg = Number(nextArg);
@@ -17,11 +21,11 @@ export function parseOptions(args) {
   return options;
 }
 
-export const generateId = () => {
+export const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };
 
-export function getCurrentDateTimeStamp() {
+export function getCurrentDateTimeStamp(): string {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -31,13 +35,13 @@ export function getCurrentDateTimeStamp() {
   return `${year}-${month}-${day}-${hours}:${minutes}`;
 }
 
-export const productPath = "./src/database/data/products.json";
+export const productPath: string = "./src/database/data/products.json";
 
-export const cartPath = "./src/database/data/cart.json";
+export const cartPath: string = "./src/database/data/cart.json";
 
-export const orderPath = "./src/database/data/orders.json";
+export const orderPath: string = "./src/database/data/orders.json";
 
-export const helpinfo = `
+export const helpinfo: string = `
 # CLI command list
 
 ## Product part

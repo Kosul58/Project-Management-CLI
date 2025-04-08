@@ -2,47 +2,44 @@ import {
   addProduct,
   deleteProduct,
   getProductById,
-  getProductList,
+  getProducts,
   updateProduct,
 } from "../controllers/product.js";
 
-import { parseOptions } from "../utils/utils.js";
+import { parseOptions } from "../utils/utils.ts";
 
-const productRouter = async (Command_Prompt) => {
-  const values = parseOptions(Command_Prompt.slice(2));
+import { ProductOptions } from "../types.ts";
 
-  // console.log(values);
-  let { productid, name, price, inventory } = values;
-  price = Number(price);
-
-  inventory = Number(inventory);
+const productRouter = async (Command_Prompt: string[]): Promise<void> => {
+  const values: ProductOptions = parseOptions(Command_Prompt.slice(2));
+  console.log("val in routes", values);
+  let { productid, userid, ...restData } = values;
 
   switch (Command_Prompt[1]) {
     case "list":
       console.log("List of all Products");
       let list;
       !productid
-        ? (list = await getProductList())
-        : (list = await getProductById(productid));
+        ? (list = await getProducts())
+        : (list = await getProductById(productid as string));
       console.log(list);
       break;
-
     case "add":
-      const add = await addProduct(name, price, inventory);
+      const add = await addProduct(restData);
       console.log(add);
       break;
 
     case "addBatch":
-      console.log("add a new product");
+      console.log("add a new batch of products");
       break;
 
     case "update":
       const update = { ...values };
-      const updateResult = await updateProduct(productid, update);
+      const updateResult = await updateProduct(productid as string, update);
       console.log(updateResult);
       break;
     case "delete":
-      const deleteResult = await deleteProduct(productid);
+      const deleteResult = await deleteProduct(productid as string);
       console.log(deleteResult);
       break;
     default:

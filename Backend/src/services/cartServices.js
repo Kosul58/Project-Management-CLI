@@ -54,9 +54,9 @@ export const removeProduct = async (userid, productid) => {
   }
 };
 
-export const removeSomeProduct = async (userid, products) => {
+export const removeProducts = async (userid, products) => {
   try {
-    const newCart = await cartRepositroy.removeSomeProduct(userid, products);
+    const newCart = await cartRepositroy.removeProducts(userid, products);
     return newCart;
   } catch (err) {
     console.log("Error in cart service removeSomeProduct", err);
@@ -64,15 +64,15 @@ export const removeSomeProduct = async (userid, products) => {
   }
 };
 
-export const removeAllProduct = async (userid) => {
-  try {
-    const newCart = await cartRepositroy.removeAllProduct(userid);
-    return newCart;
-  } catch (err) {
-    console.log("Error in cart service removeAllProduct", err);
-    throw err;
-  }
-};
+// export const removeAllProduct = async (userid) => {
+//   try {
+//     const newCart = await cartRepositroy.removeAllProduct(userid);
+//     return newCart;
+//   } catch (err) {
+//     console.log("Error in cart service removeAllProduct", err);
+//     throw err;
+//   }
+// };
 
 export const updateProduct = async (userid, id, update) => {
   try {
@@ -101,7 +101,7 @@ export default {
   getProduct,
   addProduct,
   removeProduct,
-  removeSomeProduct,
-  removeAllProduct,
+  removeProducts,
+  // removeAllProduct,
   updateProduct,
 };
