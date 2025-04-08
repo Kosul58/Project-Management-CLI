@@ -1,5 +1,5 @@
-import productRepository from "../repository/productRepositroy.ts";
-import { myProduct, ProductOptions } from "../types.ts";
+import productRepository from "../repository/productRepositroy";
+import { myProduct, ProductOptions } from "../types";
 
 const getProducts = async (): Promise<myProduct[]> => {
   try {
