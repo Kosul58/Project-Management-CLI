@@ -1,37 +1,76 @@
-import { response } from "express";
 import cartServices from "../services/cartServices.js";
+import { cartResponse, myCart, updateCart } from "../types.js";
 
-export const viewCart = async () => {
+export const viewCart = async (): Promise<cartResponse | []> => {
   try {
     const data = await cartServices.getProducts();
-    return data;
+    if (data.length > 0)
+      return {
+        message: "Cart search successful",
+        response: data,
+      };
+    else {
+      return {
+        message: "Cart search unsuccessful",
+        response: [],
+      };
+    }
   } catch (err) {
-    console.log("Error in cart controller viewCart", err);
+    console.log("Failed to get products data from cart", err);
     return [];
   }
 };
 
-export const viewCartProduct = async (productid, userid) => {
+export const viewCartProduct = async (
+  productid: string,
+  userid: string
+): Promise<cartResponse | []> => {
   try {
     const data = await cartServices.getProductById(productid, userid);
-    return data;
+    if (Object.keys(data).length > 0)
+      return {
+        message: "Product search successfull",
+        response: data,
+      };
+    else {
+      return {
+        message: "Product search unsuccessfull",
+        response: [],
+      };
+    }
   } catch (err) {
-    console.log("Error in cart controller viewCartProduct", err);
+    console.log("Failed to search product in cart of user", err);
     return [];
   }
 };
 
-export const viewCartProducts = async (userid) => {
+export const viewCartProducts = async (
+  userid: string
+): Promise<cartResponse | []> => {
   try {
     const data = await cartServices.getProduct(userid);
-    return data;
+    if (data.length > 0)
+      return {
+        message: "Cart search successful",
+        response: data,
+      };
+    else {
+      return {
+        message: "Cart search unsuccessful",
+        response: [],
+      };
+    }
   } catch (err) {
-    console.log("Error in cart controller viewCartProducts", err);
+    console.log("Failed to search products in cart of user", err);
     return [];
   }
 };
 
-export const addProduct = async (userid, productId, quantity) => {
+export const addProduct = async (
+  userid: string,
+  productId: string,
+  quantity: number
+): Promise<cartResponse | []> => {
   try {
     if (!userid || !productId || !quantity) {
       return {
@@ -53,12 +92,15 @@ export const addProduct = async (userid, productId, quantity) => {
       };
     }
   } catch (err) {
-    console.log("Error in cart controller addProduct", err);
+    console.log("Failed to add a product to the cart", err);
     return [];
   }
 };
 
-export const removeProduct = async (userid, productid) => {
+export const removeProduct = async (
+  userid: string,
+  productid: string
+): Promise<cartResponse | []> => {
   try {
     if (!userid) {
       return {
@@ -80,21 +122,24 @@ export const removeProduct = async (userid, productid) => {
       };
     }
   } catch (err) {
-    console.log("Error in cart controller removeProduct", err);
+    console.log("Failed to remove a product", err);
     return [];
   }
 };
 
 // products = [productid1 , productid2 , ...]
-export const removeProducts = async (userid, productids) => {
+export const removeProducts = async (
+  userid: string,
+  productids: string[]
+): Promise<cartResponse | []> => {
   try {
-    if (!userid || products.length === 0) {
+    if (!userid || productids.length === 0) {
       return {
         message: "no userid and product ids",
         response: [],
       };
     }
-    const result = await cartServices.removeProducts(userid, products);
+    const result = await cartServices.removeProducts(userid, productids);
     if (result.length > 0) {
       return {
         message: "Products removal successfull",
@@ -107,7 +152,7 @@ export const removeProducts = async (userid, productids) => {
       };
     }
   } catch (err) {
-    console.log("Error in cart controller removeSomeProduct", err);
+    console.log("Failed to remove products", err);
     return [];
   }
 };
@@ -141,7 +186,11 @@ export const removeProducts = async (userid, productids) => {
 
 // update = { price, quantity };
 
-export const updateProduct = async (userid, productid, update) => {
+export const updateProduct = async (
+  userid: string,
+  productid: string,
+  update: updateCart
+) => {
   try {
     if (!userid || !productid || !update) {
       return {
@@ -162,12 +211,12 @@ export const updateProduct = async (userid, productid, update) => {
       };
     }
   } catch (err) {
-    console.log("Error in cart controller updateProduct", err);
+    console.log("Failed to update a product", err);
     return [];
   }
 };
 
-export const calcTotal = async (userid) => {
+export const calcTotal = async (userid: string) => {
   try {
     if (!userid)
       return {
@@ -184,7 +233,7 @@ export const calcTotal = async (userid) => {
       };
     }
   } catch (err) {
-    console.log("error in cart controller calcTotal", err);
+    console.log("Failed to calculate total price of products in cart", err);
     return [];
   }
 };

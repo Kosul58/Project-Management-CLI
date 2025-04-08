@@ -1,16 +1,14 @@
-import { myProduct, ProductOptions } from "../types.js";
-import { readToFile, writeToFile } from "../utils/fileManager.js";
-import { generateId, productPath } from "../utils/utils.js";
+import { myProduct, ProductOptions } from "../types";
+import { readToFile, writeToFile } from "../utils/fileManager";
+import { generateId, productPath } from "../utils/utils";
 
 const getProducts = async (): Promise<myProduct[]> => {
   try {
     const result: myProduct[] = await readToFile(productPath);
+    console.log("Product search complete");
     return result;
   } catch (err) {
-    console.log(
-      "Error in product repository getProducts. Failed to get product data",
-      err
-    );
+    console.log("Failed to get product data", err);
     throw err;
   }
 };
@@ -34,13 +32,11 @@ const getProductById = async (productid: string): Promise<myProduct | []> => {
       console.log("No product found");
       return [];
     } else {
+      console.log("Product search complete");
       return data[productIndex];
     }
   } catch (err) {
-    console.log(
-      "Error in product repository getProductByID. Failed to get product data based on productid",
-      err
-    );
+    console.log("Failed to get product data based on productid", err);
     throw err;
   }
 };
@@ -56,12 +52,10 @@ const addProduct = async (product: myProduct): Promise<myProduct[]> => {
     }
     let totalProducts = [...products, product];
     await writeToFile(productPath, totalProducts);
+    console.log("Product addition complete");
     return totalProducts;
   } catch (err) {
-    console.log(
-      "Error in product repository addProduct. Failed to add a product to database",
-      err
-    );
+    console.log("Failed to add a product to database", err);
     throw err;
   }
 };
@@ -81,12 +75,10 @@ const addProducts = async (products: myProduct[]): Promise<myProduct[]> => {
       }
     }
     await writeToFile(productPath, totalProducts);
+    console.log("Products addition complete");
     return totalProducts;
   } catch (err) {
-    console.log(
-      "Error in product repository addProducts. Failed to add products to the database",
-      err
-    );
+    console.log("Failed to add products to the database", err);
     throw err;
   }
 };
@@ -108,6 +100,7 @@ const updateProduct = async (
     if (description) product.description = description;
     if (category) product.category = category;
     if (inventory) product.inventory = inventory;
+
     // const newProducts = products.map((product) => {
     //   if (product.productid === productid) {
     //     return { ...product, ...update };
@@ -115,12 +108,10 @@ const updateProduct = async (
     //   return product;
     // });
     await writeToFile(productPath, products);
+    console.log("Product update complete");
     return products;
   } catch (err) {
-    console.log(
-      "Error in product repository update. Failed to update a product",
-      err
-    );
+    console.log("Failed to update a product", err);
     throw err;
   }
 };
@@ -132,6 +123,7 @@ const deleteProduct = async (productid: string): Promise<myProduct[]> => {
       (product: ProductOptions) => product.productid !== productid
     );
     await writeToFile(productPath, totalProducts);
+    console.log("Product removal complete");
     return totalProducts;
     // if (products.length === totalProducts.length) {
     //   return { message: "No Products to delete", response: totalProducts };
@@ -142,7 +134,7 @@ const deleteProduct = async (productid: string): Promise<myProduct[]> => {
     //   };
     // }
   } catch (err) {
-    console.log("Error in product repository delete", err);
+    console.log("Failed to remove a product", err);
     throw err;
   }
 };
@@ -164,9 +156,10 @@ const increaseProductInventory = async (
       return product;
     });
     await writeToFile(productPath, products);
+    console.log("Product inventory increased");
     return products;
   } catch (err) {
-    console.log("Error in product repository invenotry++", err);
+    console.log("Failed to increase product inventory", err);
     throw err;
   }
 };
@@ -189,9 +182,10 @@ const decreaseProductInventory = async (
       return product;
     });
     await writeToFile(productPath, products);
+    console.log("Product inventory decreased");
     return products;
   } catch (err) {
-    console.log("Error in product repository invenotry--", err);
+    console.log("Failed to decrease product inventory", err);
     throw err;
   }
 };

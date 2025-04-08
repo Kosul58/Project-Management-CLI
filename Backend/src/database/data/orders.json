@@ -125,5 +125,28 @@
       }
     ],
     "total": 8750
+  },
+  {
+    "orderid": "m98si0oes5wjamgpj9",
+    "userid": "kos7",
+    "timestamp": "2025-04-08-23:29",
+    "status": "Order Successfully Placed",
+    "items": [
+      {
+        "userid": "kos7",
+        "productid": "10",
+        "name": "Wireless Earbuds",
+        "price": 99,
+        "quantity": 80
+      },
+      {
+        "userid": "kos7",
+        "productid": "15",
+        "name": "Wireless Earbuds",
+        "price": 99,
+        "quantity": 80
+      }
+    ],
+    "total": 7920
   }
 ]

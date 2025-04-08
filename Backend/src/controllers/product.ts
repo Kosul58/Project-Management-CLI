@@ -1,7 +1,7 @@
 import productService from "../services/productServices.js";
-import { myProduct, ProductOptions } from "../types.js";
+import { myProduct, ProductOptions, productResponse } from "../types.js";
 
-export const getProducts = async () => {
+export const getProducts = async (): Promise<productResponse | []> => {
   try {
     const response = await productService.getProducts();
     if (response.length === 0) {
@@ -16,12 +16,14 @@ export const getProducts = async () => {
       };
     }
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error("Failed to get products", err);
     return [];
   }
 };
 
-export const getProductById = async (productid: string) => {
+export const getProductById = async (
+  productid: string
+): Promise<productResponse | []> => {
   try {
     const data = await productService.getProductById(productid);
     if (Object.keys(data).length > 0) {
@@ -36,12 +38,14 @@ export const getProductById = async (productid: string) => {
       };
     }
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error("Failed to get product by id", err);
     return [];
   }
 };
 
-export const addProduct = async (restData: ProductOptions) => {
+export const addProduct = async (
+  restData: ProductOptions
+): Promise<productResponse | []> => {
   try {
     let { name, price, inventory } = restData;
     if (!name || !price || !inventory) {
@@ -60,15 +64,14 @@ export const addProduct = async (restData: ProductOptions) => {
       response: result.totalProducts,
     };
   } catch (err) {
-    console.error(
-      "Error in product Controller addProduct. Failed to add product",
-      err
-    );
+    console.error("Failed to add product", err);
     return [];
   }
 };
 
-export const addProducts = async (products: ProductOptions[]) => {
+export const addProducts = async (
+  products: ProductOptions[]
+): Promise<productResponse | []> => {
   try {
     if (products.length == 0) {
       return {
@@ -89,7 +92,7 @@ export const addProducts = async (products: ProductOptions[]) => {
       };
     }
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error("Failed to add multiple products", err);
     return [];
   }
 };
@@ -97,10 +100,10 @@ export const addProducts = async (products: ProductOptions[]) => {
 export const updateProduct = async (
   productid: string,
   update: ProductOptions
-) => {
+): Promise<productResponse | []> => {
   try {
     if (!productid || !update) {
-      return { message: "Enter all field" };
+      return { message: "Enter all field", response: [] };
     }
     const result = await productService.updateProduct(productid, update);
 
@@ -116,24 +119,26 @@ export const updateProduct = async (
       };
     }
   } catch (err) {
-    console.error(
-      "Error in product Controller updateProduct. Failed to update product",
-      err
-    );
+    console.error("Failed to update a product", err);
     return [];
   }
 };
 
-export const deleteProduct = async (productid: string) => {
+export const deleteProduct = async (
+  productid: string
+): Promise<productResponse | []> => {
   try {
     if (!productid) {
       console.log("Product id required");
-      return;
+      return [];
     }
     const result = await productService.deleteProduct(productid);
-    return result;
+    return {
+      message: "Product deleted successfully",
+      response: result,
+    };
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error("Failed to delete a product", err);
     return [];
   }
 };
@@ -141,11 +146,11 @@ export const deleteProduct = async (productid: string) => {
 export const increaseProductInventory = async (
   id: string,
   quantity: number
-) => {
+): Promise<productResponse | []> => {
   try {
     if (!id || !quantity) {
       console.log("Both productid and qunatity required");
-      return;
+      return [];
     }
     let result = await productService.increaseProductInventory(id, quantity);
     if (result.length > 0) {
@@ -160,7 +165,7 @@ export const increaseProductInventory = async (
       };
     }
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error("Failed to increase a product inventory", err);
     return [];
   }
 };
@@ -168,11 +173,11 @@ export const increaseProductInventory = async (
 export const decreaseProductInventory = async (
   id: string,
   quantity: number
-) => {
+): Promise<productResponse | []> => {
   try {
     if (!id || !quantity) {
       console.log("Both productid and qunatity required");
-      return;
+      return [];
     }
     let result = await productService.decreaseProductInventory(id, quantity);
     if (result.length > 0) {
@@ -187,7 +192,7 @@ export const decreaseProductInventory = async (
       };
     }
   } catch (err) {
-    console.error("Error in Controller", err);
+    console.error("Failed to decrease a product inventory", err);
     return [];
   }
 };

@@ -1,19 +1,28 @@
-import orderServices from "../services/orderServices.js";
+import orderServices from "../services/orderServices";
+import { orderResponse } from "../types";
 
-export const viewOrders = async (userid) => {
+export const viewOrders = async (
+  userid: string
+): Promise<orderResponse | []> => {
   try {
     const result = await orderServices.getOrder(userid);
     if (!result) {
       throw new Error("error fetching order data");
     }
-    return result;
+    return {
+      message: "Order search sucessfull",
+      response: result,
+    };
   } catch (err) {
-    console.log("Error in viewOrders", err);
+    console.log("Failed to search for orders", err);
     return [];
   }
 };
 
-export const createOrder = async (userid, productid) => {
+export const createOrder = async (
+  userid: string,
+  productid: string
+): Promise<orderResponse | []> => {
   try {
     if (!userid) return { message: "Userid required", response: [] };
     const result = await orderServices.addOrder(userid, productid);
@@ -22,13 +31,16 @@ export const createOrder = async (userid, productid) => {
     }
     return { message: "Order creation successfull", response: result };
   } catch (err) {
-    console.log("Error in order controller createOrder", err);
+    console.log("Failed to create an order of a product", err);
     return [];
   }
 };
 
 // products = [productId1 , productId2]
-export const createOrders = async (userid, products) => {
+export const createOrders = async (
+  userid: string,
+  products: string[]
+): Promise<orderResponse | []> => {
   try {
     if (!userid || products.length < 1)
       return { message: "Userid and products array required", response: [] };
@@ -40,12 +52,16 @@ export const createOrders = async (userid, products) => {
     }
     return { message: "Order creation successfull", response: result };
   } catch (err) {
-    console.log("Error in order controller createOrder", err);
+    console.log("Failed to create order of multiple products", err);
     return [];
   }
 };
 
-export const updateOrderStatus = async (orderid, userid, status) => {
+export const updateOrderStatus = async (
+  orderid: string,
+  userid: string,
+  status: string
+): Promise<orderResponse | []> => {
   try {
     if (!orderid || !userid || !status) {
       return {
@@ -70,13 +86,16 @@ export const updateOrderStatus = async (orderid, userid, status) => {
       };
     }
   } catch (err) {
-    console.log("Error in order controller updateOrderStatus", err);
+    console.log("Failed to update order status", err);
     return [];
   }
 };
 
 //cancels all orders for a given orderid
-export const cancelOrder = async (orderid, userid) => {
+export const cancelOrder = async (
+  orderid: string,
+  userid: string
+): Promise<orderResponse | []> => {
   try {
     if (!userid || !orderid)
       return {
@@ -87,23 +106,27 @@ export const cancelOrder = async (orderid, userid) => {
     // console.log(result);
     if (result.length >= 0) {
       return {
-        response: "Order removal successfull",
-        return: result,
+        message: "Order removal successfull",
+        response: result,
       };
     } else {
       return {
-        response: "Order removal unsuccessfull",
-        return: [],
+        message: "Order removal unsuccessfull",
+        response: [],
       };
     }
   } catch (err) {
-    console.log("Error in order controller cancelOrder", err);
+    console.log("Failed to cancel a order", err);
     return [];
   }
 };
 
 // cancels a specific order based on orderid + userid + productid
-export const cancelAOrder = async (orderid, userid, productid) => {
+export const cancelAOrder = async (
+  orderid: string,
+  userid: string,
+  productid: string
+): Promise<orderResponse | []> => {
   try {
     if (!orderid || !userid || !productid) {
       return {
@@ -112,8 +135,19 @@ export const cancelAOrder = async (orderid, userid, productid) => {
       };
     }
     const result = await orderServices.removeOrder(orderid, userid, productid);
-    return result;
+    if (result.length > 0) {
+      return {
+        message: "Order of a product canceled successfully",
+        response: result,
+      };
+    } else {
+      return {
+        message: "Cancelation of a product order unsuccessfull",
+        response: [],
+      };
+    }
   } catch (err) {
-    console.log("Error in order controller cancelAOrder", err);
+    console.log("Failed to cancel the order of a product", err);
+    return [];
   }
 };

@@ -6,10 +6,7 @@ const getProducts = async (): Promise<myProduct[]> => {
     let result: myProduct[] = await productRepository.getProducts();
     return result;
   } catch (err) {
-    console.log(
-      "error in product Services getAllProduct.Failed to get the data of all products",
-      err
-    );
+    console.log("Failed to get the data of all products", err);
     throw err;
   }
 };
@@ -21,17 +18,15 @@ const getProductById = async (prouctid: string): Promise<myProduct | []> => {
     );
     return data;
   } catch (err) {
-    console.log(
-      "error in product Services getProductById. Failed to get the data of a product based on productid",
-      err
-    );
+    console.log("Failed to get the data of a product based on productid", err);
     throw err;
   }
 };
 
 const createProduct = (restData: ProductOptions): myProduct => {
-  let { name, price, invenotry, description, category } = restData;
-  if (!name || !price || !invenotry) {
+  let { name, price, inventory, description, category } = restData;
+  console.log(name, price, inventory);
+  if (!name || !price || !inventory) {
     throw new Error(
       "Important fields missing during the addition of a product"
     );
@@ -40,7 +35,7 @@ const createProduct = (restData: ProductOptions): myProduct => {
     productid: "",
     name,
     price: Number(price),
-    inventory: Number(invenotry),
+    inventory: Number(inventory),
     description,
     category,
   };
@@ -61,10 +56,7 @@ const addProduct = async (
 
     return { newProduct, totalProducts };
   } catch (err) {
-    console.log(
-      "error in product Services addProduct. Failed to add a new product",
-      err
-    );
+    console.log("Failed to add a new product", err);
     throw err;
   }
 };
@@ -83,10 +75,7 @@ const addProducts = async (
     // console.log(productsarray);
     return data;
   } catch (err) {
-    console.log(
-      "error in product Services addProducts. Failed to add a batch of new products",
-      err
-    );
+    console.log("Failed to add a batch of new products", err);
     throw err;
   }
 };
@@ -102,10 +91,7 @@ const updateProduct = async (
     );
     return newProducts;
   } catch (err) {
-    console.log(
-      "error in product Services updateProduct. Failed to update a product",
-      err
-    );
+    console.log("Failed to update a product", err);
     throw err;
   }
 };
@@ -115,10 +101,7 @@ const deleteProduct = async (productid: string): Promise<myProduct[]> => {
     const data: myProduct[] = await productRepository.deleteProduct(productid);
     return data;
   } catch (err) {
-    console.log(
-      "error in product Services delete. Failed to delete a product",
-      err
-    );
+    console.log("Failed to delete a product", err);
     throw err;
   }
 };
@@ -129,10 +112,7 @@ const increaseProductInventory = async (id: string, quantity: number) => {
     products = await productRepository.increaseProductInventory(id, quantity);
     return products;
   } catch (err) {
-    console.log(
-      "error in product Services product inventory increase. Failed to increase the inventory of a product",
-      err
-    );
+    console.log("Failed to increase the inventory of a product", err);
     throw err;
   }
 };
@@ -143,10 +123,7 @@ const decreaseProductInventory = async (id: string, quantity: number) => {
     products = await productRepository.decreaseProductInventory(id, quantity);
     return products;
   } catch (err) {
-    console.log(
-      "error in product Services product inventory decrease. Failed to decrease the inventory of a product",
-      err
-    );
+    console.log("Failed to decrease the inventory of a product", err);
     throw err;
   }
 };

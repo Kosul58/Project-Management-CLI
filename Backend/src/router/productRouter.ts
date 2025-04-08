@@ -38,10 +38,12 @@ const productRouter = async (Command_Prompt: string[]): Promise<void> => {
       const updateResult = await updateProduct(productid as string, update);
       console.log(updateResult);
       break;
+
     case "delete":
       const deleteResult = await deleteProduct(productid as string);
       console.log(deleteResult);
       break;
+
     default:
       console.log("Wrong Command");
       console.log("Type 'node index.js help' to view all avialable prompts");
