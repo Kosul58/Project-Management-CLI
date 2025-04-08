@@ -5,9 +5,9 @@ import {
   updateOrderStatus,
   viewOrders,
 } from "../controllers/order.js";
-import { parseOptions } from "../utils/utils.ts";
+import { parseOptions } from "../utils/utils";
 
-import { ProductOptions } from "../types.ts";
+import { ProductOptions } from "../types";
 
 const orderRouter = async (Command_Prompt: string[]): Promise<void> => {
   const values: ProductOptions = parseOptions(Command_Prompt.slice(2));

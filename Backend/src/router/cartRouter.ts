@@ -9,9 +9,9 @@ import {
   viewCart,
 } from "../controllers/cart.js";
 
-import { ProductOptions } from "../types.ts";
+import { ProductOptions } from "../types";
 
-import { parseOptions } from "../utils/utils.ts";
+import { parseOptions } from "../utils/utils";
 
 const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
   console.log(Command_Prompt);

@@ -1,7 +1,7 @@
-import cartRouter from "./src/router/cartRouter.ts";
-import orderRouter from "./src/router/orderRouter.ts";
-import productRouter from "./src/router/productRouter.ts";
-import { helpinfo } from "./src/utils/utils.ts";
+import cartRouter from "./src/router/cartRouter";
+import orderRouter from "./src/router/orderRouter";
+import productRouter from "./src/router/productRouter";
+import { helpinfo } from "./src/utils/utils";
 const Command_Prompt: string[] = process.argv.slice(2);
 console.log(Command_Prompt);
 switch (Command_Prompt[0]) {
