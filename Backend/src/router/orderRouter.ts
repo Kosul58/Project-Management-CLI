@@ -4,7 +4,7 @@ import {
   createOrder,
   updateOrderStatus,
   viewOrders,
-} from "../controllers/order.js";
+} from "../controllers/order";
 import { parseOptions } from "../utils/utils";
 
 import { ProductOptions } from "../types";

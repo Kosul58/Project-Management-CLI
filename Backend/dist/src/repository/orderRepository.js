@@ -1,19 +1,14 @@
-import { readToFile, writeToFile } from "../utils/fileManager";
-
-import { cartPath, orderPath } from "../utils/utils";
-
-import { removeProduct } from "../controllers/cart";
-
+import { readToFile, writeToFile } from "../utils/fileManager.js";
+import { cartPath, orderPath } from "../utils/utils.js";
+import { removeProduct } from "../controllers/cart.js";
 import {
   increaseProductInventory,
   decreaseProductInventory,
-} from "../controllers/product";
-import { generateId, getCurrentDateTimeStamp } from "../utils/utils";
-import { myCart, myOrder } from "../types";
-
-const getOrder = async (userid: string): Promise<myOrder[]> => {
+} from "../controllers/product.js";
+import { generateId, getCurrentDateTimeStamp } from "../utils/utils.js";
+const getOrder = async (userid) => {
   try {
-    const data: myOrder[] = await readToFile(orderPath);
+    const data = await readToFile(orderPath);
     const userdata = data.filter((order) => order.userid === userid);
     if (userdata.length === 0) {
       console.log("No Order Found for the User");
@@ -26,51 +21,37 @@ const getOrder = async (userid: string): Promise<myOrder[]> => {
     throw err;
   }
 };
-
-function singleCartFilter(
-  cartItems: myCart[],
-  userid: string,
-  productid: string
-): myCart[] {
+function singleCartFilter(cartItems, userid, productid) {
   return cartItems.filter(
     (item) => item.userid === userid && item.productid === productid
   );
 }
-
-function multipleCartFilter(
-  cartItems: myCart[],
-  userid: string,
-  products: string[]
-): myCart[] {
+function multipleCartFilter(cartItems, userid, products) {
   return cartItems.filter(
     (item) => item.userid === userid && products.includes(item.productid)
   );
 }
-
-const orderTotal = (items: myCart[]): number => {
+const orderTotal = (items) => {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 };
-
-const cartUpdate = async (products: string[], userid: string) => {
+const cartUpdate = async (products, userid) => {
   for (let i = 0; i < products.length; i++) {
     await removeProduct(userid, products[i]);
   }
 };
-
-const inventoryIncrease = async (items: myCart[]) => {
+const inventoryIncrease = async (items) => {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
     await increaseProductInventory(productid, quantity);
   }
 };
-const inventoryDecrease = async (items: myCart[]) => {
+const inventoryDecrease = async (items) => {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
     await decreaseProductInventory(productid, quantity);
   }
 };
-
-const createOrder = (userid: string): myOrder => {
+const createOrder = (userid) => {
   return {
     orderid: generateId(),
     userid,
@@ -80,20 +61,16 @@ const createOrder = (userid: string): myOrder => {
     total: 0,
   };
 };
-
-const addOrder = async (
-  userid: string,
-  productid: string
-): Promise<myOrder[]> => {
+const addOrder = async (userid, productid) => {
   try {
-    let orders: myOrder[] = await readToFile(orderPath);
-    let cartItems: myCart[] = await readToFile(cartPath);
-    let items: myCart[] = singleCartFilter(cartItems, userid, productid);
+    let orders = await readToFile(orderPath);
+    let cartItems = await readToFile(cartPath);
+    let items = singleCartFilter(cartItems, userid, productid);
     if (items.length === 0) {
       throw new Error("No matching products found in cart.");
     }
-    const total: number = orderTotal(items);
-    let order: myOrder = createOrder(userid);
+    const total = orderTotal(items);
+    let order = createOrder(userid);
     order.items = items;
     order.total = total;
     orders.push(order);
@@ -107,16 +84,12 @@ const addOrder = async (
     throw err;
   }
 };
-
-const addOrders = async (
-  userid: string,
-  products: string[]
-): Promise<myOrder[]> => {
+const addOrders = async (userid, products) => {
   try {
-    let order: myOrder = createOrder(userid);
-    let orders: myOrder[] = await readToFile(orderPath);
-    let cartItems: myCart[] = await readToFile(cartPath);
-    let items: myCart[] = multipleCartFilter(cartItems, userid, products);
+    let order = createOrder(userid);
+    let orders = await readToFile(orderPath);
+    let cartItems = await readToFile(cartPath);
+    let items = multipleCartFilter(cartItems, userid, products);
     if (items.length === 0) {
       throw new Error("No matching products found in cart.");
     }
@@ -134,13 +107,7 @@ const addOrders = async (
     throw err;
   }
 };
-
-const orderFilter = (
-  orders: myOrder[],
-  orderid: string,
-  userid: string,
-  status: string
-) => {
+const orderFilter = (orders, orderid, userid, status) => {
   return orders.map((order) => {
     if (order.orderid === orderid && order.userid === userid) {
       return { ...order, status };
@@ -148,14 +115,9 @@ const orderFilter = (
     return order;
   });
 };
-
-const updateOrderStatus = async (
-  orderid: string,
-  userid: string,
-  status: string
-): Promise<myOrder[]> => {
+const updateOrderStatus = async (orderid, userid, status) => {
   try {
-    let orders: myOrder[] = await readToFile(orderPath);
+    let orders = await readToFile(orderPath);
     orders = orderFilter(orders, orderid, userid, status);
     await writeToFile(orderPath, orders);
     console.log(
@@ -167,14 +129,10 @@ const updateOrderStatus = async (
     throw err;
   }
 };
-
-const removeOrders = async (
-  orderid: string,
-  userid: string
-): Promise<myOrder[]> => {
+const removeOrders = async (orderid, userid) => {
   try {
-    let orders: myOrder[] = await readToFile(orderPath);
-    let canceledORder: myOrder | undefined = orders.find(
+    let orders = await readToFile(orderPath);
+    let canceledORder = orders.find(
       (order) => order.orderid === orderid && order.userid === userid
     );
     orders = orders.filter((order) => {
@@ -196,28 +154,27 @@ const removeOrders = async (
     throw err;
   }
 };
-
-const removeOrder = async (
-  orderid: string,
-  userid: string,
-  productid: string
-): Promise<myOrder[]> => {
+const removeOrder = async (orderid, userid, productid) => {
   try {
     // console.log(orderid, userid, productid);
-    let orders: myOrder[] = await readToFile(orderPath);
+    let orders = await readToFile(orderPath);
     // console.log(orders);
-    console.log(orders);
     let order = orders.filter(
       (order) => order.orderid === orderid && order.userid === userid
     );
-    console.log(order);
     let items = order[0].items.filter((item) => item.productid !== productid);
-    console.log(items);
+    // console.log(items);
     let canceledItems = order[0].items.filter(
       (item) => item.productid === productid
     );
+    // console.log(canceledItems);
+    if (canceledItems.length < 1) {
+      console.log("No products to remove from order");
+      return;
+    }
 
     // console.log(items, canceledItems);
+
     if (items.length !== 0) {
       orders = orders.map((order) => {
         if (order.orderid === orderid && order.userid === userid) {
@@ -240,7 +197,6 @@ const removeOrder = async (
     throw err;
   }
 };
-
 export default {
   addOrder,
   addOrders,
