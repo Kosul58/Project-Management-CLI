@@ -28,5 +28,25 @@
     "isActive": true,
     "createdAt": "2025-04-10-15:52",
     "updatedAt": ""
+  },
+  {
+    "categoryId": "m9b82h9x9tps7qpzfoj",
+    "name": "test",
+    "description": "test",
+    "slug": "test",
+    "parentId": "test2",
+    "isActive": true,
+    "createdAt": "2025-04-10-16:20",
+    "updatedAt": "2025-04-10-16:22"
+  },
+  {
+    "categoryId": "m9b98uz4nif88k278vq",
+    "name": "Audio",
+    "description": "",
+    "slug": "",
+    "parentId": "",
+    "isActive": true,
+    "createdAt": "2025-04-10-16:53",
+    "updatedAt": ""
   }
 ]

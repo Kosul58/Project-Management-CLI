@@ -1,6 +1,7 @@
 import { readToFile, writeToFile } from "../utils/fileManager";
 
 import { cartPath, orderPath } from "../utils/utils";
+import { Status } from "../common/orderType";
 
 import { removeProduct } from "../controllers/cart";
 
@@ -76,7 +77,7 @@ const createOrder = (userid: string): Order => {
     orderid: generateId(),
     userid,
     timestamp: getCurrentDateTimeStamp(),
-    status: "Order Successfully Placed",
+    status: Status.Pending,
     items: [],
     total: 0,
   };
@@ -140,8 +141,8 @@ const orderFilter = (
   orders: Order[],
   orderid: string,
   userid: string,
-  status: string
-) => {
+  status: Status
+): Order[] => {
   return orders.map((order) => {
     if (order.orderid === orderid && order.userid === userid) {
       return { ...order, status };
@@ -153,7 +154,7 @@ const orderFilter = (
 const updateOrderStatus = async (
   orderid: string,
   userid: string,
-  status: string
+  status: Status
 ): Promise<Order[]> => {
   try {
     let orders: Order[] = await readToFile(orderPath);

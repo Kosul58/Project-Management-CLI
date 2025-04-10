@@ -108,7 +108,6 @@ const updateProduct = async (
     if (description) product.description = description;
     if (category) product.category = category;
     if (inventory) product.inventory = inventory;
-
     // const newProducts = products.map((product) => {
     //   if (product.productid === productid) {
     //     return { ...product, ...update };
@@ -178,13 +177,26 @@ const increaseProductInventory = async (
     throw err;
   }
 };
-
+const checkProductInventory = (
+  products: Product[],
+  id: string,
+  quantity: number
+): boolean => {
+  return products.some(
+    (product) => product.productid === id && product.inventory >= quantity
+  );
+};
 const decreaseProductInventory = async (
   id: string,
   quantity: number
 ): Promise<Product[]> => {
   try {
     let products: Product[] = await readToFile(productPath);
+    const checkInventory = checkProductInventory(products, id, quantity);
+    if (!checkInventory) {
+      console.log("Insufficient Inventory");
+      throw new Error("Insufficient Inventory");
+    }
     products = products.map((product: Product) => {
       if (product.productid === id) {
         let inventory;

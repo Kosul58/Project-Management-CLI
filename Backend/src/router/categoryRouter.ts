@@ -48,9 +48,11 @@ const categoryRouter = async (Command_Prompt: string[]): Promise<void> => {
         isActive,
       };
       const updateResult = await updateCategory(categoryId as string, update);
+      console.log(updateResult);
       break;
     case "delete":
       const deleteResult = await deleteCategory(categoryId as string);
+      console.log(deleteResult);
       break;
     default:
       console.log("wrong command");

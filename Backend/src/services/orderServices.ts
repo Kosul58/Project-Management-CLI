@@ -1,5 +1,5 @@
 import orderRepository from "../repository/orderRepository";
-import { Order } from "../common/orderType";
+import { Order, Status } from "../common/orderType";
 
 const getOrder = async (userid: string): Promise<Order[]> => {
   try {
@@ -42,10 +42,14 @@ const updateOrderStatus = async (
   status: string
 ): Promise<Order[]> => {
   try {
+    if (!Object.values(Status).includes(status as Status)) {
+      throw new Error("Invalid status value provided.");
+    }
+    let newStatus = status as Status;
     let orders = await orderRepository.updateOrderStatus(
       orderid,
       userid,
-      status
+      newStatus
     );
     return orders;
   } catch (err) {
