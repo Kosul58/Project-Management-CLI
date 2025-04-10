@@ -23,7 +23,7 @@ const categoryRouter = async (Command_Prompt: string[]): Promise<void> => {
     isActive,
     slug,
   } = values;
-
+  console.log(values);
   switch (Command_Prompt[1]) {
     case "create":
       let category: CategoryOption = {

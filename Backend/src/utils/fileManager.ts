@@ -1,5 +1,5 @@
 import { promises as fsPromises } from "fs";
-import { ProductOptions } from "../types";
+import { ProductOptions } from "../common/productType";
 
 export const readToFile = async (path: string) => {
   const data = await fsPromises.readFile(path, "utf8");

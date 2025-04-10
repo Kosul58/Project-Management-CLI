@@ -1,5 +1,5 @@
 interface Options {
-  [key: string]: string | number;
+  [key: string]: string | number | boolean;
 }
 
 export function parseOptions(args: string[]) {
@@ -8,10 +8,13 @@ export function parseOptions(args: string[]) {
     if (args[i].startsWith("--")) {
       const key = args[i].slice(2);
       console.log(key);
-      let nextArg: string | number = args[i + 1];
+      let nextArg: string | number | boolean = args[i + 1];
       if (nextArg !== undefined && !nextArg.startsWith("--")) {
         if (key === "price" || key === "inventory") {
           nextArg = Number(nextArg);
+        }
+        if (key === "isActive") {
+          nextArg = nextArg === "true";
         }
         options[key] = nextArg;
         i++;

@@ -90,7 +90,7 @@ const updateCategory = async (
     if (name) category.name = name;
     if (description) category.description = description;
     if (parentId) category.parentId = parentId;
-    if (isActive) category.isActive = isActive;
+    if (typeof isActive === "boolean") category.isActive = isActive;
     const updateAt = getCurrentDateTimeStamp();
     category.updatedAt = updateAt;
     console.log("Category Updated");

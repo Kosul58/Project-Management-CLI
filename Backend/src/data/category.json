@@ -45,8 +45,8 @@
     "description": "",
     "slug": "",
     "parentId": "",
-    "isActive": true,
+    "isActive": false,
     "createdAt": "2025-04-10-16:53",
-    "updatedAt": ""
+    "updatedAt": "2025-04-10-17:16"
   }
 ]

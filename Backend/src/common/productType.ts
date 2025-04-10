@@ -8,7 +8,6 @@ export interface ProductOptions {
   inventory?: number;
   total?: number;
   description?: string;
-  category?: string;
   [key: string]: any; // For additional properties
 }
 
