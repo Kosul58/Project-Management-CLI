@@ -7,11 +7,11 @@ import {
   viewCartProducts,
   updateProduct,
   viewCart,
-} from "../controllers/cart";
+} from "../controllers/cart.js";
 
-import { ProductOptions } from "../common/productType";
-import { UpdateCart } from "../common/cartType";
-import { parseOptions } from "../utils/utils";
+import { ProductOptions } from "../common/types/productType.js";
+import { UpdateCart } from "../common/types/cartType.js";
+import { parseOptions } from "../utils/utils.js";
 
 const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
   console.log(Command_Prompt);

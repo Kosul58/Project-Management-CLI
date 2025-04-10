@@ -1,6 +1,6 @@
-import productService from "../services/productServices";
-import { Product, ProductOptions } from "../common/productType";
-import { ProductResponse } from "../common/responseType";
+import productService from "../services/productServices.js";
+import { Product, ProductOptions } from "../common/types/productType.js";
+import { ProductResponse } from "../common/types/responseType.js";
 
 export const getProducts = async (): Promise<ProductResponse | []> => {
   try {

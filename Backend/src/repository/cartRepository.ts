@@ -1,11 +1,11 @@
-import { Cart, UpdateCart } from "../common/cartType";
-import { Product } from "../common/productType";
-import { readToFile, writeToFile } from "../utils/fileManager.js";
+import { Cart, UpdateCart } from "../common/types/cartType.js";
+import { Product } from "../common/types/productType.js";
+import FileManager from "../utils/fileManager.js";
 import { cartPath, productPath } from "../utils/utils.js";
 
 const getProducts = async (): Promise<Cart[]> => {
   try {
-    const result: Cart[] = await readToFile(cartPath);
+    const result: Cart[] = await FileManager.readFromFile(cartPath);
     console.log("Product search in cart complete");
     return result;
   } catch (err) {
@@ -29,7 +29,7 @@ const getProductById = async (
   userid: string
 ): Promise<Cart> => {
   try {
-    let result: Cart[] = await readToFile(cartPath);
+    let result: Cart[] = await FileManager.readFromFile(cartPath);
     const index = productIndex(result, productid, userid);
     return result[index];
   } catch (err) {
@@ -40,7 +40,7 @@ const getProductById = async (
 
 const getProduct = async (userid: string): Promise<Cart[]> => {
   try {
-    let result: Cart[] = await readToFile(cartPath);
+    let result: Cart[] = await FileManager.readFromFile(cartPath);
     console.log("Product search in cart complete");
     return result.filter((p) => p.userid === userid);
   } catch (err) {
@@ -54,7 +54,7 @@ const cartCheck = async (
   userid: string
 ): Promise<Cart | undefined> => {
   // get all products form the products.json file
-  const products: Cart[] = await readToFile(cartPath);
+  const products: Cart[] = await FileManager.readFromFile(cartPath);
   // search for a product to add in cart
   const productToAdd: Cart | undefined = products.find(
     (product) => product.productid === productid && product.userid === userid
@@ -66,7 +66,7 @@ const productAvailable = async (
   productid: string,
   quantity: number
 ): Promise<Product> => {
-  const products: Product[] = await readToFile(productPath);
+  const products: Product[] = await FileManager.readFromFile(productPath);
   const productToAdd: Product | undefined = products.find(
     (product) => product.productid === productid
   );
@@ -94,7 +94,7 @@ const addProduct = async (
     const isProoductInCart = await cartCheck(productId, userid);
 
     //get all items in the cart
-    let cartItems: Cart[] = await readToFile(cartPath);
+    let cartItems: Cart[] = await FileManager.readFromFile(cartPath);
 
     if (!isProoductInCart) {
       //if no product in the cart add the product to cart
@@ -122,7 +122,7 @@ const addProduct = async (
       });
     }
     // console.log(cartItems);
-    await writeToFile(cartPath, cartItems);
+    await FileManager.writeToFile(cartPath, cartItems);
     console.log("Product addition in cart complete");
     return cartItems;
   } catch (err) {
@@ -136,7 +136,7 @@ const removeProduct = async (
   productid: string
 ): Promise<Cart[]> => {
   try {
-    const cartitems: Cart[] = await readToFile(cartPath);
+    const cartitems: Cart[] = await FileManager.readFromFile(cartPath);
     let newCart: Cart[];
     newCart = cartitems.filter((item) => {
       if (item.userid !== userid || item.productid !== productid) return item;
@@ -144,7 +144,7 @@ const removeProduct = async (
     if (cartitems.length === newCart.length) {
       throw new Error("No Items to remove from the cart");
     }
-    await writeToFile(cartPath, newCart);
+    await FileManager.writeToFile(cartPath, newCart);
     console.log(`Product with id ${productid} removed successfully`);
     console.log("Prodcut removal from cart complete");
     return newCart;
@@ -160,7 +160,7 @@ const removeProducts = async (
   products: string[]
 ): Promise<Cart[]> => {
   try {
-    const cartitems: Cart[] = await readToFile(cartPath);
+    const cartitems: Cart[] = await FileManager.readFromFile(cartPath);
     let newCart: Cart[];
     if (products.length < 1) {
       newCart = cartitems.filter((item) => {
@@ -176,7 +176,7 @@ const removeProducts = async (
       console.log("No Items to remove from the cart");
       return cartitems;
     }
-    await writeToFile(cartPath, newCart);
+    await FileManager.writeToFile(cartPath, newCart);
     console.log("Products removal from cart complete");
     return newCart;
   } catch (err) {
@@ -213,7 +213,7 @@ const updateProduct = async (
   update: UpdateCart
 ): Promise<Cart[]> => {
   try {
-    const cartItems: Cart[] = await readToFile(cartPath);
+    const cartItems: Cart[] = await FileManager.readFromFile(cartPath);
     let { quantity } = update;
     const productToUpdate = await cartCheck(pid, uid);
     if (!productToUpdate) throw new Error("No product to update");
@@ -240,7 +240,7 @@ const updateProduct = async (
     });
     // console.log(quanityChange);
     // await updateAProductInventory(id, quanityChange);
-    // await writeToFile(cartPath, updatedCart);
+    await FileManager.writeToFile(cartPath, updatedCart);
     console.log("Cart updated succesfully");
     return updatedCart;
   } catch (err) {
@@ -251,7 +251,7 @@ const updateProduct = async (
 
 const totalCartPrice = async (userid: string): Promise<number> => {
   try {
-    let cartItems: Cart[] = await readToFile(cartPath);
+    let cartItems: Cart[] = await FileManager.readFromFile(cartPath);
     cartItems = cartItems.filter((p) => p.userid === userid);
     const total = cartItems.reduce((a, item) => {
       return (a = a + item.quantity * item.price);

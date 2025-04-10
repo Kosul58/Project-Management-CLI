@@ -38,13 +38,13 @@ export function getCurrentDateTimeStamp(): string {
   return `${year}-${month}-${day}-${hours}:${minutes}`;
 }
 
-export const productPath: string = "./src/data/products.json";
+export const productPath: string = "./data/products.json";
 
-export const cartPath: string = "./src/data/cart.json";
+export const cartPath: string = "./data/cart.json";
 
-export const orderPath: string = "./src/data/orders.json";
+export const orderPath: string = "./data/orders.json";
 
-export const categoryPath: string = "./src/data/category.json";
+export const categoryPath: string = "./data/category.json";
 
 export const helpinfo: string = `
 # CLI command list

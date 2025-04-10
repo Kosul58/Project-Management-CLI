@@ -1,5 +1,5 @@
-import orderRepository from "../repository/orderRepository";
-import { Order, Status } from "../common/orderType";
+import orderRepository from "../repository/orderRepository.js";
+import { Order, Status } from "../common/types/orderType.js";
 
 const getOrder = async (userid: string): Promise<Order[]> => {
   try {

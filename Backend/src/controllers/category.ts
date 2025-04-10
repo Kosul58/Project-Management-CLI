@@ -1,6 +1,9 @@
-import { CategoryOption, UpdateCategory } from "../common/categoryType";
-import { CategoryResponse } from "../common/responseType";
-import categoryServices from "../services/categoryServices";
+import {
+  CategoryOption,
+  UpdateCategory,
+} from "../common/types/categoryType.js";
+import { CategoryResponse } from "../common/types/responseType.js";
+import categoryServices from "../services/categoryServices.js";
 
 export const createCategory = async (
   category: CategoryOption

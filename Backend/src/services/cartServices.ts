@@ -1,6 +1,6 @@
-import cartRepositroy from "../repository/cartRepository";
-import { Cart, UpdateCart } from "../common/cartType";
-import { ProductOptions } from "../common/productType";
+import cartRepositroy from "../repository/cartRepository.js";
+import { Cart, UpdateCart } from "../common/types/cartType.js";
+import { ProductOptions } from "../common/types/productType.js";
 
 export const getProducts = async (): Promise<Cart[]> => {
   try {

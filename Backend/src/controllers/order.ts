@@ -1,5 +1,5 @@
-import orderServices from "../services/orderServices";
-import { OrderResponse } from "../common/responseType";
+import orderServices from "../services/orderServices.js";
+import { OrderResponse } from "../common/types/responseType.js";
 
 export const viewOrders = async (
   userid: string

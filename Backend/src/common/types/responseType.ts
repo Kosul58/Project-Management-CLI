@@ -1,7 +1,7 @@
-import { Product } from "./productType";
+import { Product } from "../productType.js";
 import { Cart } from "./cartType";
-import { Order } from "./orderType";
-import { Category } from "./categoryType";
+import { Order } from "../orderType.js";
+import { Category } from "../categoryType.js";
 export interface ProductResponse {
   message: string;
   response: string | Product[] | Product;

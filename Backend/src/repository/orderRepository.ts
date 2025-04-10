@@ -1,21 +1,25 @@
-import { readToFile, writeToFile } from "../utils/fileManager";
+import FileManager from "../utils/fileManager.js";
 
-import { cartPath, orderPath } from "../utils/utils";
-import { Status } from "../common/orderType";
+import {
+  cartPath,
+  orderPath,
+  generateId,
+  getCurrentDateTimeStamp,
+} from "../utils/utils.js";
+import { Status } from "../common/types/orderType.js";
 
-import { removeProduct } from "../controllers/cart";
+import { removeProduct } from "../controllers/cart.js";
 
 import {
   increaseProductInventory,
   decreaseProductInventory,
-} from "../controllers/product";
-import { generateId, getCurrentDateTimeStamp } from "../utils/utils";
-import { Cart } from "../common/cartType";
-import { Order } from "../common/orderType";
+} from "../controllers/product.js";
+import { Cart } from "../common/types/cartType.js";
+import { Order } from "../common/types/orderType.js";
 
 const getOrder = async (userid: string): Promise<Order[]> => {
   try {
-    const data: Order[] = await readToFile(orderPath);
+    const data: Order[] = await FileManager.readFromFile(orderPath);
     const userdata = data.filter((order) => order.userid === userid);
     if (userdata.length === 0) {
       console.log("No Order Found for the User");
@@ -88,8 +92,8 @@ const addOrder = async (
   productid: string
 ): Promise<Order[]> => {
   try {
-    let orders: Order[] = await readToFile(orderPath);
-    let cartItems: Cart[] = await readToFile(cartPath);
+    let orders: Order[] = await FileManager.readFromFile(orderPath);
+    let cartItems: Cart[] = await FileManager.readFromFile(cartPath);
     let items: Cart[] = singleCartFilter(cartItems, userid, productid);
     if (items.length === 0) {
       throw new Error("No matching products found in cart.");
@@ -99,7 +103,7 @@ const addOrder = async (
     order.items = items;
     order.total = total;
     orders.push(order);
-    await writeToFile(orderPath, orders);
+    await FileManager.writeToFile(orderPath, orders);
     await cartUpdate([productid], userid);
     console.log("Order createad sucessfully");
     await inventoryDecrease(items);
@@ -116,8 +120,8 @@ const addOrders = async (
 ): Promise<Order[]> => {
   try {
     let order: Order = createOrder(userid);
-    let orders: Order[] = await readToFile(orderPath);
-    let cartItems: Cart[] = await readToFile(cartPath);
+    let orders: Order[] = await FileManager.readFromFile(orderPath);
+    let cartItems: Cart[] = await FileManager.readFromFile(cartPath);
     let items: Cart[] = multipleCartFilter(cartItems, userid, products);
     if (items.length === 0) {
       throw new Error("No matching products found in cart.");
@@ -126,7 +130,7 @@ const addOrders = async (
     order.items = items;
     order.total = total;
     orders.push(order);
-    await writeToFile(orderPath, orders);
+    await FileManager.writeToFile(orderPath, orders);
     await cartUpdate(products, userid);
     console.log("Order createad sucessfully");
     await inventoryDecrease(items);
@@ -157,9 +161,9 @@ const updateOrderStatus = async (
   status: Status
 ): Promise<Order[]> => {
   try {
-    let orders: Order[] = await readToFile(orderPath);
+    let orders: Order[] = await FileManager.readFromFile(orderPath);
     orders = orderFilter(orders, orderid, userid, status);
-    await writeToFile(orderPath, orders);
+    await FileManager.writeToFile(orderPath, orders);
     console.log(
       `order status updated of order id ${orderid} and user id ${userid}`
     );
@@ -175,7 +179,7 @@ const removeOrders = async (
   userid: string
 ): Promise<Order[]> => {
   try {
-    let orders: Order[] = await readToFile(orderPath);
+    let orders: Order[] = await FileManager.readFromFile(orderPath);
     let canceledORder: Order | undefined = orders.find(
       (order) => order.orderid === orderid && order.userid === userid
     );
@@ -190,7 +194,7 @@ const removeOrders = async (
     }
     await inventoryIncrease(canceledORder.items);
     // console.log(orders);
-    await writeToFile(orderPath, orders);
+    await FileManager.writeToFile(orderPath, orders);
     console.log(`order canceled for order id ${orderid} and user id ${userid}`);
     return orders;
   } catch (err) {
@@ -206,7 +210,7 @@ const removeOrder = async (
 ): Promise<Order[]> => {
   try {
     // console.log(orderid, userid, productid);
-    let orders: Order[] = await readToFile(orderPath);
+    let orders: Order[] = await FileManager.readFromFile(orderPath);
     // console.log(orders);
     console.log(orders);
     let order = orders.filter(
@@ -234,7 +238,7 @@ const removeOrder = async (
     }
 
     await inventoryIncrease(canceledItems);
-    await writeToFile(orderPath, orders);
+    await FileManager.writeToFile(orderPath, orders);
     console.log("Order of a product removed successfully");
     return orders;
   } catch (err) {

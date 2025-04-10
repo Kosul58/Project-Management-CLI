@@ -2,8 +2,8 @@ import {
   Category,
   CategoryOption,
   UpdateCategory,
-} from "../common/categoryType";
-import categoryRepository from "../repository/categoryRepository";
+} from "../common/types/categoryType.js";
+import categoryRepository from "../repository/categoryRepository.js";
 
 const generateCategory = (category: CategoryOption): Category => {
   const { name, description = "", slug = "", parentId = "" } = category;

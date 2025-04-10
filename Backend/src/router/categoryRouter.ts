@@ -4,14 +4,14 @@ import {
   readCategories,
   updateCategory,
   deleteCategory,
-} from "../controllers/category";
-import { parseOptions } from "../utils/utils";
+} from "../controllers/category.js";
+import { parseOptions } from "../utils/utils.js";
 
 import {
   CategoryOption,
   CategoryParser,
   UpdateCategory,
-} from "../common/categoryType";
+} from "../common/types/categoryType.js";
 
 const categoryRouter = async (Command_Prompt: string[]): Promise<void> => {
   const values: CategoryParser = parseOptions(Command_Prompt.slice(2));

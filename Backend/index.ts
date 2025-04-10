@@ -1,8 +1,8 @@
-import cartRouter from "./src/router/cartRouter";
-import orderRouter from "./src/router/orderRouter";
-import productRouter from "./src/router/productRouter";
-import categoryRouter from "./src/router/categoryRouter";
-import { helpinfo } from "./src/utils/utils";
+import cartRouter from "./src/router/cartRouter.js";
+import orderRouter from "./src/router/orderRouter.js";
+import productRouter from "./src/router/productRouter.js";
+import categoryRouter from "./src/router/categoryRouter.js";
+import { helpinfo } from "./src/utils/utils.js";
 const Command_Prompt: string[] = process.argv.slice(2);
 console.log(Command_Prompt);
 switch (Command_Prompt[0]) {

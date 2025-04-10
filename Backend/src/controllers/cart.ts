@@ -1,6 +1,6 @@
 import cartServices from "../services/cartServices.js";
-import { Cart, UpdateCart } from "../common/cartType.js";
-import { CartResponse } from "../common/responseType.js";
+import { Cart, UpdateCart } from "../common/types/cartType.js";
+import { CartResponse } from "../common/types/responseType.js";
 
 export const viewCart = async (): Promise<CartResponse | []> => {
   try {

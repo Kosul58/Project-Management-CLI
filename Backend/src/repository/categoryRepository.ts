@@ -1,10 +1,10 @@
-import { Category, UpdateCategory } from "../common/categoryType";
-import { readToFile, writeToFile } from "../utils/fileManager";
+import { Category, UpdateCategory } from "../common/types/categoryType.js";
+import FileManager from "../utils/fileManager.js";
 import {
   generateId,
   categoryPath,
   getCurrentDateTimeStamp,
-} from "../utils/utils";
+} from "../utils/utils.js";
 
 const checkCategory = (categories: Category[], name: string) => {
   return !categories.some(
@@ -14,7 +14,7 @@ const checkCategory = (categories: Category[], name: string) => {
 
 const createCategory = async (category: Category): Promise<Category[]> => {
   try {
-    const categories = await readToFile(categoryPath);
+    const categories = await FileManager.readFromFile(categoryPath);
     category.categoryId = generateId();
     category.createdAt = getCurrentDateTimeStamp();
     const isUnique = checkCategory(categories, category.name);
@@ -23,7 +23,7 @@ const createCategory = async (category: Category): Promise<Category[]> => {
       return categories;
     }
     categories.push(category);
-    await writeToFile(categoryPath, categories);
+    await FileManager.writeToFile(categoryPath, categories);
     console.log("New category created.");
     return categories;
   } catch (err) {
@@ -35,7 +35,7 @@ const createCategory = async (category: Category): Promise<Category[]> => {
 // to get all the category data from the category.json file
 const readCategories = async (): Promise<Category[]> => {
   try {
-    const categories: Category[] = await readToFile(categoryPath);
+    const categories: Category[] = await FileManager.readFromFile(categoryPath);
     console.log("Categorires read from file.");
     return categories;
   } catch (err) {
@@ -47,7 +47,7 @@ const readCategories = async (): Promise<Category[]> => {
 // to get a category based on its id and name
 const readCategory = async (categoryid: string): Promise<Category | null> => {
   try {
-    const categoires: Category[] = await readToFile(categoryPath);
+    const categoires: Category[] = await FileManager.readFromFile(categoryPath);
     const categoryIndex = getCategoryIndex(categoires, categoryid);
     if (categoryIndex < 0) {
       return null;
@@ -74,7 +74,7 @@ const updateCategory = async (
   update: UpdateCategory
 ): Promise<Category[]> => {
   try {
-    const categoires: Category[] = await readToFile(categoryPath);
+    const categoires: Category[] = await FileManager.readFromFile(categoryPath);
     const categorIndex = getCategoryIndex(categoires, categoryid);
     if (categorIndex < 0) {
       console.log("No category found to update");
@@ -94,7 +94,7 @@ const updateCategory = async (
     const updateAt = getCurrentDateTimeStamp();
     category.updatedAt = updateAt;
     console.log("Category Updated");
-    await writeToFile(categoryPath, categoires);
+    await FileManager.writeToFile(categoryPath, categoires);
     return categoires;
   } catch (err) {
     console.log("Failed to update a category", err);
@@ -104,14 +104,14 @@ const updateCategory = async (
 
 const deleteCategory = async (categoryid: string): Promise<Category[]> => {
   try {
-    const categoires: Category[] = await readToFile(categoryPath);
+    const categoires: Category[] = await FileManager.readFromFile(categoryPath);
     const categorIndex = getCategoryIndex(categoires, categoryid);
     if (categorIndex < 0) {
       console.log("No Category found to remove");
       return categoires;
     }
     categoires.splice(categorIndex, 1);
-    await writeToFile(categoryPath, categoires);
+    await FileManager.writeToFile(categoryPath, categoires);
     return categoires;
   } catch (err) {
     console.log("Failed to delete category from the file", err);
