@@ -1,9 +1,9 @@
 import productRepository from "../repository/productRepositroy";
-import { myProduct, ProductOptions } from "../types";
+import { Product, ProductOptions } from "../common/productType";
 
-const getProducts = async (): Promise<myProduct[]> => {
+const getProducts = async (): Promise<Product[]> => {
   try {
-    let result: myProduct[] = await productRepository.getProducts();
+    let result: Product[] = await productRepository.getProducts();
     return result;
   } catch (err) {
     console.log("Failed to get the data of all products", err);
@@ -11,11 +11,9 @@ const getProducts = async (): Promise<myProduct[]> => {
   }
 };
 
-const getProductById = async (prouctid: string): Promise<myProduct | []> => {
+const getProductById = async (prouctid: string): Promise<Product | []> => {
   try {
-    const data: myProduct | [] = await productRepository.getProductById(
-      prouctid
-    );
+    const data: Product | [] = await productRepository.getProductById(prouctid);
     return data;
   } catch (err) {
     console.log("Failed to get the data of a product based on productid", err);
@@ -23,7 +21,7 @@ const getProductById = async (prouctid: string): Promise<myProduct | []> => {
   }
 };
 
-const createProduct = (restData: ProductOptions): myProduct => {
+const createProduct = (restData: ProductOptions): Product => {
   let { name, price, inventory, description, category } = restData;
   console.log(name, price, inventory);
   if (!name || !price || !inventory) {
@@ -42,13 +40,13 @@ const createProduct = (restData: ProductOptions): myProduct => {
 };
 const addProduct = async (
   restData: ProductOptions
-): Promise<{ newProduct: myProduct; totalProducts: myProduct[] }> => {
+): Promise<{ newProduct: Product; totalProducts: Product[] }> => {
   try {
     // Create a new product
-    const newProduct: myProduct = createProduct(restData);
+    const newProduct: Product = createProduct(restData);
 
     // Send product data to repository to add to file
-    const totalProducts: myProduct[] = await productRepository.addProduct(
+    const totalProducts: Product[] = await productRepository.addProduct(
       newProduct
     );
 
@@ -62,16 +60,14 @@ const addProduct = async (
 };
 
 // productsarray = [{name: , price: , inventory: }]
-const addProducts = async (
-  products: ProductOptions[]
-): Promise<myProduct[]> => {
+const addProducts = async (products: ProductOptions[]): Promise<Product[]> => {
   try {
-    let myProduct: myProduct[] = [];
+    let Product: Product[] = [];
     for (let product of products) {
       const newProduct = createProduct(product);
-      myProduct.push(newProduct);
+      Product.push(newProduct);
     }
-    const data: myProduct[] = await productRepository.addProducts(myProduct);
+    const data: Product[] = await productRepository.addProducts(Product);
     // console.log(productsarray);
     return data;
   } catch (err) {
@@ -83,9 +79,9 @@ const addProducts = async (
 const updateProduct = async (
   productid: string,
   update: ProductOptions
-): Promise<myProduct[]> => {
+): Promise<Product[]> => {
   try {
-    const newProducts: myProduct[] = await productRepository.updateProduct(
+    const newProducts: Product[] = await productRepository.updateProduct(
       productid,
       update
     );
@@ -96,9 +92,9 @@ const updateProduct = async (
   }
 };
 
-const deleteProduct = async (productid: string): Promise<myProduct[]> => {
+const deleteProduct = async (productid: string): Promise<Product[]> => {
   try {
-    const data: myProduct[] = await productRepository.deleteProduct(productid);
+    const data: Product[] = await productRepository.deleteProduct(productid);
     return data;
   } catch (err) {
     console.log("Failed to delete a product", err);

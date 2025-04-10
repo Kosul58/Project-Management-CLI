@@ -22,7 +22,7 @@ export function parseOptions(args: string[]) {
 }
 
 export const generateId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
 };
 
 export function getCurrentDateTimeStamp(): string {
@@ -35,11 +35,13 @@ export function getCurrentDateTimeStamp(): string {
   return `${year}-${month}-${day}-${hours}:${minutes}`;
 }
 
-export const productPath: string = "./src/database/data/products.json";
+export const productPath: string = "./src/data/products.json";
 
-export const cartPath: string = "./src/database/data/cart.json";
+export const cartPath: string = "./src/data/cart.json";
 
-export const orderPath: string = "./src/database/data/orders.json";
+export const orderPath: string = "./src/data/orders.json";
+
+export const categoryPath: string = "./src/data/category.json";
 
 export const helpinfo: string = `
 # CLI command list

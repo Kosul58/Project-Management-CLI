@@ -9,11 +9,12 @@ import {
   decreaseProductInventory,
 } from "../controllers/product";
 import { generateId, getCurrentDateTimeStamp } from "../utils/utils";
-import { myCart, myOrder } from "../types";
+import { Cart } from "../common/cartType";
+import { Order } from "../common/orderType";
 
-const getOrder = async (userid: string): Promise<myOrder[]> => {
+const getOrder = async (userid: string): Promise<Order[]> => {
   try {
-    const data: myOrder[] = await readToFile(orderPath);
+    const data: Order[] = await readToFile(orderPath);
     const userdata = data.filter((order) => order.userid === userid);
     if (userdata.length === 0) {
       console.log("No Order Found for the User");
@@ -28,26 +29,26 @@ const getOrder = async (userid: string): Promise<myOrder[]> => {
 };
 
 function singleCartFilter(
-  cartItems: myCart[],
+  cartItems: Cart[],
   userid: string,
   productid: string
-): myCart[] {
+): Cart[] {
   return cartItems.filter(
     (item) => item.userid === userid && item.productid === productid
   );
 }
 
 function multipleCartFilter(
-  cartItems: myCart[],
+  cartItems: Cart[],
   userid: string,
   products: string[]
-): myCart[] {
+): Cart[] {
   return cartItems.filter(
     (item) => item.userid === userid && products.includes(item.productid)
   );
 }
 
-const orderTotal = (items: myCart[]): number => {
+const orderTotal = (items: Cart[]): number => {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 };
 
@@ -57,20 +58,20 @@ const cartUpdate = async (products: string[], userid: string) => {
   }
 };
 
-const inventoryIncrease = async (items: myCart[]) => {
+const inventoryIncrease = async (items: Cart[]) => {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
     await increaseProductInventory(productid, quantity);
   }
 };
-const inventoryDecrease = async (items: myCart[]) => {
+const inventoryDecrease = async (items: Cart[]) => {
   for (let { productid, quantity } of items) {
     // console.log(productid, quantity);
     await decreaseProductInventory(productid, quantity);
   }
 };
 
-const createOrder = (userid: string): myOrder => {
+const createOrder = (userid: string): Order => {
   return {
     orderid: generateId(),
     userid,
@@ -84,16 +85,16 @@ const createOrder = (userid: string): myOrder => {
 const addOrder = async (
   userid: string,
   productid: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
-    let orders: myOrder[] = await readToFile(orderPath);
-    let cartItems: myCart[] = await readToFile(cartPath);
-    let items: myCart[] = singleCartFilter(cartItems, userid, productid);
+    let orders: Order[] = await readToFile(orderPath);
+    let cartItems: Cart[] = await readToFile(cartPath);
+    let items: Cart[] = singleCartFilter(cartItems, userid, productid);
     if (items.length === 0) {
       throw new Error("No matching products found in cart.");
     }
     const total: number = orderTotal(items);
-    let order: myOrder = createOrder(userid);
+    let order: Order = createOrder(userid);
     order.items = items;
     order.total = total;
     orders.push(order);
@@ -111,12 +112,12 @@ const addOrder = async (
 const addOrders = async (
   userid: string,
   products: string[]
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
-    let order: myOrder = createOrder(userid);
-    let orders: myOrder[] = await readToFile(orderPath);
-    let cartItems: myCart[] = await readToFile(cartPath);
-    let items: myCart[] = multipleCartFilter(cartItems, userid, products);
+    let order: Order = createOrder(userid);
+    let orders: Order[] = await readToFile(orderPath);
+    let cartItems: Cart[] = await readToFile(cartPath);
+    let items: Cart[] = multipleCartFilter(cartItems, userid, products);
     if (items.length === 0) {
       throw new Error("No matching products found in cart.");
     }
@@ -136,7 +137,7 @@ const addOrders = async (
 };
 
 const orderFilter = (
-  orders: myOrder[],
+  orders: Order[],
   orderid: string,
   userid: string,
   status: string
@@ -153,9 +154,9 @@ const updateOrderStatus = async (
   orderid: string,
   userid: string,
   status: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
-    let orders: myOrder[] = await readToFile(orderPath);
+    let orders: Order[] = await readToFile(orderPath);
     orders = orderFilter(orders, orderid, userid, status);
     await writeToFile(orderPath, orders);
     console.log(
@@ -171,10 +172,10 @@ const updateOrderStatus = async (
 const removeOrders = async (
   orderid: string,
   userid: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
-    let orders: myOrder[] = await readToFile(orderPath);
-    let canceledORder: myOrder | undefined = orders.find(
+    let orders: Order[] = await readToFile(orderPath);
+    let canceledORder: Order | undefined = orders.find(
       (order) => order.orderid === orderid && order.userid === userid
     );
     orders = orders.filter((order) => {
@@ -201,10 +202,10 @@ const removeOrder = async (
   orderid: string,
   userid: string,
   productid: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
     // console.log(orderid, userid, productid);
-    let orders: myOrder[] = await readToFile(orderPath);
+    let orders: Order[] = await readToFile(orderPath);
     // console.log(orders);
     console.log(orders);
     let order = orders.filter(

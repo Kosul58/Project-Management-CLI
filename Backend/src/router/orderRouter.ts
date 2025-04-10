@@ -7,7 +7,7 @@ import {
 } from "../controllers/order";
 import { parseOptions } from "../utils/utils";
 
-import { ProductOptions } from "../types";
+import { ProductOptions } from "../common/productType";
 
 const orderRouter = async (Command_Prompt: string[]): Promise<void> => {
   const values: ProductOptions = parseOptions(Command_Prompt.slice(2));

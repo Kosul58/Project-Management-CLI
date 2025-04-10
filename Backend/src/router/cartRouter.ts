@@ -9,8 +9,8 @@ import {
   viewCart,
 } from "../controllers/cart";
 
-import { myCart, ProductOptions, updateCart } from "../types";
-
+import { ProductOptions } from "../common/productType";
+import { UpdateCart } from "../common/cartType";
 import { parseOptions } from "../utils/utils";
 
 const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
@@ -55,12 +55,8 @@ const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
       break;
 
     case "update":
-      let myUpdate: updateCart = {
-        name: update.name,
-        price: update.price,
+      let myUpdate: UpdateCart = {
         quantity: Number(update.quantity),
-        description: update.description,
-        category: update.category,
       };
       const updateResult = await updateProduct(
         userid as string,

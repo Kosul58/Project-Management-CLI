@@ -1,9 +1,9 @@
 import orderServices from "../services/orderServices";
-import { orderResponse } from "../types";
+import { OrderResponse } from "../common/responseType";
 
 export const viewOrders = async (
   userid: string
-): Promise<orderResponse | []> => {
+): Promise<OrderResponse | []> => {
   try {
     const result = await orderServices.getOrder(userid);
     if (!result) {
@@ -22,7 +22,7 @@ export const viewOrders = async (
 export const createOrder = async (
   userid: string,
   productid: string
-): Promise<orderResponse | []> => {
+): Promise<OrderResponse | []> => {
   try {
     if (!userid) return { message: "Userid required", response: [] };
     const result = await orderServices.addOrder(userid, productid);
@@ -40,7 +40,7 @@ export const createOrder = async (
 export const createOrders = async (
   userid: string,
   products: string[]
-): Promise<orderResponse | []> => {
+): Promise<OrderResponse | []> => {
   try {
     if (!userid || products.length < 1)
       return { message: "Userid and products array required", response: [] };
@@ -61,7 +61,7 @@ export const updateOrderStatus = async (
   orderid: string,
   userid: string,
   status: string
-): Promise<orderResponse | []> => {
+): Promise<OrderResponse | []> => {
   try {
     if (!orderid || !userid || !status) {
       return {
@@ -95,7 +95,7 @@ export const updateOrderStatus = async (
 export const cancelOrder = async (
   orderid: string,
   userid: string
-): Promise<orderResponse | []> => {
+): Promise<OrderResponse | []> => {
   try {
     if (!userid || !orderid)
       return {
@@ -126,7 +126,7 @@ export const cancelAOrder = async (
   orderid: string,
   userid: string,
   productid: string
-): Promise<orderResponse | []> => {
+): Promise<OrderResponse | []> => {
   try {
     if (!orderid || !userid || !productid) {
       return {

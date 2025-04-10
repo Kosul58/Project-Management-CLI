@@ -1,7 +1,7 @@
 import orderRepository from "../repository/orderRepository";
-import { myOrder } from "../types";
+import { Order } from "../common/orderType";
 
-const getOrder = async (userid: string): Promise<myOrder[]> => {
+const getOrder = async (userid: string): Promise<Order[]> => {
   try {
     const data = await orderRepository.getOrder(userid);
     return data;
@@ -13,7 +13,7 @@ const getOrder = async (userid: string): Promise<myOrder[]> => {
 const addOrder = async (
   userid: string,
   productid: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
     const result = await orderRepository.addOrder(userid, productid);
     return result;
@@ -26,7 +26,7 @@ const addOrder = async (
 const addOrders = async (
   userid: string,
   products: string[]
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
     const result = await orderRepository.addOrders(userid, products);
     return result;
@@ -40,7 +40,7 @@ const updateOrderStatus = async (
   orderid: string,
   userid: string,
   status: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
     let orders = await orderRepository.updateOrderStatus(
       orderid,
@@ -58,7 +58,7 @@ const updateOrderStatus = async (
 const removeOrders = async (
   orderid: string,
   userid: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
     let orders = await orderRepository.removeOrders(orderid, userid);
     return orders;
@@ -73,7 +73,7 @@ const removeOrder = async (
   orderid: string,
   userid: string,
   productid: string
-): Promise<myOrder[]> => {
+): Promise<Order[]> => {
   try {
     // console.log(orderid, userid, productid);
     let orders = await orderRepository.removeOrder(orderid, userid, productid);

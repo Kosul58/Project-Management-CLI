@@ -190,3 +190,17 @@
 
 5. to update order status
    -> node index.js order statusupdate --orderid m98si0oes5wjamgpj9 --userid kos7 --status completed
+
+## Category part
+
+1. create category
+   -> node index.js category create --name name123
+   -> node index.js category create --name name123 --description description123 --slug slug123 --parentId parent123
+
+2. read categories
+   -> node index.js category read
+
+3. updaet a category
+   -> node index.js category update --categoryId category123 --name name123 --description description123
+4. delete a category
+   -> node index.js category delete --categoryId category123

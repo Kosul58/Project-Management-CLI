@@ -1,6 +1,7 @@
 import cartRouter from "./src/router/cartRouter";
 import orderRouter from "./src/router/orderRouter";
 import productRouter from "./src/router/productRouter";
+import categoryRouter from "./src/router/categoryRouter";
 import { helpinfo } from "./src/utils/utils";
 const Command_Prompt: string[] = process.argv.slice(2);
 console.log(Command_Prompt);
@@ -20,6 +21,10 @@ switch (Command_Prompt[0]) {
   case "order":
     console.log("Order Part");
     orderRouter(Command_Prompt);
+    break;
+  case "category":
+    console.log("Category Part");
+    categoryRouter(Command_Prompt);
     break;
   default:
     console.log("Invalid Prompt");

@@ -1,10 +1,11 @@
-import { myCart, myProduct, ProductOptions, updateCart } from "../types.js";
+import { Cart, UpdateCart } from "../common/cartType";
+import { Product } from "../common/productType";
 import { readToFile, writeToFile } from "../utils/fileManager.js";
 import { cartPath, productPath } from "../utils/utils.js";
 
-const getProducts = async (): Promise<myCart[]> => {
+const getProducts = async (): Promise<Cart[]> => {
   try {
-    const result: myCart[] = await readToFile(cartPath);
+    const result: Cart[] = await readToFile(cartPath);
     console.log("Product search in cart complete");
     return result;
   } catch (err) {
@@ -14,7 +15,7 @@ const getProducts = async (): Promise<myCart[]> => {
 };
 
 const productIndex = (
-  products: myCart[],
+  products: Cart[],
   productid: string,
   userid: string
 ): number => {
@@ -26,9 +27,9 @@ const productIndex = (
 const getProductById = async (
   productid: string,
   userid: string
-): Promise<myCart> => {
+): Promise<Cart> => {
   try {
-    let result: myCart[] = await readToFile(cartPath);
+    let result: Cart[] = await readToFile(cartPath);
     const index = productIndex(result, productid, userid);
     return result[index];
   } catch (err) {
@@ -37,9 +38,9 @@ const getProductById = async (
   }
 };
 
-const getProduct = async (userid: string): Promise<myCart[]> => {
+const getProduct = async (userid: string): Promise<Cart[]> => {
   try {
-    let result: myCart[] = await readToFile(cartPath);
+    let result: Cart[] = await readToFile(cartPath);
     console.log("Product search in cart complete");
     return result.filter((p) => p.userid === userid);
   } catch (err) {
@@ -51,11 +52,11 @@ const getProduct = async (userid: string): Promise<myCart[]> => {
 const cartCheck = async (
   productid: string,
   userid: string
-): Promise<myCart | undefined> => {
+): Promise<Cart | undefined> => {
   // get all products form the products.json file
-  const products: myCart[] = await readToFile(cartPath);
+  const products: Cart[] = await readToFile(cartPath);
   // search for a product to add in cart
-  const productToAdd: myCart | undefined = products.find(
+  const productToAdd: Cart | undefined = products.find(
     (product) => product.productid === productid && product.userid === userid
   );
   return productToAdd;
@@ -64,9 +65,9 @@ const cartCheck = async (
 const productAvailable = async (
   productid: string,
   quantity: number
-): Promise<myProduct> => {
-  const products: myProduct[] = await readToFile(productPath);
-  const productToAdd: myProduct | undefined = products.find(
+): Promise<Product> => {
+  const products: Product[] = await readToFile(productPath);
+  const productToAdd: Product | undefined = products.find(
     (product) => product.productid === productid
   );
   if (!productToAdd) {
@@ -84,20 +85,20 @@ const addProduct = async (
   userid: string,
   productId: string,
   quantity: number
-): Promise<myCart[]> => {
+): Promise<Cart[]> => {
   try {
     //check if product is in product.json file or not
-    const productToAdd: myProduct = await productAvailable(productId, quantity);
+    const productToAdd: Product = await productAvailable(productId, quantity);
 
     //check if product is already in cart or not
     const isProoductInCart = await cartCheck(productId, userid);
 
     //get all items in the cart
-    let cartItems: myCart[] = await readToFile(cartPath);
+    let cartItems: Cart[] = await readToFile(cartPath);
 
     if (!isProoductInCart) {
       //if no product in the cart add the product to cart
-      const itemToCart: myCart = {
+      const itemToCart: Cart = {
         userid: userid,
         productid: productToAdd.productid,
         name: productToAdd.name,
@@ -133,10 +134,10 @@ const addProduct = async (
 const removeProduct = async (
   userid: string,
   productid: string
-): Promise<myCart[]> => {
+): Promise<Cart[]> => {
   try {
-    const cartitems: myCart[] = await readToFile(cartPath);
-    let newCart: myCart[];
+    const cartitems: Cart[] = await readToFile(cartPath);
+    let newCart: Cart[];
     newCart = cartitems.filter((item) => {
       if (item.userid !== userid || item.productid !== productid) return item;
     });
@@ -157,10 +158,10 @@ const removeProduct = async (
 const removeProducts = async (
   userid: string,
   products: string[]
-): Promise<myCart[]> => {
+): Promise<Cart[]> => {
   try {
-    const cartitems: myCart[] = await readToFile(cartPath);
-    let newCart: myCart[];
+    const cartitems: Cart[] = await readToFile(cartPath);
+    let newCart: Cart[];
     if (products.length < 1) {
       newCart = cartitems.filter((item) => {
         if (item.userid !== userid) return item;
@@ -209,11 +210,11 @@ const removeProducts = async (
 const updateProduct = async (
   uid: string,
   pid: string,
-  update: updateCart
-): Promise<myCart[]> => {
+  update: UpdateCart
+): Promise<Cart[]> => {
   try {
-    const cartItems: myCart[] = await readToFile(cartPath);
-    let { price, quantity, name, description, category } = update;
+    const cartItems: Cart[] = await readToFile(cartPath);
+    let { quantity } = update;
     const productToUpdate = await cartCheck(pid, uid);
     if (!productToUpdate) throw new Error("No product to update");
     // const index = productIndex(cartItems, pid, uid);
@@ -226,7 +227,7 @@ const updateProduct = async (
     // if (description) product.description = description;
     // if (category) product.category = category;
     // console.log(product);
-    const updatedCart: myCart[] = cartItems.map((product) => {
+    const updatedCart: Cart[] = cartItems.map((product) => {
       if (product.productid === pid && product.userid === uid) {
         // if (product.quantity <= quantity) {
         //   quanityChange = quantity - product.quantity;
@@ -250,7 +251,7 @@ const updateProduct = async (
 
 const totalCartPrice = async (userid: string): Promise<number> => {
   try {
-    let cartItems: myCart[] = await readToFile(cartPath);
+    let cartItems: Cart[] = await readToFile(cartPath);
     cartItems = cartItems.filter((p) => p.userid === userid);
     const total = cartItems.reduce((a, item) => {
       return (a = a + item.quantity * item.price);

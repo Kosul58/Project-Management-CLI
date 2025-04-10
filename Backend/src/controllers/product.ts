@@ -1,7 +1,8 @@
-import productService from "../services/productServices.js";
-import { myProduct, ProductOptions, productResponse } from "../types.js";
+import productService from "../services/productServices";
+import { Product, ProductOptions } from "../common/productType";
+import { ProductResponse } from "../common/responseType";
 
-export const getProducts = async (): Promise<productResponse | []> => {
+export const getProducts = async (): Promise<ProductResponse | []> => {
   try {
     const response = await productService.getProducts();
     if (response.length === 0) {
@@ -23,7 +24,7 @@ export const getProducts = async (): Promise<productResponse | []> => {
 
 export const getProductById = async (
   productid: string
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     const data = await productService.getProductById(productid);
     if (Object.keys(data).length > 0) {
@@ -45,13 +46,12 @@ export const getProductById = async (
 
 export const addProduct = async (
   restData: ProductOptions
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     let { name, price, inventory } = restData;
     if (!name || !price || !inventory) {
       return { message: "Enter all fields", response: [] };
     }
-
     const result = await productService.addProduct(restData);
     if (!result) {
       return {
@@ -71,7 +71,7 @@ export const addProduct = async (
 
 export const addProducts = async (
   products: ProductOptions[]
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     if (products.length == 0) {
       return {
@@ -100,7 +100,7 @@ export const addProducts = async (
 export const updateProduct = async (
   productid: string,
   update: ProductOptions
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     if (!productid || !update) {
       return { message: "Enter all field", response: [] };
@@ -126,7 +126,7 @@ export const updateProduct = async (
 
 export const deleteProduct = async (
   productid: string
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     if (!productid) {
       console.log("Product id required");
@@ -146,7 +146,7 @@ export const deleteProduct = async (
 export const increaseProductInventory = async (
   id: string,
   quantity: number
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     if (!id || !quantity) {
       console.log("Both productid and qunatity required");
@@ -173,7 +173,7 @@ export const increaseProductInventory = async (
 export const decreaseProductInventory = async (
   id: string,
   quantity: number
-): Promise<productResponse | []> => {
+): Promise<ProductResponse | []> => {
   try {
     if (!id || !quantity) {
       console.log("Both productid and qunatity required");

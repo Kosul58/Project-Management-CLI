@@ -1,0 +1,32 @@
+[
+  {
+    "categoryId": "adf45asdga5weeasdf5",
+    "name": "Electronics",
+    "description": "",
+    "slug": "",
+    "parentId": "",
+    "isActive": true,
+    "createdAt": "2025-04-10-10:35",
+    "updatedAt": ""
+  },
+  {
+    "categoryId": "m9b6yvheytur9j652t",
+    "name": "Clothes",
+    "description": "",
+    "slug": "",
+    "parentId": "",
+    "isActive": true,
+    "createdAt": "2025-04-10-15:49",
+    "updatedAt": ""
+  },
+  {
+    "categoryId": "m9b7263lbjnljdpgop",
+    "name": "Fashion",
+    "description": "",
+    "slug": "",
+    "parentId": "",
+    "isActive": true,
+    "createdAt": "2025-04-10-15:52",
+    "updatedAt": ""
+  }
+]

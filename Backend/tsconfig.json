@@ -3,7 +3,7 @@
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "Node",
-    "outDir": "mist",
+    "outDir": "/dist",
     "strict": true,
     "esModuleInterop": true,
     "types": ["node"]

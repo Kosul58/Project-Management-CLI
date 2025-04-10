@@ -1,7 +1,8 @@
 import cartRepositroy from "../repository/cartRepository";
-import { myCart, ProductOptions, updateCart } from "../types";
+import { Cart, UpdateCart } from "../common/cartType";
+import { ProductOptions } from "../common/productType";
 
-export const getProducts = async (): Promise<myCart[]> => {
+export const getProducts = async (): Promise<Cart[]> => {
   try {
     const result = await cartRepositroy.getProducts();
     return result;
@@ -14,7 +15,7 @@ export const getProducts = async (): Promise<myCart[]> => {
 export const getProductById = async (
   productid: string,
   userid: string
-): Promise<myCart> => {
+): Promise<Cart> => {
   try {
     const result = await cartRepositroy.getProductById(productid, userid);
     return result;
@@ -27,7 +28,7 @@ export const getProductById = async (
   }
 };
 
-export const getProduct = async (userid: string): Promise<myCart[]> => {
+export const getProduct = async (userid: string): Promise<Cart[]> => {
   try {
     const result = await cartRepositroy.getProduct(userid);
     return result;
@@ -41,7 +42,7 @@ export const addProduct = async (
   userid: string,
   productId: string,
   quantity: number
-): Promise<myCart[]> => {
+): Promise<Cart[]> => {
   try {
     const cartItems = await cartRepositroy.addProduct(
       userid,
@@ -58,7 +59,7 @@ export const addProduct = async (
 export const removeProduct = async (
   userid: string,
   productid: string
-): Promise<myCart[]> => {
+): Promise<Cart[]> => {
   try {
     const newCart = await cartRepositroy.removeProduct(userid, productid);
     return newCart;
@@ -71,7 +72,7 @@ export const removeProduct = async (
 export const removeProducts = async (
   userid: string,
   products: string[]
-): Promise<myCart[]> => {
+): Promise<Cart[]> => {
   try {
     const newCart = await cartRepositroy.removeProducts(userid, products);
     return newCart;
@@ -97,22 +98,16 @@ export const removeProducts = async (
 export const updateProduct = async (
   uid: string,
   pid: string,
-  update: updateCart
+  update: UpdateCart
 ) => {
   try {
     console.log(update);
     //cleans the update
-    const cleanUpdate = Object.fromEntries(
-      Object.entries(update).filter(
-        ([_, v]) => v !== null && v !== undefined && !Number.isNaN(v)
-      )
-    );
-    console.log(cleanUpdate);
-    const updatedCart = await cartRepositroy.updateProduct(
-      uid,
-      pid,
-      cleanUpdate
-    );
+    // const cleanUpdate = {
+    //   quantity: 1,
+    // };
+    // if (update.quantity) cleanUpdate.quantity = update.quantity;
+    const updatedCart = await cartRepositroy.updateProduct(uid, pid, update);
     return updatedCart;
   } catch (err) {
     console.log("Failed to update a product in the cart of a user", err);

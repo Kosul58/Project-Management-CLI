@@ -1,7 +1,8 @@
 import cartServices from "../services/cartServices.js";
-import { cartResponse, myCart, updateCart } from "../types.js";
+import { Cart, UpdateCart } from "../common/cartType.js";
+import { CartResponse } from "../common/responseType.js";
 
-export const viewCart = async (): Promise<cartResponse | []> => {
+export const viewCart = async (): Promise<CartResponse | []> => {
   try {
     const data = await cartServices.getProducts();
     if (data.length > 0)
@@ -24,7 +25,7 @@ export const viewCart = async (): Promise<cartResponse | []> => {
 export const viewCartProduct = async (
   productid: string,
   userid: string
-): Promise<cartResponse | []> => {
+): Promise<CartResponse | []> => {
   try {
     const data = await cartServices.getProductById(productid, userid);
     if (Object.keys(data).length > 0)
@@ -46,7 +47,7 @@ export const viewCartProduct = async (
 
 export const viewCartProducts = async (
   userid: string
-): Promise<cartResponse | []> => {
+): Promise<CartResponse | []> => {
   try {
     const data = await cartServices.getProduct(userid);
     if (data.length > 0)
@@ -70,7 +71,7 @@ export const addProduct = async (
   userid: string,
   productId: string,
   quantity: number
-): Promise<cartResponse | []> => {
+): Promise<CartResponse | []> => {
   try {
     if (!userid || !productId || !quantity) {
       return {
@@ -100,7 +101,7 @@ export const addProduct = async (
 export const removeProduct = async (
   userid: string,
   productid: string
-): Promise<cartResponse | []> => {
+): Promise<CartResponse | []> => {
   try {
     if (!userid) {
       return {
@@ -131,7 +132,7 @@ export const removeProduct = async (
 export const removeProducts = async (
   userid: string,
   productids: string[]
-): Promise<cartResponse | []> => {
+): Promise<CartResponse | []> => {
   try {
     if (!userid || productids.length === 0) {
       return {
@@ -189,10 +190,10 @@ export const removeProducts = async (
 export const updateProduct = async (
   userid: string,
   productid: string,
-  update: updateCart
+  update: UpdateCart
 ) => {
   try {
-    if (!userid || !productid || !update) {
+    if (!userid || !productid || !update.quantity) {
       return {
         message: "Enter all fields",
         response: [],

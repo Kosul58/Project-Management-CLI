@@ -1,10 +1,11 @@
-import { myProduct, ProductOptions } from "../types";
+import { Product, ProductOptions } from "../common/productType";
+import { createCategory } from "../controllers/category";
 import { readToFile, writeToFile } from "../utils/fileManager";
 import { generateId, productPath } from "../utils/utils";
 
-const getProducts = async (): Promise<myProduct[]> => {
+const getProducts = async (): Promise<Product[]> => {
   try {
-    const result: myProduct[] = await readToFile(productPath);
+    const result: Product[] = await readToFile(productPath);
     console.log("Product search complete");
     return result;
   } catch (err) {
@@ -23,9 +24,9 @@ const getProductIndex = (
   return productIndex;
 };
 
-const getProductById = async (productid: string): Promise<myProduct | []> => {
+const getProductById = async (productid: string): Promise<Product | []> => {
   try {
-    const data: myProduct[] = await readToFile(productPath);
+    const data: Product[] = await readToFile(productPath);
     const productIndex: number = getProductIndex(data, productid);
     console.log(productIndex);
     if (productIndex < 0) {
@@ -41,9 +42,9 @@ const getProductById = async (productid: string): Promise<myProduct | []> => {
   }
 };
 
-const addProduct = async (product: myProduct): Promise<myProduct[]> => {
+const addProduct = async (product: Product): Promise<Product[]> => {
   try {
-    const products: myProduct[] = await readToFile(productPath);
+    const products: Product[] = await readToFile(productPath);
     product.productid = generateId();
     const productindex: number = getProductIndex(products, product.productid);
     if (productindex >= 0) {
@@ -52,6 +53,13 @@ const addProduct = async (product: myProduct): Promise<myProduct[]> => {
     }
     let totalProducts = [...products, product];
     await writeToFile(productPath, totalProducts);
+    if (product.category) {
+      const category = {
+        name: product.category,
+        parentId: "",
+      };
+      await createCategory(category);
+    }
     console.log("Product addition complete");
     return totalProducts;
   } catch (err) {
@@ -60,10 +68,10 @@ const addProduct = async (product: myProduct): Promise<myProduct[]> => {
   }
 };
 
-const addProducts = async (products: myProduct[]): Promise<myProduct[]> => {
+const addProducts = async (products: Product[]): Promise<Product[]> => {
   try {
-    const productsInDb: myProduct[] = await readToFile(productPath);
-    let totalProducts: myProduct[] = [...productsInDb];
+    const productsInDb: Product[] = await readToFile(productPath);
+    let totalProducts: Product[] = [...productsInDb];
     for (let product of products) {
       product.productid = generateId();
       const productindex = getProductIndex(products, product.productid);
@@ -86,12 +94,12 @@ const addProducts = async (products: myProduct[]): Promise<myProduct[]> => {
 const updateProduct = async (
   productid: string,
   update: ProductOptions
-): Promise<myProduct[]> => {
+): Promise<Product[]> => {
   try {
-    const products: myProduct[] = await readToFile(productPath);
+    const products: Product[] = await readToFile(productPath);
     const { name, price, description, category, inventory } = update;
     let productIndex: number = getProductIndex(products, productid);
-    let product: myProduct = products[productIndex];
+    let product: Product = products[productIndex];
     if (productIndex < 0) {
       throw new Error("No product found");
     }
@@ -107,6 +115,13 @@ const updateProduct = async (
     //   }
     //   return product;
     // });
+    if (product.category) {
+      const category = {
+        name: product.category,
+        parentId: "",
+      };
+      await createCategory(category);
+    }
     await writeToFile(productPath, products);
     console.log("Product update complete");
     return products;
@@ -116,10 +131,10 @@ const updateProduct = async (
   }
 };
 
-const deleteProduct = async (productid: string): Promise<myProduct[]> => {
+const deleteProduct = async (productid: string): Promise<Product[]> => {
   try {
-    const products: myProduct[] = await readToFile(productPath);
-    const totalProducts: myProduct[] = products.filter(
+    const products: Product[] = await readToFile(productPath);
+    const totalProducts: Product[] = products.filter(
       (product: ProductOptions) => product.productid !== productid
     );
     await writeToFile(productPath, totalProducts);
@@ -142,10 +157,10 @@ const deleteProduct = async (productid: string): Promise<myProduct[]> => {
 const increaseProductInventory = async (
   id: string,
   quantity: string | number
-): Promise<myProduct[]> => {
+): Promise<Product[]> => {
   try {
-    let products: myProduct[] = await readToFile(productPath);
-    products = products.map((product: myProduct) => {
+    let products: Product[] = await readToFile(productPath);
+    products = products.map((product: Product) => {
       if (product.productid === id) {
         let inventory: number = Number(product.inventory) + Number(quantity);
         return {
@@ -167,10 +182,10 @@ const increaseProductInventory = async (
 const decreaseProductInventory = async (
   id: string,
   quantity: number
-): Promise<myProduct[]> => {
+): Promise<Product[]> => {
   try {
-    let products: myProduct[] = await readToFile(productPath);
-    products = products.map((product: myProduct) => {
+    let products: Product[] = await readToFile(productPath);
+    products = products.map((product: Product) => {
       if (product.productid === id) {
         let inventory;
         inventory = Number(product.inventory) - quantity;

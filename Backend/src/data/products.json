@@ -1,0 +1,112 @@
+[
+  {
+    "productid": "1",
+    "name": "Tablet",
+    "price": 800,
+    "description": "Samsung tablet",
+    "category": "Electronics",
+    "inventory": 230
+  },
+  {
+    "productid": "2",
+    "name": "Wireless Mouse",
+    "price": 35,
+    "description": "Ergonomic wireless mouse with adjustable DPI and long battery life.",
+    "category": "Accessories",
+    "inventory": 196
+  },
+  {
+    "productid": "3",
+    "name": "Mechanical Keyboard",
+    "price": 80,
+    "description": "RGB mechanical keyboard with blue switches for a satisfying typing experience.",
+    "category": "Accessories",
+    "inventory": 230
+  },
+  {
+    "productid": "4",
+    "name": "Smartphone X",
+    "price": 999,
+    "description": "A flagship smsartphone with an amazing camera and all-day battery life.",
+    "category": "Electronics",
+    "inventory": 150
+  },
+  {
+    "productid": "5",
+    "name": "Bluetooth Headphones",
+    "price": 120,
+    "description": "Noise-canceling over-ear Bluetooth headphones with deep bass.",
+    "category": "Audio",
+    "inventory": 355
+  },
+  {
+    "productid": "6",
+    "name": "Gaming Monitor 27",
+    "price": 300,
+    "description": "27-inch gaming monitor with a 144Hz refresh rate and 1ms response time.",
+    "category": "Electronics",
+    "inventory": 200
+  },
+  {
+    "productid": "7",
+    "name": "4K Action Camera",
+    "price": 250,
+    "description": "Waterproof action camera with 4K video recording and image stabilization.",
+    "category": "Cameras",
+    "inventory": 180
+  },
+  {
+    "productid": "8",
+    "name": "Portable Power Bank",
+    "price": 50,
+    "description": "10,000mAh power bank with fast charging and dual USB ports.",
+    "category": "Accessories",
+    "inventory": 665
+  },
+  {
+    "productid": "9",
+    "name": "Smartwatch Series 5",
+    "price": 350,
+    "description": "Advanced smartwatch with fitness tracking, heart rate monitoring, and GPS.",
+    "category": "Wearables",
+    "inventory": 220
+  },
+  {
+    "productid": "10",
+    "name": "Wireless Earbuds",
+    "price": 99,
+    "description": "True wireless earbuds with touch controls and noise isolation.",
+    "category": "Audio",
+    "inventory": 960
+  },
+  {
+    "productid": "122",
+    "name": "Laptop Pro 15",
+    "price": 1200,
+    "inventory": 100
+  },
+  {
+    "productid": "m90xrstm0qj9ahgvht4",
+    "name": "kaper",
+    "price": 55,
+    "inventory": 55
+  },
+  {
+    "productid": "m918xpqsq9d1u6sgx3",
+    "name": "momoss",
+    "price": 2222,
+    "inventory": 10222
+  },
+  {
+    "name": "Fantech",
+    "price": 5000,
+    "inventory": 80,
+    "productid": "m927eg4x86g80h5w9i"
+  },
+  {
+    "productid": "m99b5sutqiwulu03gd8",
+    "name": "Lenovo legion 5",
+    "price": 1300,
+    "inventory": 700
+  }
+]
