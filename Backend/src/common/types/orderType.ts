@@ -1,4 +1,4 @@
-import { Cart } from "./cartType";
+import { CartProduct } from "./cartType.js";
 
 export enum Status {
   Pending = "Pending",
@@ -13,6 +13,6 @@ export interface Order {
   userid: string;
   timestamp: string;
   status: Status;
-  items: Cart[];
+  items: CartProduct[];
   total: number;
 }

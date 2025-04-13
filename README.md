@@ -167,7 +167,7 @@
    (removes products by matching userid)
 
 4. update a product for a user in the cart
-   -> node index.js cart update --userid kos7 --productid 3 --price 90
+   -> node index.js cart update --userid kos7 --productid 3 --quantity 90
 
 5. calculate total price of all products in the cart of a user
    -> node index.js cart total --userid kos7

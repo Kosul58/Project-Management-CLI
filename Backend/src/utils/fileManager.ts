@@ -16,7 +16,6 @@ class FileManager {
       throw err;
     }
   }
-
   // Method to write data to file
   async writeToFile(path: string, data: ProductOptions[]) {
     try {

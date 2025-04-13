@@ -143,6 +143,38 @@ export const deleteProduct = async (
   }
 };
 
+export const modifyInventory = async (
+  id: string,
+  quantity: number,
+  modification: "increase" | "decrease"
+): Promise<ProductResponse | []> => {
+  try {
+    if (!id || !quantity || modification) {
+      console.log("Provide all required fields");
+      return [];
+    }
+    let result = await productService.modifyInventory(
+      id,
+      quantity,
+      modification
+    );
+    if (result.length > 0) {
+      return {
+        message: "Inventory modification Successfully",
+        response: result,
+      };
+    } else {
+      return {
+        message: "Invetory modification Unsuccessfull",
+        response: [],
+      };
+    }
+  } catch (err) {
+    console.error("Failed to increase a product inventory", err);
+    return [];
+  }
+};
+
 export const increaseProductInventory = async (
   id: string,
   quantity: number

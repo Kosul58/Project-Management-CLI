@@ -1,6 +1,11 @@
 export interface Cart {
-  productid: string;
   userid: string;
+  products: CartProduct[];
+}
+
+export interface CartProduct {
+  userid: string;
+  productid: string;
   name: string;
   price: number;
   quantity: number;

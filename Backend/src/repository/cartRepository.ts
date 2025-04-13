@@ -1,279 +1,271 @@
-import { Cart, UpdateCart } from "../common/types/cartType.js";
+import { Cart, CartProduct, UpdateCart } from "../common/types/cartType.js";
 import { Product } from "../common/types/productType.js";
 import FileManager from "../utils/fileManager.js";
 import { cartPath, productPath } from "../utils/utils.js";
 
-const getProducts = async (): Promise<Cart[]> => {
-  try {
-    const result: Cart[] = await FileManager.readFromFile(cartPath);
-    console.log("Product search in cart complete");
-    return result;
-  } catch (err) {
-    console.log("Failed to get products from cart", err);
-    throw err;
+class CartRepository {
+  private readonly cartPath: string;
+  private readonly productPath: string;
+  private cart: Cart[] = [];
+  private products: Product[] = [];
+
+  constructor() {
+    this.productPath = productPath;
+    this.cartPath = cartPath;
   }
-};
 
-const productIndex = (
-  products: Cart[],
-  productid: string,
-  userid: string
-): number => {
-  return products.findIndex(
-    (p) => p.userid === userid && p.productid === productid
-  );
-};
-
-const getProductById = async (
-  productid: string,
-  userid: string
-): Promise<Cart> => {
-  try {
-    let result: Cart[] = await FileManager.readFromFile(cartPath);
-    const index = productIndex(result, productid, userid);
-    return result[index];
-  } catch (err) {
-    console.log("Failed to get product by id for a user from cart", err);
-    throw err;
+  private async loadCart(): Promise<void> {
+    this.cart = await FileManager.readFromFile(this.cartPath);
   }
-};
 
-const getProduct = async (userid: string): Promise<Cart[]> => {
-  try {
-    let result: Cart[] = await FileManager.readFromFile(cartPath);
-    console.log("Product search in cart complete");
-    return result.filter((p) => p.userid === userid);
-  } catch (err) {
-    console.log("failed to get the products of a user in cart", err);
-    throw err;
+  private async saveCart(cart: Cart[]): Promise<void> {
+    await FileManager.writeToFile(this.cartPath, cart);
+    this.cart = cart;
   }
-};
 
-const cartCheck = async (
-  productid: string,
-  userid: string
-): Promise<Cart | undefined> => {
-  // get all products form the products.json file
-  const products: Cart[] = await FileManager.readFromFile(cartPath);
-  // search for a product to add in cart
-  const productToAdd: Cart | undefined = products.find(
-    (product) => product.productid === productid && product.userid === userid
-  );
-  return productToAdd;
-};
+  private async loadProduct(): Promise<void> {
+    this.products = await FileManager.readFromFile(this.productPath);
+  }
 
-const productAvailable = async (
-  productid: string,
-  quantity: number
-): Promise<Product> => {
-  const products: Product[] = await FileManager.readFromFile(productPath);
-  const productToAdd: Product | undefined = products.find(
-    (product) => product.productid === productid
-  );
-  if (!productToAdd) {
-    throw new Error(
-      "No matching products found in products.json to add to cart"
+  // check if the product is in products file
+  private async productAvailable(
+    productid: string,
+    quantity: number
+  ): Promise<Product> {
+    const productToAdd: Product | undefined = this.products.find(
+      (product) => product.productid === productid
     );
-  }
-  if (productToAdd.inventory < Number(quantity)) {
-    throw new Error("Not enough inventory");
-  }
-  return productToAdd;
-};
-
-const addProduct = async (
-  userid: string,
-  productId: string,
-  quantity: number
-): Promise<Cart[]> => {
-  try {
-    //check if product is in product.json file or not
-    const productToAdd: Product = await productAvailable(productId, quantity);
-
-    //check if product is already in cart or not
-    const isProoductInCart = await cartCheck(productId, userid);
-
-    //get all items in the cart
-    let cartItems: Cart[] = await FileManager.readFromFile(cartPath);
-
-    if (!isProoductInCart) {
-      //if no product in the cart add the product to cart
-      const itemToCart: Cart = {
-        userid: userid,
-        productid: productToAdd.productid,
-        name: productToAdd.name,
-        price: productToAdd.price,
-        quantity: Number(quantity),
-      };
-      cartItems.push(itemToCart);
-    } else {
-      //if product in the cart update the product to cart
-      cartItems = cartItems.map((item) => {
-        if (item.productid === productId) {
-          return {
-            userid: userid,
-            productid: item.productid,
-            name: item.name,
-            price: item.price,
-            quantity: Number(item.quantity) + Number(quantity),
-          };
-        }
-        return item;
-      });
+    if (!productToAdd) {
+      throw new Error(
+        "No matching products found in products.json to add to cart"
+      );
     }
-    // console.log(cartItems);
-    await FileManager.writeToFile(cartPath, cartItems);
-    console.log("Product addition in cart complete");
-    return cartItems;
-  } catch (err) {
-    console.log("Failed to add product to the cart of a user", err);
-    throw err;
+    if (productToAdd.inventory < Number(quantity)) {
+      throw new Error("Not enough inventory");
+    }
+    return productToAdd;
   }
-};
 
-const removeProduct = async (
-  userid: string,
-  productid: string
-): Promise<Cart[]> => {
-  try {
-    const cartitems: Cart[] = await FileManager.readFromFile(cartPath);
-    let newCart: Cart[];
-    newCart = cartitems.filter((item) => {
-      if (item.userid !== userid || item.productid !== productid) return item;
-    });
-    if (cartitems.length === newCart.length) {
-      throw new Error("No Items to remove from the cart");
-    }
-    await FileManager.writeToFile(cartPath, newCart);
-    console.log(`Product with id ${productid} removed successfully`);
-    console.log("Prodcut removal from cart complete");
-    return newCart;
-  } catch (err) {
-    console.log("Failed to remove a product from the cart of a user", err);
-    throw err;
-  }
-};
-
-//proucts = [productid1 , productid2]
-const removeProducts = async (
-  userid: string,
-  products: string[]
-): Promise<Cart[]> => {
-  try {
-    const cartitems: Cart[] = await FileManager.readFromFile(cartPath);
-    let newCart: Cart[];
-    if (products.length < 1) {
-      newCart = cartitems.filter((item) => {
-        if (item.userid !== userid) return item;
-      });
-    } else {
-      newCart = cartitems.filter((item) => {
-        if (item.userid !== userid && !products.includes(item.productid))
-          return item;
-      });
-    }
-    if (cartitems.length === newCart.length) {
-      console.log("No Items to remove from the cart");
-      return cartitems;
-    }
-    await FileManager.writeToFile(cartPath, newCart);
-    console.log("Products removal from cart complete");
-    return newCart;
-  } catch (err) {
-    console.log(
-      "Failed to remove multiple products from the cart of a user",
-      err
+  // check if the cart exists
+  private cartCheck(userid: string): Cart {
+    // get all products form the cart.json file
+    // search for a product to add in cart
+    const cart: Cart | undefined = this.cart.find(
+      (product) => product.userid === userid
     );
-    throw err;
+    if (!cart) throw new Error("No cart found for the user");
+    return cart;
   }
-};
 
-// const removeAllProduct = async (userid) => {
-//   try {
-//     const cartitems = await readToFile(cartPath);
-//     let newCart;
+  public async getProducts(): Promise<Cart[]> {
+    try {
+      await this.loadCart();
+      console.log("Product search in cart complete");
+      return this.cart;
+    } catch (err) {
+      console.log("Failed to get products from cart", err);
+      throw err;
+    }
+  }
 
-//     newCart = cartitems.filter((item) => item.userid !== userid);
-
-//     if (cartitems.length === newCart.length) {
-//       throw new Error("No Items to remove from the cart");
-//     }
-//     await writeToFile(cartPath, newCart);
-//     console.log(`Product removed successfully`);
-//     return newCart;
-//   } catch (err) {
-//     console.log("Error in cart repository removeall", err);
-//     throw err;
-//   }
-// };
-
-const updateProduct = async (
-  uid: string,
-  pid: string,
-  update: UpdateCart
-): Promise<Cart[]> => {
-  try {
-    const cartItems: Cart[] = await FileManager.readFromFile(cartPath);
-    let { quantity } = update;
-    const productToUpdate = await cartCheck(pid, uid);
-    if (!productToUpdate) throw new Error("No product to update");
-    // const index = productIndex(cartItems, pid, uid);
-    // if (index < 0) throw new Error("Product not found in cart");
-    // const product = cartItems[index];
-    // console.log(product);
-    // if (price) product.price = price;
-    // if (quantity) product.quantity = quantity;
-    // if (name) product.name = name;
-    // if (description) product.description = description;
-    // if (category) product.category = category;
-    // console.log(product);
-    const updatedCart: Cart[] = cartItems.map((product) => {
-      if (product.productid === pid && product.userid === uid) {
-        // if (product.quantity <= quantity) {
-        //   quanityChange = quantity - product.quantity;
-        // } else if (product.quantity > quantity) {
-        //   quanityChange = `${product.quantity - quantity}`;
-        // }
-        return { ...product, ...update };
+  public async getProductById(
+    productid: string,
+    userid: string
+  ): Promise<CartProduct | undefined> {
+    try {
+      await this.loadCart();
+      const userCart = this.cart.find((entry) => entry.userid === userid);
+      if (!userCart) {
+        console.log("No Cart Found for the given user");
+        return userCart;
       }
-      return product;
-    });
-    // console.log(quanityChange);
-    // await updateAProductInventory(id, quanityChange);
-    await FileManager.writeToFile(cartPath, updatedCart);
-    console.log("Cart updated succesfully");
-    return updatedCart;
-  } catch (err) {
-    console.log("Failed to update a product in the cart", err);
-    throw err;
+      return userCart.products.find(
+        (product) => product.productid === productid
+      );
+    } catch (err) {
+      console.log("Failed to get product by id for a user from cart", err);
+      throw err;
+    }
   }
-};
 
-const totalCartPrice = async (userid: string): Promise<number> => {
-  try {
-    let cartItems: Cart[] = await FileManager.readFromFile(cartPath);
-    cartItems = cartItems.filter((p) => p.userid === userid);
-    const total = cartItems.reduce((a, item) => {
-      return (a = a + item.quantity * item.price);
-    }, 0);
-    console.log("Total price calculation complete");
-    return total;
-  } catch (err) {
-    console.log(
-      "Failed to calculate total price of products in the cart of a user",
-      err
-    );
-    throw err;
+  public async getProduct(userid: string): Promise<Cart[]> {
+    try {
+      await this.loadCart();
+      console.log("Product search in cart complete");
+      return this.cart.filter((p) => p.userid === userid);
+    } catch (err) {
+      console.log("failed to get the products of a user in cart", err);
+      throw err;
+    }
   }
-};
 
-export default {
-  totalCartPrice,
-  getProducts,
-  getProductById,
-  getProduct,
-  addProduct,
-  removeProduct,
-  removeProducts,
-  updateProduct,
-};
+  public async addProduct(userid: string, productId: string, quantity: number) {
+    try {
+      await this.loadCart();
+      await this.loadProduct();
+
+      // Check if product is available in product list
+      const productToAdd: Product = await this.productAvailable(
+        productId,
+        quantity
+      );
+
+      // Find user cart entry
+      let userCart = this.cartCheck(userid);
+
+      if (!userCart) {
+        const newCart: Cart = {
+          userid,
+          products: [
+            {
+              userid: userid,
+              productid: productToAdd.productid,
+              name: productToAdd.name,
+              price: productToAdd.price,
+              quantity: Number(quantity),
+              description: productToAdd.description,
+              category: productToAdd.category,
+            },
+          ],
+        };
+        this.cart.push(newCart);
+      } else {
+        const productIndex = userCart.products.findIndex(
+          (p) => p.productid === productId
+        );
+
+        if (productIndex >= 0) {
+          userCart.products[productIndex].quantity += Number(quantity);
+        } else {
+          userCart.products.push({
+            userid: userid,
+            productid: productToAdd.productid,
+            name: productToAdd.name,
+            price: productToAdd.price,
+            quantity: Number(quantity),
+            description: productToAdd.description,
+            category: productToAdd.category,
+          });
+        }
+      }
+      await this.saveCart(this.cart);
+      console.log("Product addition in cart complete");
+      return this.cart;
+    } catch (err) {
+      console.log("Failed to add product to the cart of a user", err);
+      throw err;
+    }
+  }
+
+  public async removeProduct(
+    userid: string,
+    productid: string
+  ): Promise<Cart[]> {
+    try {
+      await this.loadCart();
+      let userCart = this.cartCheck(userid);
+      let length1 = userCart?.products.length;
+
+      userCart.products = userCart.products.filter((item) => {
+        if (item.productid !== productid) return item;
+      });
+      let length2 = userCart?.products.length;
+      if (length1 === length2) {
+        throw new Error("No Items to remove from the cart");
+      }
+      await this.saveCart(this.cart);
+      console.log(`Product with id ${productid} removed successfully`);
+      console.log("Prodcut removal from cart complete");
+      return this.cart;
+    } catch (err) {
+      console.log("Failed to remove a product from the cart of a user", err);
+      throw err;
+    }
+  }
+
+  public async removeProducts(
+    userid: string,
+    products: string[]
+  ): Promise<Cart[]> {
+    try {
+      await this.loadCart();
+
+      const userCart = this.cartCheck(userid);
+      let length1 = userCart.products.length;
+      if (products.length < 1) {
+        userCart.products = userCart.products.filter((item) => {
+          if (item.userid !== userid) return item;
+        });
+      } else {
+        userCart.products = userCart.products.filter((item) => {
+          if (!products.includes(item.productid)) return item;
+        });
+      }
+      let length2 = userCart.products.length;
+      if (length1 === length2) {
+        console.log("No Items to remove from the cart");
+        return this.cart;
+      }
+      await this.saveCart(this.cart);
+      console.log("Products removal from cart complete");
+      return this.cart;
+    } catch (err) {
+      console.log(
+        "Failed to remove multiple products from the cart of a user",
+        err
+      );
+      throw err;
+    }
+  }
+
+  public async updateProduct(
+    uid: string,
+    pid: string,
+    update: UpdateCart
+  ): Promise<Cart[]> {
+    try {
+      await this.loadCart();
+      let { quantity } = update;
+      let cartToUpdate = this.cartCheck(uid);
+      if (!cartToUpdate) throw new Error("No Cart to update");
+      const productIndex = cartToUpdate.products.findIndex(
+        (product) => product.productid === pid
+      );
+
+      if (productIndex === -1) {
+        throw new Error("Product not found in user's cart");
+      }
+      // Update product details
+      cartToUpdate.products[productIndex] = {
+        ...cartToUpdate.products[productIndex],
+        ...update,
+      };
+      await this.saveCart(this.cart);
+      console.log("Cart updated succesfully");
+      return this.cart;
+    } catch (err) {
+      console.log("Failed to update a product in the cart", err);
+      throw err;
+    }
+  }
+
+  public async totalCartPrice(userid: string): Promise<number> {
+    try {
+      await this.loadCart();
+      const userCart = this.cartCheck(userid);
+      const total = userCart.products.reduce((a, item) => {
+        return (a = a + item.quantity * item.price);
+      }, 0);
+      console.log("Total price calculation complete");
+      return total;
+    } catch (err) {
+      console.log(
+        "Failed to calculate total price of products in the cart of a user",
+        err
+      );
+      throw err;
+    }
+  }
+}
+
+export default new CartRepository();
