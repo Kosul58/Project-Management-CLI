@@ -48,5 +48,15 @@
     "isActive": false,
     "createdAt": "2025-04-10-16:53",
     "updatedAt": "2025-04-10-17:16"
+  },
+  {
+    "categoryId": "m9i7b8jlxz63tvvm0kg",
+    "name": "test2",
+    "description": "d1",
+    "slug": "",
+    "parentId": "",
+    "isActive": true,
+    "createdAt": "2025-04-15-13:33",
+    "updatedAt": ""
   }
 ]

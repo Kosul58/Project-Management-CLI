@@ -23,7 +23,7 @@ export interface CategoryOption {
   name: string;
   description?: string;
   slug?: string;
-  parentId: string;
+  parentId?: string;
 }
 
 // to parse cli commands

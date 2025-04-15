@@ -22,7 +22,7 @@
     "userid": "0505",
     "products": [
       {
-        "userid": "1515",
+        "userid": "0505",
         "productid": "10",
         "name": "Wireless Earbuds",
         "price": 99,
@@ -34,14 +34,14 @@
     "userid": "055",
     "products": [
       {
-        "userid": "1515",
+        "userid": "055",
         "productid": "10",
         "name": "Wireless Earbuds",
         "price": 99,
         "quantity": 10
       },
       {
-        "userid": "1515",
+        "userid": "055",
         "productid": "12",
         "name": "Wireless Mouse",
         "price": 90,
@@ -53,14 +53,14 @@
     "userid": "k101",
     "products": [
       {
-        "userid": "1515",
+        "userid": "k101",
         "productid": "10",
         "name": "Wireless Earbuds",
         "price": 99,
         "quantity": 5
       },
       {
-        "userid": "1515",
+        "userid": "k101",
         "productid": "101",
         "name": "Wireless Earbuds",
         "price": 99,
@@ -72,7 +72,7 @@
     "userid": "k202",
     "products": [
       {
-        "userid": "1515",
+        "userid": "k202",
         "productid": "122",
         "name": "Laptop Pro 15",
         "price": 1200,
@@ -84,18 +84,41 @@
     "userid": "kos7",
     "products": [
       {
-        "userid": "1515",
+        "userid": "kos7",
         "productid": "3",
         "name": "Mechanical Keyboard",
         "price": 80,
         "quantity": 500
       },
       {
-        "userid": "1515",
+        "userid": "kos7",
         "productid": "m99b5sutqiwulu03gd8",
         "name": "Lenovo legion 5",
         "price": 1300,
         "quantity": 5
+      }
+    ]
+  },
+  {
+    "userid": "test1",
+    "products": [
+      {
+        "userid": "test1",
+        "productid": "8",
+        "name": "Portable Power Bank",
+        "price": 50,
+        "quantity": 50,
+        "description": "10,000mAh power bank with fast charging and dual USB ports.",
+        "category": "Accessories"
+      },
+      {
+        "userid": "test1",
+        "productid": "4",
+        "name": "Wireless Mouse",
+        "price": 35,
+        "quantity": 50,
+        "description": "Ergonomic wireless mouse with adjustable DPI and long battery life.",
+        "category": "Accessories"
       }
     ]
   }

@@ -16,7 +16,7 @@ export interface CartProduct {
 export interface UpdateCart {
   // name?: string;
   price?: number;
-  quantity?: number;
+  quantity: number;
   description?: string;
   category?: string;
 }

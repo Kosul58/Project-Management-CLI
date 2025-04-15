@@ -1,6 +1,6 @@
 import {
-  cancelAOrder,
-  cancelOrder,
+  cancelSingleOrder,
+  cancelWholeOrder,
   createOrder,
   updateOrderStatus,
   viewOrders,
@@ -28,7 +28,7 @@ const orderRouter = async (Command_Prompt: string[]): Promise<void> => {
       break;
 
     case "cancel":
-      const cancelResult = await cancelOrder(
+      const cancelResult = await cancelWholeOrder(
         orderid as string,
         userid as string
       );
@@ -36,7 +36,7 @@ const orderRouter = async (Command_Prompt: string[]): Promise<void> => {
       break;
 
     case "cancelaorder":
-      const cancelOneOrder = await cancelAOrder(
+      const cancelOneOrder = await cancelSingleOrder(
         orderid as string,
         userid as string,
         productid as string

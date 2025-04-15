@@ -19,7 +19,7 @@ class ProductServices {
       category,
     };
   }
-  public async getProducts(prouctid: string): Promise<Product[]> {
+  public async getProducts(): Promise<Product[]> {
     try {
       let result: Product[] = await productRepository.getProducts();
       return result;
@@ -28,7 +28,7 @@ class ProductServices {
       throw err;
     }
   }
-  public async getProductsById(prouctid: string): Promise<Product | []> {
+  public async getProductById(prouctid: string): Promise<Product | []> {
     try {
       const data: Product | [] = await productRepository.getProductById(
         prouctid
@@ -76,9 +76,9 @@ class ProductServices {
   public async updateProduct(
     productid: string,
     update: ProductOptions
-  ): Promise<Product[]> {
+  ): Promise<Product[] | null> {
     try {
-      const newProducts: Product[] = await productRepository.updateProduct(
+      const newProducts = await productRepository.updateProduct(
         productid,
         update
       );
@@ -88,9 +88,9 @@ class ProductServices {
       throw err;
     }
   }
-  public async deleteProduct(productid: string): Promise<Product[]> {
+  public async deleteProduct(productid: string): Promise<Product[] | null> {
     try {
-      const data: Product[] = await productRepository.deleteProduct(productid);
+      const data = await productRepository.deleteProduct(productid);
       return data;
     } catch (err) {
       console.log("Failed to delete a product", err);

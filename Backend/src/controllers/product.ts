@@ -1,14 +1,18 @@
 import productService from "../services/productServices.js";
-import { Product, ProductOptions } from "../common/types/productType.js";
+import {
+  Product,
+  ProductOptions,
+  UpdateProdcut,
+} from "../common/types/productType.js";
 import { ProductResponse } from "../common/types/responseType.js";
 
-export const getProducts = async (): Promise<ProductResponse | []> => {
+export const getProducts = async (): Promise<ProductResponse | null> => {
   try {
     const response = await productService.getProducts();
     if (response.length === 0) {
       return {
         message: "Product search failed",
-        response: "No products found in file",
+        response: "",
       };
     } else {
       return {
@@ -18,13 +22,13 @@ export const getProducts = async (): Promise<ProductResponse | []> => {
     }
   } catch (err) {
     console.error("Failed to get products", err);
-    return [];
+    return null;
   }
 };
 
 export const getProductById = async (
   productid: string
-): Promise<ProductResponse | []> => {
+): Promise<ProductResponse | null> => {
   try {
     const data = await productService.getProductById(productid);
     if (Object.keys(data).length > 0) {
@@ -40,13 +44,13 @@ export const getProductById = async (
     }
   } catch (err) {
     console.error("Failed to get product by id", err);
-    return [];
+    return null;
   }
 };
 
 export const addProduct = async (
   restData: ProductOptions
-): Promise<ProductResponse | []> => {
+): Promise<ProductResponse | null> => {
   try {
     let { name, price, inventory } = restData;
     if (!name || !price || !inventory) {
@@ -65,18 +69,18 @@ export const addProduct = async (
     };
   } catch (err) {
     console.error("Failed to add product", err);
-    return [];
+    return null;
   }
 };
 
 export const addProducts = async (
   products: ProductOptions[]
-): Promise<ProductResponse | []> => {
+): Promise<ProductResponse | null> => {
   try {
     if (products.length == 0) {
       return {
         message: "empty products array",
-        response: [],
+        response: "",
       };
     }
     const data = await productService.addProducts(products);
@@ -88,26 +92,26 @@ export const addProducts = async (
     } else {
       return {
         message: "Batch addition of products unsuccessfull",
-        response: [],
+        response: "",
       };
     }
   } catch (err) {
     console.error("Failed to add multiple products", err);
-    return [];
+    return null;
   }
 };
 
 export const updateProduct = async (
   productid: string,
-  update: ProductOptions
-): Promise<ProductResponse | []> => {
+  update: UpdateProdcut
+): Promise<ProductResponse | null> => {
   try {
     if (!productid || !update) {
-      return { message: "Enter all field", response: [] };
+      return { message: "Enter all field", response: "" };
     }
     const result = await productService.updateProduct(productid, update);
 
-    if (result.length > 0) {
+    if (result && result.length > 0) {
       return {
         message: `Product with id ${productid} updated successfully`,
         response: result,
@@ -115,31 +119,37 @@ export const updateProduct = async (
     } else {
       return {
         message: "No products to update",
-        response: [],
+        response: "",
       };
     }
   } catch (err) {
     console.error("Failed to update a product", err);
-    return [];
+    return null;
   }
 };
 
 export const deleteProduct = async (
   productid: string
-): Promise<ProductResponse | []> => {
+): Promise<ProductResponse | null> => {
   try {
     if (!productid) {
       console.log("Product id required");
-      return [];
+      return null;
     }
     const result = await productService.deleteProduct(productid);
+    if (!result) {
+      return {
+        message: "Product deletion unsuccessfull",
+        response: "",
+      };
+    }
     return {
       message: "Product deleted successfully",
       response: result,
     };
   } catch (err) {
     console.error("Failed to delete a product", err);
-    return [];
+    return null;
   }
 };
 
@@ -149,7 +159,8 @@ export const modifyInventory = async (
   modification: "increase" | "decrease"
 ): Promise<ProductResponse | []> => {
   try {
-    if (!id || !quantity || modification) {
+    console.log(id, quantity, modification);
+    if (!id || !quantity || !modification) {
       console.log("Provide all required fields");
       return [];
     }
@@ -175,59 +186,59 @@ export const modifyInventory = async (
   }
 };
 
-export const increaseProductInventory = async (
-  id: string,
-  quantity: number
-): Promise<ProductResponse | []> => {
-  try {
-    if (!id || !quantity) {
-      console.log("Both productid and qunatity required");
-      return [];
-    }
-    let result = await productService.increaseProductInventory(id, quantity);
-    if (result.length > 0) {
-      return {
-        message: "Inventory Update Successfully",
-        response: result,
-      };
-    } else {
-      return {
-        message: "Invetory Update Unsuccessfull",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.error("Failed to increase a product inventory", err);
-    return [];
-  }
-};
+// export const increaseProductInventory = async (
+//   id: string,
+//   quantity: number
+// ): Promise<ProductResponse | []> => {
+//   try {
+//     if (!id || !quantity) {
+//       console.log("Both productid and qunatity required");
+//       return [];
+//     }
+//     let result = await productService.increaseProductInventory(id, quantity);
+//     if (result.length > 0) {
+//       return {
+//         message: "Inventory Update Successfully",
+//         response: result,
+//       };
+//     } else {
+//       return {
+//         message: "Invetory Update Unsuccessfull",
+//         response: [],
+//       };
+//     }
+//   } catch (err) {
+//     console.error("Failed to increase a product inventory", err);
+//     return [];
+//   }
+// };
 
-export const decreaseProductInventory = async (
-  id: string,
-  quantity: number
-): Promise<ProductResponse | []> => {
-  try {
-    if (!id || !quantity) {
-      console.log("Both productid and qunatity required");
-      return [];
-    }
-    let result = await productService.decreaseProductInventory(id, quantity);
-    if (result.length > 0) {
-      return {
-        message: "Inventory Update Successfully",
-        response: result,
-      };
-    } else {
-      return {
-        message: "Invetory Update Unsuccessfull",
-        response: [],
-      };
-    }
-  } catch (err) {
-    console.error("Failed to decrease a product inventory", err);
-    return [];
-  }
-};
+// export const decreaseProductInventory = async (
+//   id: string,
+//   quantity: number
+// ): Promise<ProductResponse | []> => {
+//   try {
+//     if (!id || !quantity) {
+//       console.log("Both productid and qunatity required");
+//       return [];
+//     }
+//     let result = await productService.decreaseProductInventory(id, quantity);
+//     if (result.length > 0) {
+//       return {
+//         message: "Inventory Update Successfully",
+//         response: result,
+//       };
+//     } else {
+//       return {
+//         message: "Invetory Update Unsuccessfull",
+//         response: [],
+//       };
+//     }
+//   } catch (err) {
+//     console.error("Failed to decrease a product inventory", err);
+//     return [];
+//   }
+// };
 // Display all products
 // const data = await getProductList();
 // console.log(data);

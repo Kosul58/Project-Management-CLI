@@ -10,14 +10,9 @@ import { Status } from "../common/types/orderType.js";
 
 import { removeProduct } from "../controllers/cart.js";
 
-import {
-  increaseProductInventory,
-  decreaseProductInventory,
-  modifyInventory,
-} from "../controllers/product.js";
+import { modifyInventory } from "../controllers/product.js";
 import { Cart, CartProduct } from "../common/types/cartType.js";
 import { Order } from "../common/types/orderType.js";
-import { Product } from "../common/types/productType.js";
 import fileManager from "../utils/fileManager.js";
 
 class OrderRepository {
@@ -206,13 +201,12 @@ class OrderRepository {
   public async removeOrders(orderid: string, userid: string): Promise<Order[]> {
     try {
       await this.loadOrders();
-      this.orders.filter((o) => o.orderid !== orderid);
-
       const order = this.orders.find((o) => o.orderid === orderid);
       if (!order) {
         console.log("No order to cancel");
         return this.orders;
       }
+      this.orders = this.orders.filter((o) => o.orderid !== orderid);
       await this.modifyInventory(order.items, "increase");
       await this.setOrders();
       console.log(

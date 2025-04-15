@@ -47,13 +47,13 @@ class CartRepository {
   }
 
   // check if the cart exists
-  private cartCheck(userid: string): Cart {
+  private cartCheck(userid: string): Cart | undefined {
     // get all products form the cart.json file
     // search for a product to add in cart
-    const cart: Cart | undefined = this.cart.find(
-      (product) => product.userid === userid
-    );
-    if (!cart) throw new Error("No cart found for the user");
+    const cart = this.cart.find((product) => product.userid === userid);
+    if (!cart) {
+      console.log("No cart found for the user");
+    }
     return cart;
   }
 
@@ -166,14 +166,21 @@ class CartRepository {
     try {
       await this.loadCart();
       let userCart = this.cartCheck(userid);
+      if (!userCart) {
+        console.log("no cart found for the user");
+        return [];
+      }
       let length1 = userCart?.products.length;
-
       userCart.products = userCart.products.filter((item) => {
         if (item.productid !== productid) return item;
       });
       let length2 = userCart?.products.length;
       if (length1 === length2) {
         throw new Error("No Items to remove from the cart");
+      }
+      console.log(userCart.products.length);
+      if (userCart.products.length === 0) {
+        this.cart = this.cart.filter((c) => c.userid !== userid);
       }
       await this.saveCart(this.cart);
       console.log(`Product with id ${productid} removed successfully`);
@@ -193,20 +200,23 @@ class CartRepository {
       await this.loadCart();
 
       const userCart = this.cartCheck(userid);
-      let length1 = userCart.products.length;
-      if (products.length < 1) {
-        userCart.products = userCart.products.filter((item) => {
-          if (item.userid !== userid) return item;
-        });
-      } else {
-        userCart.products = userCart.products.filter((item) => {
-          if (!products.includes(item.productid)) return item;
-        });
+      if (!userCart) {
+        console.log("no cart found for the user");
+        return [];
       }
+      let length1 = userCart.products.length;
+
+      userCart.products = userCart.products.filter((item) => {
+        if (!products.includes(item.productid)) return item;
+      });
+
       let length2 = userCart.products.length;
       if (length1 === length2) {
         console.log("No Items to remove from the cart");
         return this.cart;
+      }
+      if (userCart.products.length === 0) {
+        this.cart = this.cart.filter((c) => c.userid !== userid);
       }
       await this.saveCart(this.cart);
       console.log("Products removal from cart complete");
@@ -255,6 +265,10 @@ class CartRepository {
     try {
       await this.loadCart();
       const userCart = this.cartCheck(userid);
+      if (!userCart) {
+        console.log("no cart found for the user");
+        return 0;
+      }
       const total = userCart.products.reduce((a, item) => {
         return (a = a + item.quantity * item.price);
       }, 0);

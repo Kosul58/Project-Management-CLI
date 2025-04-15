@@ -112,14 +112,15 @@ class ProductRepository {
   public async updateProduct(
     productid: string,
     update: ProductOptions
-  ): Promise<Product[]> {
+  ): Promise<Product[] | null> {
     try {
       await this.loadProducts();
       const { name, price, description, category, inventory } = update;
       let productIndex: number = this.getProductIndex(productid);
       let product: Product = this.products[productIndex];
       if (productIndex < 0) {
-        throw new Error("No product found");
+        console.log("No product found");
+        return null;
       }
       if (name) product.name = name;
       if (price) product.price = price;
@@ -147,7 +148,7 @@ class ProductRepository {
       throw err;
     }
   }
-  public async deleteProduct(productid: string) {
+  public async deleteProduct(productid: string): Promise<Product[] | null> {
     try {
       await this.loadProducts();
       // const totalProducts: Product[] = products.filter(
@@ -156,6 +157,7 @@ class ProductRepository {
       const productIndex = this.getProductIndex(productid);
       if (productIndex < 0) {
         console.log("Product does not exists");
+        return null;
       }
       this.products.splice(productIndex, 1);
       await this.saveProducts(this.products);
@@ -211,60 +213,60 @@ class ProductRepository {
       throw err;
     }
   }
-  public async increaseProductInventory(
-    id: string,
-    quantity: string | number
-  ): Promise<Product[]> {
-    try {
-      await this.loadProducts();
-      this.products = this.products.map((product: Product) => {
-        if (product.productid === id) {
-          let inventory: number = Number(product.inventory) + Number(quantity);
-          return {
-            ...product,
-            inventory,
-          };
-        }
-        return product;
-      });
-      await this.saveProducts(this.products);
-      console.log("Product inventory increased");
-      return this.products;
-    } catch (err) {
-      console.log("Failed to increase product inventory", err);
-      throw err;
-    }
-  }
-  public async decreaseProductInventory(
-    id: string,
-    quantity: number
-  ): Promise<Product[]> {
-    try {
-      await this.loadProducts();
-      const checkInventory = this.checkInventory(id, quantity);
-      if (!checkInventory) {
-        console.log("Insufficient Inventory");
-        throw new Error("Insufficient Inventory");
-      }
-      this.products = this.products.map((product: Product) => {
-        if (product.productid === id) {
-          let inventory;
-          inventory = Number(product.inventory) - quantity;
-          return {
-            ...product,
-            inventory,
-          };
-        }
-        return product;
-      });
-      await this.saveProducts(this.products);
-      console.log("Product inventory decreased");
-      return this.products;
-    } catch (err) {
-      console.log("Failed to decrease product inventory", err);
-      throw err;
-    }
-  }
+  // public async increaseProductInventory(
+  //   id: string,
+  //   quantity: string | number
+  // ): Promise<Product[]> {
+  //   try {
+  //     await this.loadProducts();
+  //     this.products = this.products.map((product: Product) => {
+  //       if (product.productid === id) {
+  //         let inventory: number = Number(product.inventory) + Number(quantity);
+  //         return {
+  //           ...product,
+  //           inventory,
+  //         };
+  //       }
+  //       return product;
+  //     });
+  //     await this.saveProducts(this.products);
+  //     console.log("Product inventory increased");
+  //     return this.products;
+  //   } catch (err) {
+  //     console.log("Failed to increase product inventory", err);
+  //     throw err;
+  //   }
+  // }
+  // public async decreaseProductInventory(
+  //   id: string,
+  //   quantity: number
+  // ): Promise<Product[]> {
+  //   try {
+  //     await this.loadProducts();
+  //     const checkInventory = this.checkInventory(id, quantity);
+  //     if (!checkInventory) {
+  //       console.log("Insufficient Inventory");
+  //       throw new Error("Insufficient Inventory");
+  //     }
+  //     this.products = this.products.map((product: Product) => {
+  //       if (product.productid === id) {
+  //         let inventory;
+  //         inventory = Number(product.inventory) - quantity;
+  //         return {
+  //           ...product,
+  //           inventory,
+  //         };
+  //       }
+  //       return product;
+  //     });
+  //     await this.saveProducts(this.products);
+  //     console.log("Product inventory decreased");
+  //     return this.products;
+  //   } catch (err) {
+  //     console.log("Failed to decrease product inventory", err);
+  //     throw err;
+  //   }
+  // }
 }
 
 export default new ProductRepository();

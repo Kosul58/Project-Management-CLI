@@ -92,7 +92,7 @@ export const updateOrderStatus = async (
 };
 
 //cancels all orders for a given orderid
-export const cancelOrder = async (
+export const cancelWholeOrder = async (
   orderid: string,
   userid: string
 ): Promise<OrderResponse | []> => {
@@ -122,7 +122,7 @@ export const cancelOrder = async (
 };
 
 // cancels a specific order based on orderid + userid + productid
-export const cancelAOrder = async (
+export const cancelSingleOrder = async (
   orderid: string,
   userid: string,
   productid: string

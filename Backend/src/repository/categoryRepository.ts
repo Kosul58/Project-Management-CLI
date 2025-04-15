@@ -1,6 +1,5 @@
 import { Category, UpdateCategory } from "../common/types/categoryType.js";
 import fileManager from "../utils/fileManager.js";
-import FileManager from "../utils/fileManager.js";
 import {
   generateId,
   categoryPath,
@@ -21,7 +20,7 @@ class CategoryRepository {
     await fileManager.writeToFile(this.categoryPath, this.categories);
   }
 
-  private checkCategory(name: string): boolean {
+  private checkName(name: string): boolean {
     return !this.categories.some(
       (cat) => cat.name.trim().toLowerCase() === name.trim().toLowerCase()
     );
@@ -34,17 +33,18 @@ class CategoryRepository {
 
   public async createCategory(category: Category): Promise<Category[]> {
     try {
-      this.loadCategories();
+      await this.loadCategories();
       category.categoryId = generateId();
       category.createdAt = getCurrentDateTimeStamp();
-      const isUnique = this.checkCategory(category.name);
+      const isUnique = this.checkName(category.name);
       if (!isUnique) {
         console.log("Category alerady exists in file");
         return this.categories;
+      } else {
+        this.categories.push(category);
+        await this.setCategories();
+        console.log("New category created.");
       }
-      this.categories.push(category);
-      await this.setCategories();
-      console.log("New category created.");
       return this.categories;
     } catch (err) {
       console.log("Failed to create a category", err);
@@ -89,7 +89,12 @@ class CategoryRepository {
       }
       const { name, description, parentId, isActive } = update;
       const category = this.categories[categorIndex];
-      const isUnique = this.checkCategory(name as string);
+      let isUnique;
+      if (category.name === name) {
+        isUnique = true;
+      } else {
+        isUnique = this.checkName(name as string);
+      }
       if (!isUnique) {
         console.log("Category with same name already exists");
         return this.categories;
@@ -118,7 +123,7 @@ class CategoryRepository {
         return this.categories;
       }
       this.categories.splice(categorIndex, 1);
-      await this.setCategories;
+      await this.setCategories();
       return this.categories;
     } catch (err) {
       console.log("Failed to delete category from the file", err);
