@@ -79,9 +79,11 @@ class CartRepository {
         console.log("No Cart Found for the given user");
         return userCart;
       }
-      return userCart.products.find(
+      const userProduct = userCart.products.find(
         (product) => product.productid === productid
       );
+
+      return userProduct;
     } catch (err) {
       console.log("Failed to get product by id for a user from cart", err);
       throw err;

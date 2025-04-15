@@ -28,6 +28,11 @@ export const viewCartProduct = async (
 ): Promise<CartResponse | []> => {
   try {
     const data = await cartServices.getProductById(productid, userid);
+    if (!data)
+      return {
+        message: "Product search unsuccessfull",
+        response: [],
+      };
     if (Object.keys(data).length > 0)
       return {
         message: "Product search successfull",

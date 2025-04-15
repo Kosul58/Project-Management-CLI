@@ -1,5 +1,5 @@
 import { Product } from "./productType.js";
-import { Cart } from "./cartType.js";
+import { Cart, CartProduct } from "./cartType.js";
 import { Order } from "./orderType.js";
 import { Category } from "./categoryType.js";
 export interface ProductResponse {
@@ -9,7 +9,7 @@ export interface ProductResponse {
 
 export interface CartResponse {
   message: string;
-  response: string | Cart[] | Cart;
+  response: string | Cart[] | Cart | CartProduct;
 }
 
 export interface OrderResponse {
