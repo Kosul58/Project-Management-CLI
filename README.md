@@ -214,3 +214,5 @@
    -> node index.js user delete --userid m9kzx68alw3y8tb34xc
 5. update user info (firstname , lastname, username)
    -> node index.js user update --userid m9kzx68alw3y8tb34xc --firstname tf
+
+# API command list

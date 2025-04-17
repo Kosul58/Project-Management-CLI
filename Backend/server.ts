@@ -5,6 +5,7 @@ import routes from "./src/router/api_routes/router.js"; // Adjust the path as ne
 
 const app = express();
 const PORT = 3000;
+
 app.use(cors());
 app.use(express.json());
 
