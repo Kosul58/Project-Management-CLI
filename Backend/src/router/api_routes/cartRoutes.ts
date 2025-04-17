@@ -9,58 +9,31 @@ import {
   viewCartProduct,
   viewCartProducts,
 } from "../../controllers/api_controllers/cart.js";
+
 const cartRoutes = express.Router();
 
-//Create cart
-cartRoutes.post("/", async (req, res) => {
-  const { userid, productid, quantity } = req.body;
-  const data = await addProduct(userid, productid, quantity);
-  res.json(data);
-});
+// Create cart item
+cartRoutes.post("/", addProduct);
 
-//Read cart
-cartRoutes.get("/", async (req, res) => {
-  const data = await viewCart();
-  res.json(data);
-});
+// View all carts (for all users)
+cartRoutes.get("/", viewCartProducts);
 
-cartRoutes.get("/", async (req, res) => {
-  const { userid, productid } = req.body;
-  const data = await viewCartProduct(productid, userid);
-  res.json(data);
-});
+// View all products in a user's cart
+cartRoutes.get("/:userid", viewCart);
 
-cartRoutes.get("/:userid", async (req, res) => {
-  const { userid } = req.params;
-  const data = await viewCartProducts(userid);
-  res.json(data);
-});
+// View specific product in a user's cart
+cartRoutes.get("/:userid/:productid", viewCartProduct);
 
-//Update cart
-cartRoutes.put("/", async (req, res) => {
-  const { userid, productid, update } = req.body;
-  const data = await updateProduct(userid, productid, update);
-  res.json(data);
-});
+// Update product in cart
+cartRoutes.put("/", updateProduct);
 
-//Delete cart
-cartRoutes.delete("/:userid/:productid", async (req, res) => {
-  const { userid, productid } = req.params;
-  const data = await removeProduct(userid, productid);
-  res.json(data);
-});
+// Delete specific product from cart
+cartRoutes.delete("/:userid/:productid", removeProduct);
 
-cartRoutes.delete("/", async (req, res) => {
-  const { userid, products } = req.body;
-  const data = await removeProducts(userid, products);
-  res.json(data);
-});
+// Delete multiple products from a user's cart
+cartRoutes.delete("/", removeProducts);
 
-//calculate total price
-cartRoutes.get("/total/:id", async (req, res) => {
-  const { id } = req.params;
-  const data = await calcTotal(id);
-  res.json(data);
-});
+// Calculate total cart price for a user
+cartRoutes.get("/total/:id", calcTotal);
 
 export default cartRoutes;

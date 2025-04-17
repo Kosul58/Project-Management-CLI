@@ -1,202 +1,183 @@
+import { RequestHandler } from "express";
 import cartServices from "../../services/cartServices.js";
-import { Cart, UpdateCart } from "../../common/types/cartType.js";
-import { CartResponse } from "../../common/types/responseType.js";
+import { UpdateCart } from "../../common/types/cartType.js";
 
-export const viewCartProducts = async () => {
+export const viewCartProducts: RequestHandler = async (req, res) => {
   try {
-    const data = await cartServices.getProducts("api");
-    if (data.length > 0)
-      return {
-        message: "Cart search successful",
-        response: data,
-      };
-    else {
-      return {
-        message: "Cart search unsuccessful",
-        response: [],
-      };
+    const result = await cartServices.getProducts("api");
+    if (!result || result.length === 0) {
+      res
+        .status(404)
+        .json({ message: "Cart search unsuccessful", response: [] });
+      return;
     }
+    res
+      .status(200)
+      .json({ message: "Cart search successful", response: result });
+    return;
   } catch (err) {
-    console.log("Failed to get products data from cart", err);
-    return [];
+    res.status(500).json({ message: "Failed to get products data from cart" });
+    return;
   }
 };
 
-export const viewCartProduct = async (productid: string, userid: string) => {
+export const viewCartProduct: RequestHandler = async (req, res) => {
+  const { productid, userid } = req.params;
   try {
-    const data = await cartServices.getProductById(productid, userid, "api");
-    if (!data || Object.keys(data).length === 0)
-      return {
-        message: "Product search unsuccessfull",
-        response: [],
-      };
-    if (Object.keys(data).length > 0)
-      return {
-        message: "Product search successfull",
-        response: data,
-      };
-    else {
-      return {
-        message: "Product search unsuccessfull",
-        response: [],
-      };
+    const result = await cartServices.getProductById(productid, userid, "api");
+    if (!result || Object.keys(result).length === 0) {
+      res
+        .status(404)
+        .json({ message: "Product search unsuccessful", response: [] });
+      return;
     }
+    res
+      .status(200)
+      .json({ message: "Product search successful", response: result });
+    return;
   } catch (err) {
-    console.log("Failed to search product in cart of user", err);
-    return [];
+    res
+      .status(500)
+      .json({ message: "Failed to search product in cart of user" });
+    return;
   }
 };
 
-export const viewCart = async (userid: string) => {
+export const viewCart: RequestHandler = async (req, res) => {
+  const { userid } = req.params;
   try {
-    const data = await cartServices.getProduct(userid, "api");
-    if (!data || Object.keys(data).length === 0)
-      return {
-        message: "Cart search unsuccessful",
-        response: [],
-      };
-    else {
-      return {
-        message: "Cart search successful",
-        response: data,
-      };
+    const result = await cartServices.getProduct(userid, "api");
+    if (!result || Object.keys(result).length === 0) {
+      res
+        .status(404)
+        .json({ message: "Cart search unsuccessful", response: [] });
+      return;
     }
+    res
+      .status(200)
+      .json({ message: "Cart search successful", response: result });
+    return;
   } catch (err) {
-    console.log("Failed to search products in cart of user", err);
-    return [];
+    res
+      .status(500)
+      .json({ message: "Failed to search products in cart of user" });
+    return;
   }
 };
 
-export const addProduct = async (
-  userid: string,
-  productId: string,
-  quantity: number
-) => {
+export const addProduct: RequestHandler = async (req, res) => {
+  const { userid, productid, quantity } = req.body;
   try {
-    if (!userid || !productId || !quantity) {
-      return {
-        message: "Provide all fields",
-        response: [],
-      };
+    if (!userid || !productid || !quantity) {
+      res.status(400).json({ message: "Provide all fields", response: [] });
+      return;
     }
     const result = await cartServices.addProduct(
       userid,
-      productId,
+      productid,
       quantity,
       "api"
     );
-
-    if (!result || result.length === 0) {
-      return {
-        message: "Product addition to cart unsuccessfully",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Product addition to cart successfully",
-        response: result,
-      };
+    if (result === "noproduct") {
+      res.status(404).json({
+        message: "Product Not in the Product databasea",
+      });
+      return;
     }
+    if (
+      (Array.isArray(result) && result.length < 1) ||
+      !result ||
+      Object.keys(result).length === 0
+    ) {
+      res.status(409).json({
+        message: "Product addition to cart unsuccessful",
+        response: [],
+      });
+      return;
+    }
+    res.status(201).json({
+      message: "Product addition to cart successful",
+      response: result,
+    });
+    return;
   } catch (err) {
-    console.log("Failed to add a product to the cart", err);
-    return [];
+    res.status(500).json({ message: "Failed to add a product to the cart" });
+    return;
   }
 };
 
-export const removeProduct = async (userid: string, productid: string) => {
+export const removeProduct: RequestHandler = async (req, res) => {
+  const { userid, productid } = req.params;
   try {
-    if (!userid) {
-      return {
-        message: "no userid",
-        response: [],
-      };
+    if (!userid || !productid) {
+      res
+        .status(400)
+        .json({ message: "User ID and Product ID required", response: [] });
+      return;
     }
     const result = await cartServices.removeProduct(userid, productid, "api");
-
-    if (!result || result.length === 0) {
-      return {
-        message: "Product removal unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Product removal successfull",
-        response: result,
-      };
+    if (result === "nocart") {
+      res.status(404).json({
+        message: "No cart found containing the product",
+      });
+      return;
     }
+    if (!result || Object.keys(result).length < 1) {
+      res.status(404).json({
+        message: "Product removal unsuccessful. Cart has no such product",
+        response: [],
+      });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Product removal successful", response: result });
+    return;
   } catch (err) {
-    console.log("Failed to remove a product", err);
-    return [];
+    res.status(500).json({ message: "Failed to remove a product" });
+    return;
   }
 };
 
-// products = [productid1 , productid2 , ...]
-export const removeProducts = async (userid: string, productids: string[]) => {
+export const removeProducts: RequestHandler = async (req, res) => {
+  const { userid, products } = req.body;
   try {
-    if (!userid || productids.length === 0) {
-      return {
-        message: "no userid and product ids",
-        response: [],
-      };
+    if (!userid || !products || products.length === 0) {
+      res
+        .status(400)
+        .json({ message: "User ID and product list required", response: [] });
+      return;
     }
-    const result = await cartServices.removeProducts(userid, productids, "api");
-    if (!result || result.length === 0) {
-      return {
-        message: "Products removal unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Products removal successfull",
-        response: result,
-      };
+    const result = await cartServices.removeProducts(userid, products, "api");
+    if (result === "nocart") {
+      res.status(404).json({
+        message: "No cart found",
+      });
     }
+    if (!result || Object.keys(result).length < 1) {
+      res
+        .status(404)
+        .json({ message: "Products removal unsuccessful", response: [] });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Products removal successful", response: result });
   } catch (err) {
-    console.log("Failed to remove products", err);
-    return [];
+    res.status(500).json({ message: "Failed to remove products" });
   }
 };
 
-// export const removeAllProduct = async (userid) => {
-//   try {
-//     if (!userid) {
-//       return {
-//         message: "no userid",
-//         response: [],
-//       };
-//     }
-//     const result = await cartServices.removeAllProduct(userid);
-
-//     if (result.length > 0) {
-//       return {
-//         message: "Products removal successfull",
-//         response: result,
-//       };
-//     } else {
-//       return {
-//         message: "Products removal unsuccessfull",
-//         response: [],
-//       };
-//     }
-//   } catch (err) {
-//     console.log("Error in cart controller removeAllProduct", err);
-//     return [];
-//   }
-// };
-
-// update = { price, quantity };
-
-export const updateProduct = async (
-  userid: string,
-  productid: string,
-  update: UpdateCart
-) => {
+export const updateProduct: RequestHandler = async (req, res) => {
+  const { userid, productid, update } = req.body as {
+    userid: string;
+    productid: string;
+    update: UpdateCart;
+  };
   try {
-    if (!userid || !productid || !update.quantity) {
-      return {
-        message: "Enter all fields",
-        response: [],
-      };
+    if (!userid || !productid || !update?.quantity) {
+      res.status(400).json({ message: "Enter all fields", response: [] });
+      return;
     }
     const result = await cartServices.updateProduct(
       userid,
@@ -204,41 +185,47 @@ export const updateProduct = async (
       update,
       "api"
     );
-    if (!result || result.length === 0) {
-      return {
-        message: "Product update unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Product update successfull",
-        response: result,
-      };
+    if (result === "nocart") {
+      res.status(400).json({ message: "No cart found" });
+      return;
     }
+    if (result === "noproduct") {
+      res.status(404).json({ message: "Product not found in cart" });
+    }
+    if (!result || Object.keys(result).length < 1) {
+      res
+        .status(404)
+        .json({ message: "Product update unsuccessful", response: [] });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Product update successful", response: result });
   } catch (err) {
-    console.log("Failed to update a product", err);
-    return [];
+    res.status(500).json({ message: "Failed to update a product" });
   }
 };
 
-export const calcTotal = async (userid: string) => {
+export const calcTotal: RequestHandler = async (req, res) => {
+  const { id } = req.params;
   try {
-    if (!userid)
-      return {
-        message: "enter userid",
-        response: [],
-      };
-    const total = await cartServices.cartTotal(userid, "api");
-    if (total) {
-      return { message: "Total of all products in the cart", response: total };
-    } else {
-      return {
-        message: "Error in total price calculation",
-        response: [],
-      };
+    if (!id) {
+      res.status(400).json({ message: "Enter user ID", response: [] });
+      return;
     }
+    const result = await cartServices.cartTotal(id, "api");
+    if (!result) {
+      res
+        .status(500)
+        .json({ message: "Error in total price calculation", response: [] });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Total of all products in the cart", response: result });
   } catch (err) {
-    console.log("Failed to calculate total price of products in cart", err);
-    return [];
+    res
+      .status(500)
+      .json({ message: "Failed to calculate total price of products in cart" });
   }
 };

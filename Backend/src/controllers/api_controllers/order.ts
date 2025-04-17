@@ -1,65 +1,86 @@
+import { RequestHandler } from "express";
 import orderServices from "../../services/orderServices.js";
-import { OrderResponse } from "../../common/types/responseType.js";
 
-export const viewOrders = async (userid: string) => {
+export const viewOrders: RequestHandler = async (req, res) => {
+  const { userid } = req.params;
   try {
     const result = await orderServices.getOrder(userid, "api");
     if (!result) {
-      throw new Error("error fetching order data");
+      res
+        .status(404)
+        .json({ message: "Error fetching order data", response: [] });
+      return;
     }
-    return {
-      message: "Order search sucessfull",
+    res.status(200).json({
+      message: "Order search successful",
       response: result,
-    };
+    });
+    return;
   } catch (err) {
     console.log("Failed to search for orders", err);
-    return null;
+    res.status(500).json({ message: "Internal server error", response: [] });
+    return;
   }
 };
 
-export const createOrder = async (userid: string, productid: string) => {
+export const createOrder: RequestHandler = async (req, res) => {
+  const { userid, productid } = req.body;
   try {
-    if (!userid) return { message: "Userid required", response: [] };
+    if (!userid) {
+      res.status(400).json({ message: "Userid required", response: [] });
+      return;
+    }
     const result = await orderServices.addOrder(userid, productid, "api");
     if (!result || Object.keys(result).length === 0) {
-      return { message: "Order creation unsuccessfull", response: [] };
+      res
+        .status(400)
+        .json({ message: "Order creation unsuccessful", response: [] });
+      return;
     }
-    return { message: "Order creation successfull", response: result };
+    res
+      .status(201)
+      .json({ message: "Order creation successful", response: result });
+    return;
   } catch (err) {
     console.log("Failed to create an order of a product", err);
-    return [];
+    res.status(500).json({ message: "Internal server error", response: [] });
+    return;
   }
 };
 
-// products = [productId1 , productId2]
-export const createOrders = async (userid: string, products: string[]) => {
+export const createOrders: RequestHandler = async (req, res) => {
+  const { userid, products } = req.body;
   try {
-    if (!userid || products.length < 1)
-      return { message: "Userid and products array required", response: [] };
-
-    const result = await orderServices.addOrders(userid, products, "api");
-
-    if (!result || Object.keys(result).length === 0) {
-      return { message: "Order creation unsuccessfull", response: [] };
+    if (!userid || products.length < 1) {
+      res
+        .status(400)
+        .json({ message: "Userid and products array required", response: [] });
+      return;
     }
-    return { message: "Order creation successfull", response: result };
+    const result = await orderServices.addOrders(userid, products, "api");
+    if (!result || Object.keys(result).length === 0) {
+      res
+        .status(400)
+        .json({ message: "Order creation unsuccessful", response: [] });
+      return;
+    }
+    res
+      .status(201)
+      .json({ message: "Order creation successful", response: result });
+    return;
   } catch (err) {
     console.log("Failed to create order of multiple products", err);
-    return [];
+    res.status(500).json({ message: "Internal server error", response: [] });
+    return;
   }
 };
 
-export const updateOrderStatus = async (
-  orderid: string,
-  userid: string,
-  status: string
-) => {
+export const updateOrderStatus: RequestHandler = async (req, res) => {
+  const { orderid, userid, status } = req.body;
   try {
     if (!orderid || !userid || !status) {
-      return {
-        message: "enter all fields",
-        response: [],
-      };
+      res.status(400).json({ message: "Enter all fields", response: [] });
+      return;
     }
     const result = await orderServices.updateOrderStatus(
       orderid,
@@ -67,62 +88,59 @@ export const updateOrderStatus = async (
       status,
       "api"
     );
-    if (!result || result.length === 0) {
-      return {
-        message: "Order status update unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Order status update successfull",
-        response: result,
-      };
+    if (result === "noorder") {
+      res.status(400).json({
+        message: "No order found",
+      });
     }
+    if (!result || Object.keys(result).length === 0) {
+      res
+        .status(400)
+        .json({ message: "Order status update unsuccessful", response: [] });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Order status update successful", response: result });
+    return;
   } catch (err) {
     console.log("Failed to update order status", err);
-    return [];
+    res.status(500).json({ message: "Internal server error", response: [] });
+    return;
   }
 };
 
-//cancels all orders for a given orderid
-export const cancelWholeOrder = async (orderid: string, userid: string) => {
+export const cancelWholeOrder: RequestHandler = async (req, res) => {
+  const { orderid, userid } = req.body;
   try {
-    if (!userid || !orderid)
-      return {
-        message: "Enter all fields",
-        response: [],
-      };
-    const result = await orderServices.removeOrders(orderid, userid, "api");
-    // console.log(result);
-    if (!result || result.length === 0) {
-      return {
-        message: "Order removal unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Order removal successfull",
-        response: result,
-      };
+    if (!userid || !orderid) {
+      res.status(400).json({ message: "Enter all fields", response: [] });
+      return;
     }
+    const result = await orderServices.removeOrders(orderid, userid, "api");
+    if (!result || Object.keys(result).length === 0) {
+      res
+        .status(400)
+        .json({ message: "Order removal unsuccessful", response: [] });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Order removal successful", response: result });
+    return;
   } catch (err) {
-    console.log("Failed to cancel a order", err);
-    return [];
+    console.log("Failed to cancel an order", err);
+    res.status(500).json({ message: "Internal server error", response: [] });
+    return;
   }
 };
 
-// cancels a specific order based on orderid + userid + productid
-export const cancelSingleOrder = async (
-  orderid: string,
-  userid: string,
-  productid: string
-) => {
+export const cancelSingleOrder: RequestHandler = async (req, res) => {
+  const { orderid, userid, productid } = req.body;
   try {
     if (!orderid || !userid || !productid) {
-      return {
-        message: "Enter all fields",
-        response: [],
-      };
+      res.status(400).json({ message: "Enter all fields", response: [] });
+      return;
     }
     const result = await orderServices.removeOrder(
       orderid,
@@ -130,19 +148,31 @@ export const cancelSingleOrder = async (
       productid,
       "api"
     );
-    if (!result || result.length === 0) {
-      return {
-        message: "Cancelation of a product order unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Order of a product canceled successfully",
-        response: result,
-      };
+    if (result === "noorder") {
+      res.status(400).json({ message: "No order found" });
+      return;
     }
+
+    if (result === "noproduct") {
+      res.status(400).json({ message: "No product found" });
+      return;
+    }
+
+    if (!result || Object.keys(result).length === 0) {
+      res.status(400).json({
+        message: "Cancellation of a product order unsuccessful",
+        response: [],
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "Order of a product canceled successfully",
+      response: result,
+    });
+    return;
   } catch (err) {
     console.log("Failed to cancel the order of a product", err);
-    return [];
+    res.status(500).json({ message: "Internal server error", response: [] });
+    return;
   }
 };

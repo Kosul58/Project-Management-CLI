@@ -2,124 +2,171 @@ import {
   CategoryOption,
   UpdateCategory,
 } from "../../common/types/categoryType.js";
-import { CategoryResponse } from "../../common/types/responseType.js";
+import { RequestHandler } from "express";
 import categoryServices from "../../services/categoryServices.js";
 
-export const createCategory = async (category: CategoryOption) => {
+// Create Category
+export const createCategory: RequestHandler = async (req, res) => {
+  const category: CategoryOption = req.body;
   try {
     if (!category.name) {
-      console.log("Name field required");
-      return [];
+      res.status(400).json({ message: "Name field required" });
+      return;
     }
-    const result = await categoryServices.createCategory(category);
+
+    const result = await categoryServices.createCategory(category, "api");
+    if (result === null) {
+      res.status(409).json({
+        message: "Category with same name already exits",
+        response: [],
+      });
+      return;
+    }
+    if (
+      (Array.isArray(result) && result.length === 0) ||
+      (!Array.isArray(result) && Object.keys(result).length === 0)
+    ) {
+      res.status(404).json({
+        message: "Category creation unsuccessful",
+        response: [],
+      });
+      return;
+    }
+
+    res.status(201).json({
+      message: "Category creation successful",
+      response: result,
+    });
+    return;
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create category" });
+    return;
+  }
+};
+
+// Read All Categories
+export const readCategories: RequestHandler = async (req, res) => {
+  try {
+    const result = await categoryServices.readCategories("api");
     if (!result || result.length === 0) {
-      return {
-        message: "Category creation unsuccessfull",
+      res.status(404).json({
+        message: "Categories read unsuccessful",
         response: [],
-      };
-    } else {
-      return {
-        message: "Category creation successfull",
-        response: result,
-      };
+      });
+      return;
     }
+    res.status(200).json({
+      message: "Categories read successful",
+      response: result,
+    });
+    return;
   } catch (err) {
-    console.log("Failed to create category");
-    return [];
+    res.status(500).json({ message: "Failed to read categories" });
+    return;
   }
 };
 
-export const readCategories = async () => {
+// Read Single Category
+export const readCategory: RequestHandler = async (req, res) => {
+  const { id } = req.params;
   try {
-    const result = await categoryServices.readCategories();
-    if (result.length === 0) {
-      return {
-        message: "Categories read unsuccessfull",
-        response: [],
-      };
-    } else {
-      return {
-        message: "Categories read successfull",
-        response: result,
-      };
+    if (!id) {
+      res.status(400).json({ message: "Category id required" });
+      return;
     }
-  } catch (err) {
-    console.log("Failed to read categories");
-    return [];
-  }
-};
 
-export const readCategory = async (categoryid: string) => {
-  try {
-    if (!categoryid) {
-      console.log("Category id required");
-      return null;
-    }
-    const result = await categoryServices.readCategory(categoryid);
+    const result = await categoryServices.readCategory(id, "api");
     if (!result || Object.keys(result).length < 1) {
-      return {
-        message: "Category read unsuccessfull",
+      res.status(404).json({
+        message: "Category read unsuccessful",
         response: [],
-      };
-    } else {
-      return {
-        message: "Category read successfull",
-        response: result,
-      };
+      });
+      return;
     }
+    res.status(200).json({
+      message: "Category read successful",
+      response: result,
+    });
+    return;
   } catch (err) {
-    console.log("Failed to read a category");
-    return [];
+    res.status(500).json({ message: "Failed to read category" });
+    return;
   }
 };
 
-export const updateCategory = async (
-  categoryid: string,
-  update: UpdateCategory
-) => {
+// Update Category
+export const updateCategory: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const update: UpdateCategory = req.body;
   try {
-    if (!categoryid || !update) {
-      console.log("Enter all required fields");
-      return [];
+    if (!id || Object.keys(update).length < 1) {
+      res.status(400).json({ message: "Enter all required fields" });
+      return;
     }
-    const result = await categoryServices.updateCategory(categoryid, update);
-    if (!result || result.length === 0) {
-      return {
-        message: "Category update unsuccessfull",
+
+    const result = await categoryServices.updateCategory(id, update, "api");
+
+    if (result === null) {
+      res.status(409).json({
+        message: "Category with same name already exists",
+      });
+      return;
+    }
+
+    if (result === undefined) {
+      res.status(404).json({
+        message: "Category not found",
+      });
+    }
+    if (Array.isArray(result) && result.length === 0) {
+      res.status(404).json({
+        message: "Category update unsuccessful",
         response: [],
-      };
-    } else {
-      return {
-        message: "Category update successfull",
-        response: result,
-      };
+      });
+      return;
     }
+
+    res.status(200).json({
+      message: "Category update successful",
+      response: result,
+    });
+    return;
   } catch (err) {
-    console.log("Failed to update a category");
-    return [];
+    res.status(500).json({ message: "Failed to update category" });
+    return;
   }
 };
 
-export const deleteCategory = async (categoryid: string) => {
+// Delete Category
+export const deleteCategory: RequestHandler = async (req, res) => {
+  const { id } = req.params;
   try {
-    if (!categoryid) {
-      console.log("Enter all required fields");
-      return [];
+    if (!id) {
+      res.status(400).json({ message: "Enter all required fields" });
+      return;
     }
-    const result = await categoryServices.deleteCategory(categoryid);
-    if (!result || result.length === 0) {
-      return {
-        message: "Category update unsuccessfull",
+
+    const result = await categoryServices.deleteCategory(id, "api");
+    if (!result) {
+      res.status(404).json({
+        message: "Category not found",
+      });
+      return;
+    }
+    if (Array.isArray(result) && result.length === 0) {
+      res.status(404).json({
+        message: "Category delete unsuccessful",
         response: [],
-      };
-    } else {
-      return {
-        message: "Category update successfull",
-        response: result,
-      };
+      });
+      return;
     }
+    res.status(200).json({
+      message: "Category delete successful",
+      response: result,
+    });
+    return;
   } catch (err) {
-    console.log("Failed to delete a category");
-    return [];
+    res.status(500).json({ message: "Failed to delete category" });
+    return;
   }
 };

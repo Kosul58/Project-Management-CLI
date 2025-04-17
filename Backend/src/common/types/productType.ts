@@ -13,12 +13,14 @@ export interface ProductOptions {
 
 //add and fetch products
 export interface Product {
-  productid: string;
+  productid?: string;
   name: string;
   price: number;
   inventory: number;
   description?: string;
   category?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AddProduct {

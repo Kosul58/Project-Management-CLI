@@ -9,41 +9,16 @@ import {
 const categoryRoutes = express.Router();
 
 //create category
-categoryRoutes.post("/", async (req, res) => {
-  const { name, description, slug, parentId } = req.body;
-  console.log({ name, description, slug, parentId });
-  const data = await createCategory({ name, description, slug, parentId });
-  res.json(data);
-});
+categoryRoutes.post("/", createCategory);
 
 //read category
-categoryRoutes.get("/", async (req, res) => {
-  const data = await readCategories();
-  res.json(data);
-});
+categoryRoutes.get("/", readCategories);
 
-categoryRoutes.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const data = await readCategory(id);
-  res.json(data);
-});
+categoryRoutes.get("/:id", readCategory);
 
 //update category
-categoryRoutes.put("/", async (req, res) => {
-  const { categoryid, name, description, parentId, isActive } = req.body;
-  const data = await updateCategory(categoryid, {
-    name,
-    description,
-    parentId,
-    isActive,
-  });
-  res.json(data);
-});
+categoryRoutes.put("/:id", updateCategory);
 //delte category
 
-categoryRoutes.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  const data = await deleteCategory(id);
-  res.json(data);
-});
+categoryRoutes.delete("/:id", deleteCategory);
 export default categoryRoutes;

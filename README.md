@@ -137,17 +137,34 @@
 ## Product part
 
 1. add a product
-   -> node index.js product add --name "Laptop" --price 999.99 --inventory 500
+   -> http://localhost:3000/api/product/
+   body{
+   "name":"n1",
+   "price":2,
+   "inventory":2,
+   "category":"c2",
+   "description":"d2"
+   }
 
 2. list products
-   -> node index.js product list (list of all products)
-   -> node index.js product list --productid 5 (product based on product id)
+   -> http://localhost:3000/api/product/modify/
+   -> http://localhost:3000/api/product/modify/6800e7cc476df2fec05f03b1
 
 3. update a product
-   -> node index.js product update --productid 10 --name Fantech Mouse --price 5000 --inventory 80
+   -> http://localhost:3000/api/product/modify/6800e7cc476df2fec05f03b1
+   body{
+   "name": "updatetest"
+   }
 
 4. delete a product
-   -> node index.js product delete --productid 10
+   -> http://localhost:3000/api/product/modify/6800e7cc476df2fec05f03b1
+
+5. modify a product inventory
+   -> http://localhost:3000/api/product/modify/6800e7cc476df2fec05f03b1
+   body{
+   "quantity": 200,
+   "modification": "increase"
+   }
 
 ## Cart part
 
@@ -216,3 +233,116 @@
    -> node index.js user update --userid m9kzx68alw3y8tb34xc --firstname tf
 
 # API command list
+
+## Product part
+
+1. add a product
+   -> node index.js product add --name "Laptop" --price 999.99 --inventory 500
+
+2. list products
+   -> node index.js product list (list of all products)
+   -> node index.js product list --productid 5 (product based on product id)
+
+3. update a product
+   -> node index.js product update --productid 10 --name Fantech Mouse --price 5000 --inventory 80
+
+4. delete a product
+   -> node index.js product delete --productid 10
+
+## Cart part
+
+1. add a product to the cart
+   -> node index.js cart add --userid kos7 --productid 3 --quantity 10
+
+2. view products in the cart
+   -> node index.js cart view --userid kos7 --productid 3 (view a product in the cart of a user)
+   -> node index.js cart view --userid kos7 (view all products in the cart of a user)
+   -> node index.js cart view (view all the carts)
+
+3. remove product from the cart for a user
+   -> node index.js cart remove --userid kos7 --productid 9
+   (removes a product by matching productid and userid)
+
+4. update a product for a user in the cart
+   -> node index.js cart update --userid kos7 --productid 3 --quantity 90
+
+5. calculate total price of all products in the cart of a user
+   -> node index.js cart total --userid kos7
+
+## Order part
+
+1. add a product in cart to order
+   -> node index.js order create --userid user123 --productid product123
+
+2. view all orders in the order.json file
+   -> node index.js order list --userid k202
+
+3. to cancel a order of products
+   -> node index.js order cancel --userid user123 --orderid order123
+
+4. to cancel the order of a single product
+   -> node index.js order cancelaorder --userid user123 --orderid order123 --productid product123
+
+   //node index.js order cancelaorder --userid k202 --orderid m915m0be3l0refd77p4 --productid 8
+
+5. to update order status
+   -> node index.js order statusupdate --orderid m98si0oes5wjamgpj9 --userid kos7 --status completed
+
+## Category part
+
+1. create category
+   -> http://localhost:3000/api/category/
+   body{
+   "name":"t1",
+   "description": "d1",
+   "slug":"s1",
+   "parentId":"p1"
+   }
+
+2. read categories
+   -> http://localhost:3000/api/category/
+
+3. read category
+   -> http://localhost:3000/api/category/6800d181eafa6175ba4958cc
+
+4. update a category
+   -> http://localhost:3000/api/category/6800d7d491a62e9bb122dbd0
+   body{
+   "name":"tx11",
+   "description": "dx22"
+   }
+
+5. delete a category
+   -> http://localhost:3000/api/category/6800d7d491a62e9bb122dbd0
+
+## User part
+
+1. Signup user
+   -> http://localhost:3000/api/user/signup
+   body{
+   firstname:'',
+   lastname:'',
+   username:'',
+   email: '',
+   password:''
+   }
+2. Signin user
+   -> http://localhost:3000/api/user/signin
+   body{
+   username: '',
+   email: '',
+   password: ''
+   }
+3. read user
+   -> http://localhost:3000/api/user/6800b2f3739864ea6966c261
+4. delete user
+   -> http://localhost:3000/api/user/6800b2f3739864ea6966c261
+5. update user info (firstname , lastname, username)
+   -> http://localhost:3000/api/user/6800b2f3739864ea6966c261
+   body{
+   update:{
+   firstname:'',
+   lastname:'',
+   username:''
+   }
+   }

@@ -1,16 +1,17 @@
 import cliCartRepository from "../repository/cli_repository/cartRepository.js";
 import apiCartRepository from "../repository/api_repository/cartRepository.js";
 import { Cart, CartProduct, UpdateCart } from "../common/types/cartType.js";
-import { ProductOptions } from "../common/types/productType.js";
+import productServices from "./productServices.js";
 
 class CartService {
-  public async getProducts(target: "cli" | "api"): Promise<Cart[]> {
+  private getRepository(target: "cli" | "api") {
+    return target === "cli" ? cliCartRepository : apiCartRepository;
+  }
+
+  public async getProducts(target: "cli" | "api") {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.getProducts())
-        : (result = await apiCartRepository.getProducts());
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.getProducts();
     } catch (err) {
       console.log("Failed to get all the products in the cart", err);
       throw err;
@@ -21,36 +22,38 @@ class CartService {
     productid: string,
     userid: string,
     target: "cli" | "api"
-  ): Promise<CartProduct | null> {
+  ) {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.getProductById(productid, userid))
-        : (result = await apiCartRepository.getProductById(productid, userid));
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.getProductById(productid, userid);
     } catch (err) {
-      console.log(
-        "Failed to get a product in cart based on product and user id",
-        err
-      );
+      console.log("Failed to get a product in cart by product/user id", err);
       throw err;
     }
   }
 
-  public async getProduct(
-    userid: string,
-    target: "cli" | "api"
-  ): Promise<Cart | null> {
+  public async getProduct(userid: string, target: "cli" | "api") {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.getProduct(userid))
-        : (result = await apiCartRepository.getProduct(userid));
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.getProduct(userid);
     } catch (err) {
-      console.log("Failed to get the products from the user's cart", err);
+      console.log("Failed to get user's cart products", err);
       throw err;
     }
+  }
+  private generateCart(
+    product: any,
+    quantity: number,
+    userid: string
+  ): CartProduct {
+    return {
+      userid,
+      productid: product._id,
+      name: product.name,
+      price: product.price,
+      quantity,
+      description: product.description ?? "",
+    };
   }
 
   public async addProduct(
@@ -58,24 +61,18 @@ class CartService {
     productId: string,
     quantity: number,
     target: "cli" | "api"
-  ): Promise<Cart[] | null> {
+  ) {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.addProduct(
-            userid,
-            productId,
-            quantity
-          ))
-        : (result = await apiCartRepository.addProduct(
-            userid,
-            productId,
-            quantity
-          ));
-
-      return result;
+      if (target === "api") {
+        const product =
+          (await productServices.getProductById(productId, "api")) ?? undefined;
+        if (!product) return "noproduct";
+        const newProduct = this.generateCart(product, quantity, userid);
+        return await apiCartRepository.addProduct(userid, newProduct, quantity);
+      }
+      return await cliCartRepository.addProduct(userid, productId, quantity);
     } catch (err) {
-      console.log("Failed to add a product to cart for a user", err);
+      console.error("Failed to add product to cart", err);
       throw err;
     }
   }
@@ -84,16 +81,12 @@ class CartService {
     userid: string,
     productid: string,
     target: "cli" | "api"
-  ): Promise<Cart[] | null> {
+  ) {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.removeProduct(userid, productid))
-        : (result = await apiCartRepository.removeProduct(userid, productid));
-
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.removeProduct(userid, productid);
     } catch (err) {
-      console.log("Failed to remove a product from the cart of a user", err);
+      console.log("Failed to remove product from cart", err);
       throw err;
     }
   }
@@ -102,18 +95,12 @@ class CartService {
     userid: string,
     products: string[],
     target: "cli" | "api"
-  ): Promise<Cart[] | null> {
+  ) {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.removeProducts(userid, products))
-        : (result = await apiCartRepository.removeProducts(userid, products));
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.removeProducts(userid, products);
     } catch (err) {
-      console.log(
-        "Failed to remove multiple products from the cart of a user",
-        err
-      );
+      console.log("Failed to remove multiple products from cart", err);
       throw err;
     }
   }
@@ -123,35 +110,22 @@ class CartService {
     pid: string,
     update: UpdateCart,
     target: "cli" | "api"
-  ): Promise<Cart[] | null> {
+  ) {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.updateProduct(uid, pid, update))
-        : (result = await apiCartRepository.updateProduct(uid, pid, update));
-
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.updateProduct(uid, pid, update);
     } catch (err) {
-      console.log("Failed to update a product in the cart of a user", err);
+      console.log("Failed to update product in cart", err);
       throw err;
     }
   }
 
-  public async cartTotal(
-    userid: string,
-    target: "cli" | "api"
-  ): Promise<number | null> {
+  public async cartTotal(userid: string, target: "cli" | "api") {
     try {
-      let result;
-      target === "cli"
-        ? (result = await cliCartRepository.totalCartPrice(userid))
-        : (result = await apiCartRepository.totalCartPrice(userid));
-      return result;
+      const repository = this.getRepository(target);
+      return await repository.totalCartPrice(userid);
     } catch (err) {
-      console.log(
-        "Failed to calculate the total cost of products in the cart of a user",
-        err
-      );
+      console.log("Failed to calculate total cart price", err);
       throw err;
     }
   }

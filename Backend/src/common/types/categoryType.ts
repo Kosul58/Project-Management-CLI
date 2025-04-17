@@ -1,6 +1,6 @@
 //types required for fetching category
 export interface Category {
-  categoryId: string;
+  categoryId?: string;
   name: string;
   description?: string;
   slug?: string;
@@ -16,6 +16,7 @@ export interface UpdateCategory {
   description?: string;
   parentId?: string;
   isActive?: boolean;
+  updatedAt?: string;
 }
 
 //type required to add a category

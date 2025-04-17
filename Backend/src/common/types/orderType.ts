@@ -9,7 +9,7 @@ export enum Status {
   Delivered = "Delivered",
 }
 export interface Order {
-  orderid: string;
+  orderid?: string;
   userid: string;
   timestamp: string;
   status: Status;

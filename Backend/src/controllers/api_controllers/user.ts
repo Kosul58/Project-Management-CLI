@@ -5,7 +5,13 @@ import userServices from "../../services/userServices.js";
 export const signUp: RequestHandler = async (req, res) => {
   const user: AddUser = req.body;
   try {
-    if (Object.keys(user).length < 5) {
+    if (
+      !user.firstname ||
+      !user.lastname ||
+      !user.username ||
+      !user.email ||
+      !user.password
+    ) {
       res
         .status(400)
         .json({ message: "Please provide all required user info" });
@@ -38,11 +44,15 @@ export const signIn: RequestHandler = async (req, res) => {
       return;
     }
     const result = await userServices.signIn(username, email, password, "api");
-    if (!result) {
-      res.status(404).json({ message: "Login failed. User not found" });
+    if (result === undefined) {
+      res.status(404).json({ message: "Signin failed. User not found" });
       return;
     }
-    res.status(200).json({ message: "Login successful", response: result });
+    if (result === null) {
+      res.status(400).json({ message: "Signin failed. Password do not match" });
+      return;
+    }
+    res.status(200).json({ message: "Signin successful", response: result });
     return;
   } catch (err) {
     console.error("Sign in error:", err);
@@ -60,9 +70,7 @@ export const deleteUser: RequestHandler = async (req, res) => {
     }
     const result = await userServices.deleteUser(userid, "api");
     if (!result) {
-      res
-        .status(404)
-        .json({ message: "User deletion failed or user not found" });
+      res.status(404).json({ message: "User not found" });
       return;
     }
     res
@@ -92,8 +100,14 @@ export const updateUserInfo: RequestHandler = async (req, res) => {
     }
 
     const result = await userServices.updateUserInfo(userid, update, "api");
-    if (!result) {
-      res.status(404).json({ message: "User update failed or user not found" });
+    if (result === undefined) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    if (result === null) {
+      res
+        .status(400)
+        .json({ message: "Another user with same Username already exits" });
       return;
     }
     res
