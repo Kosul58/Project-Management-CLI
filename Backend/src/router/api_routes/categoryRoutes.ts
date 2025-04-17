@@ -5,7 +5,7 @@ import {
   readCategories,
   readCategory,
   updateCategory,
-} from "../controllers/category.js";
+} from "../../controllers/api_controllers/category.js";
 const categoryRoutes = express.Router();
 
 //create category

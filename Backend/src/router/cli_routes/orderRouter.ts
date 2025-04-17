@@ -4,10 +4,10 @@ import {
   createOrder,
   updateOrderStatus,
   viewOrders,
-} from "../controllers/order.js";
-import { parseOptions } from "../utils/utils.js";
+} from "../../controllers/cli_controllers/order.js";
+import { parseOptions } from "../../utils/utils.js";
 
-import { ProductOptions } from "../common/types/productType.js";
+import { ProductOptions } from "../../common/types/productType.js";
 
 const orderRouter = async (Command_Prompt: string[]): Promise<void> => {
   const values: ProductOptions = parseOptions(Command_Prompt.slice(2));

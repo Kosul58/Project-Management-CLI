@@ -157,14 +157,11 @@
 2. view products in the cart
    -> node index.js cart view --userid kos7 --productid 3 (view a product in the cart of a user)
    -> node index.js cart view --userid kos7 (view all products in the cart of a user)
-   -> node index.js cart view (view all products in the cart)
+   -> node index.js cart view (view all the carts)
 
 3. remove product from the cart for a user
    -> node index.js cart remove --userid kos7 --productid 9
    (removes a product by matching productid and userid)
-
-   -> node index.js cart remove --userid kos7
-   (removes products by matching userid)
 
 4. update a product for a user in the cart
    -> node index.js cart update --userid kos7 --productid 3 --quantity 90
@@ -200,7 +197,20 @@
 2. read categories
    -> node index.js category read
 
-3. updaet a category
+3. update a category
    -> node index.js category update --categoryId category123 --name name123 --description description123
 4. delete a category
    -> node index.js category delete --categoryId category123
+
+## User part
+
+1. Signup user
+   -> node index.js user signup --firstname tf --lastname tl --username tu --email te --password tp
+2. Signin user
+   -> node index.js user signin --username t --email t --password t
+3. read user
+   -> node indes.js user read --userid userid123
+4. delete user
+   -> node index.js user delete --userid m9kzx68alw3y8tb34xc
+5. update user info (firstname , lastname, username)
+   -> node index.js user update --userid m9kzx68alw3y8tb34xc --firstname tf

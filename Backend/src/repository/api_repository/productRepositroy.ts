@@ -1,8 +1,8 @@
-import { Product, ProductOptions } from "../common/types/productType.js";
-import { createCategory } from "../controllers/category.js";
-import FileManager from "../utils/fileManager.js";
-import { generateId, productPath } from "../utils/utils.js";
-
+import { Product, ProductOptions } from "../../common/types/productType.js";
+import { createCategory } from "../../controllers/api_controllers/category.js";
+import FileManager from "../../utils/fileManager.js";
+import { generateId } from "../../utils/utils.js";
+import { productPath } from "../../utils/constants.js";
 class ProductRepository {
   private readonly productPath: string;
   private products: Product[] = [];
@@ -12,11 +12,9 @@ class ProductRepository {
   private async loadProducts(): Promise<void> {
     this.products = await FileManager.readFromFile(this.productPath);
   }
-
   private async saveProducts(products: Product[]): Promise<void> {
     await FileManager.writeToFile(this.productPath, products);
   }
-
   private getProductIndex(productid: string): number {
     const productIndex: number = this.products.findIndex(
       (product) => product.productid === productid
@@ -28,7 +26,6 @@ class ProductRepository {
       (product) => product.productid === id && product.inventory >= quantity
     );
   }
-
   private async categoryManager(category: string | undefined) {
     if (category) {
       const newCategory = {
@@ -38,7 +35,6 @@ class ProductRepository {
       await createCategory(newCategory);
     }
   }
-
   public async getProducts(): Promise<Product[]> {
     try {
       await this.loadProducts();
@@ -49,15 +45,13 @@ class ProductRepository {
       throw err;
     }
   }
-
-  public async getProductById(productid: string): Promise<Product | []> {
+  public async getProductById(productid: string): Promise<Product | null> {
     try {
       await this.loadProducts();
       const productIndex: number = this.getProductIndex(productid);
-      // console.log(productIndex);
       if (productIndex < 0) {
         console.log("No product found");
-        return [];
+        return null;
       } else {
         console.log("Product search complete");
         return this.products[productIndex];
@@ -68,14 +62,14 @@ class ProductRepository {
     }
   }
 
-  public async addProduct(product: Product): Promise<Product[]> {
+  public async addProduct(product: Product): Promise<Product[] | null> {
     try {
       await this.loadProducts();
       product.productid = generateId();
       const productindex: number = this.getProductIndex(product.productid);
       if (productindex >= 0) {
         console.log("Product already exists in the database");
-        return [];
+        return null;
       }
       let totalProducts = [...this.products, product];
       await this.saveProducts(totalProducts);
@@ -95,7 +89,6 @@ class ProductRepository {
         product.productid = generateId();
         const productindex = this.getProductIndex(product.productid);
         if (productindex < 0) {
-          // console.log(product);
           totalProducts = [...totalProducts, product];
         } else {
           console.log("Product Already exists");
@@ -127,12 +120,6 @@ class ProductRepository {
       if (description) product.description = description;
       if (category) product.category = category;
       if (inventory) product.inventory = inventory;
-      // const newProducts = products.map((product) => {
-      //   if (product.productid === productid) {
-      //     return { ...product, ...update };
-      //   }
-      //   return product;
-      // });
       if (product.category) {
         const category = {
           name: product.category,
@@ -151,9 +138,7 @@ class ProductRepository {
   public async deleteProduct(productid: string): Promise<Product[] | null> {
     try {
       await this.loadProducts();
-      // const totalProducts: Product[] = products.filter(
-      //   (product: ProductOptions) => product.productid !== productid
-      // );
+
       const productIndex = this.getProductIndex(productid);
       if (productIndex < 0) {
         console.log("Product does not exists");
@@ -161,17 +146,8 @@ class ProductRepository {
       }
       this.products.splice(productIndex, 1);
       await this.saveProducts(this.products);
-      // await this.saveProducts(totalProducts);
       console.log("Product removal complete");
       return this.products;
-      // if (products.length === totalProducts.length) {
-      //   return { message: "No Products to delete", response: totalProducts };
-      // } else {
-      //   return {
-      //     message: `Product with product id: ${productid} deleted successfully`,
-      //     response: totalProducts,
-      //   };
-      // }
     } catch (err) {
       console.log("Failed to remove a product", err);
       throw err;
@@ -182,13 +158,13 @@ class ProductRepository {
     id: string,
     quantity: number,
     operation: "increase" | "decrease"
-  ) {
+  ): Promise<Product[] | null> {
     try {
       await this.loadProducts();
       const isAvailabe = this.checkInventory(id, quantity);
       if (operation === "decrease" && !isAvailabe) {
         console.log("Insufficient Inventory");
-        throw new Error("Insufficient Inventory");
+        return null;
       }
       this.products = this.products.map((product: Product) => {
         if (product.productid === id) {

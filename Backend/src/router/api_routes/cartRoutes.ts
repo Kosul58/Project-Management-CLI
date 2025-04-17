@@ -8,7 +8,7 @@ import {
   viewCart,
   viewCartProduct,
   viewCartProducts,
-} from "../controllers/cart.js";
+} from "../../controllers/api_controllers/cart.js";
 const cartRoutes = express.Router();
 
 //Create cart

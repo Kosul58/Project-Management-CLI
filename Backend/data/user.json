@@ -1,0 +1,35 @@
+[
+  {
+    "userid": "sdf212fwe21faw5s2df",
+    "firstname": "changeone",
+    "lastname": "changetwo",
+    "username": "changethree",
+    "email": "test@test",
+    "password": "sfasfasfawef",
+    "createdAt": "2025-04-05-05:22",
+    "lastLogin": "2025-04-15-15:22",
+    "role": ""
+  },
+  {
+    "userid": "m9jnxx5tosij6hb2nhj",
+    "firstname": "ftest",
+    "lastname": "ltest",
+    "username": "utest",
+    "email": "etest",
+    "password": "$2b$10$4L1YGC4VMTaoPL42dmIslePlbDhbp7wCADR3u.n4yTqfsVTjj9m8.",
+    "createdAt": "2025-04-16-14:07",
+    "lastLogin": "2025-04-16-14:11",
+    "role": ""
+  },
+  {
+    "userid": "m9kzx68alw3y8tb34xc",
+    "firstname": "tf",
+    "lastname": "t",
+    "username": "t",
+    "email": "t",
+    "password": "$2b$10$qV1TyUQG6hIR.ohCmxdRreAa2qsKsnVRDDCvGPy58ahfOroSlx61q",
+    "createdAt": "2025-04-17-12:30",
+    "lastLogin": "2025-04-17-12:32",
+    "role": ""
+  }
+]

@@ -6,7 +6,7 @@ import {
   createOrders,
   updateOrderStatus,
   viewOrders,
-} from "../controllers/order.js";
+} from "../../controllers/api_controllers/order.js";
 const orderRoutes = express.Router();
 
 orderRoutes.get("/:userid", async (req, res) => {

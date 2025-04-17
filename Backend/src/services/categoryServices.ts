@@ -3,7 +3,8 @@ import {
   CategoryOption,
   UpdateCategory,
 } from "../common/types/categoryType.js";
-import categoryRepository from "../repository/categoryRepository.js";
+import cliCategoryRepository from "../repository/cli_repository/categoryRepository.js";
+import apiCategoryRepositoryr from "../repository/api_repository/categoryRepository.js";
 
 class CategoryService {
   private generateCategory(category: CategoryOption): Category {
@@ -20,10 +21,17 @@ class CategoryService {
     };
   }
 
-  public async createCategory(category: CategoryOption): Promise<Category[]> {
+  public async createCategory(
+    category: CategoryOption,
+    target: "cli" | "api"
+  ): Promise<Category[] | null> {
     try {
       const newCategory = this.generateCategory(category);
-      const result = await categoryRepository.createCategory(newCategory);
+      let result;
+      target === "cli"
+        ? (result = await cliCategoryRepository.createCategory(newCategory))
+        : (result = await apiCategoryRepositoryr.createCategory(newCategory));
+
       return result;
     } catch (err) {
       console.log("Failed to create a category", err);
@@ -31,9 +39,13 @@ class CategoryService {
     }
   }
 
-  public async readCategories(): Promise<Category[]> {
+  public async readCategories(target: "cli" | "api"): Promise<Category[]> {
     try {
-      const result = await categoryRepository.readCategories();
+      let result;
+      target === "cli"
+        ? (result = await cliCategoryRepository.readCategories())
+        : (result = await apiCategoryRepositoryr.readCategories());
+
       return result;
     } catch (err) {
       console.log("Failed to read categories", err);
@@ -41,9 +53,16 @@ class CategoryService {
     }
   }
 
-  public async readCategory(categoryid: string): Promise<Category | null> {
+  public async readCategory(
+    categoryid: string,
+    target: "cli" | "api"
+  ): Promise<Category | null> {
     try {
-      const result = await categoryRepository.readCategory(categoryid);
+      let result;
+      target === "cli"
+        ? (result = await cliCategoryRepository.readCategory(categoryid))
+        : (result = await apiCategoryRepositoryr.readCategory(categoryid));
+
       return result;
     } catch (err) {
       console.log("Failed to read a category", err);
@@ -53,13 +72,20 @@ class CategoryService {
 
   public async updateCategory(
     categoryid: string,
-    update: UpdateCategory
-  ): Promise<Category[]> {
+    update: UpdateCategory,
+    target: "cli" | "api"
+  ): Promise<Category[] | null> {
     try {
-      const result = await categoryRepository.updateCategory(
-        categoryid,
-        update
-      );
+      let result;
+      target === "cli"
+        ? (result = await cliCategoryRepository.updateCategory(
+            categoryid,
+            update
+          ))
+        : (result = await apiCategoryRepositoryr.updateCategory(
+            categoryid,
+            update
+          ));
       return result;
     } catch (err) {
       console.log("Failed to update category", err);
@@ -67,9 +93,15 @@ class CategoryService {
     }
   }
 
-  public async deleteCategory(categoryid: string): Promise<Category[]> {
+  public async deleteCategory(
+    categoryid: string,
+    target: "cli" | "api"
+  ): Promise<Category[] | null> {
     try {
-      const result = await categoryRepository.deleteCategory(categoryid);
+      let result;
+      target === "cli"
+        ? (result = await cliCategoryRepository.deleteCategory(categoryid))
+        : (result = await apiCategoryRepositoryr.deleteCategory(categoryid));
       return result;
     } catch (err) {
       console.log("Failed to delete category", err);

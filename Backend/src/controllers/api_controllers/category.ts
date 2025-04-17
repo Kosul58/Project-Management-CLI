@@ -1,20 +1,18 @@
 import {
   CategoryOption,
   UpdateCategory,
-} from "../common/types/categoryType.js";
-import { CategoryResponse } from "../common/types/responseType.js";
-import categoryServices from "../services/categoryServices.js";
+} from "../../common/types/categoryType.js";
+import { CategoryResponse } from "../../common/types/responseType.js";
+import categoryServices from "../../services/categoryServices.js";
 
-export const createCategory = async (
-  category: CategoryOption
-): Promise<CategoryResponse | []> => {
+export const createCategory = async (category: CategoryOption) => {
   try {
     if (!category.name) {
       console.log("Name field required");
       return [];
     }
     const result = await categoryServices.createCategory(category);
-    if (result.length < 1) {
+    if (!result || result.length === 0) {
       return {
         message: "Category creation unsuccessfull",
         response: [],
@@ -31,10 +29,10 @@ export const createCategory = async (
   }
 };
 
-export const readCategories = async (): Promise<CategoryResponse | []> => {
+export const readCategories = async () => {
   try {
     const result = await categoryServices.readCategories();
-    if (result.length < 1) {
+    if (result.length === 0) {
       return {
         message: "Categories read unsuccessfull",
         response: [],
@@ -51,13 +49,11 @@ export const readCategories = async (): Promise<CategoryResponse | []> => {
   }
 };
 
-export const readCategory = async (
-  categoryid: string
-): Promise<CategoryResponse | []> => {
+export const readCategory = async (categoryid: string) => {
   try {
     if (!categoryid) {
       console.log("Category id required");
-      return [];
+      return null;
     }
     const result = await categoryServices.readCategory(categoryid);
     if (!result || Object.keys(result).length < 1) {
@@ -80,14 +76,14 @@ export const readCategory = async (
 export const updateCategory = async (
   categoryid: string,
   update: UpdateCategory
-): Promise<CategoryResponse | []> => {
+) => {
   try {
     if (!categoryid || !update) {
       console.log("Enter all required fields");
       return [];
     }
     const result = await categoryServices.updateCategory(categoryid, update);
-    if (result.length < 1) {
+    if (!result || result.length === 0) {
       return {
         message: "Category update unsuccessfull",
         response: [],
@@ -104,16 +100,14 @@ export const updateCategory = async (
   }
 };
 
-export const deleteCategory = async (
-  categoryid: string
-): Promise<CategoryResponse | []> => {
+export const deleteCategory = async (categoryid: string) => {
   try {
     if (!categoryid) {
       console.log("Enter all required fields");
       return [];
     }
     const result = await categoryServices.deleteCategory(categoryid);
-    if (result.length < 1) {
+    if (!result || result.length === 0) {
       return {
         message: "Category update unsuccessfull",
         response: [],

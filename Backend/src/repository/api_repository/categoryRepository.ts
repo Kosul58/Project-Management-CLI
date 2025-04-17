@@ -1,11 +1,8 @@
-import { Category, UpdateCategory } from "../common/types/categoryType.js";
-import fileManager from "../utils/fileManager.js";
-import {
-  generateId,
-  categoryPath,
-  getCurrentDateTimeStamp,
-} from "../utils/utils.js";
+import { Category, UpdateCategory } from "../../common/types/categoryType.js";
+import fileManager from "../../utils/fileManager.js";
+import { generateId, getCurrentDateTimeStamp } from "../../utils/utils.js";
 
+import { categoryPath } from "../../utils/constants.js";
 class CategoryRepository {
   private readonly categoryPath: string;
   private categories: Category[] = [];
@@ -31,7 +28,7 @@ class CategoryRepository {
     return data;
   }
 
-  public async createCategory(category: Category): Promise<Category[]> {
+  public async createCategory(category: Category): Promise<Category[] | null> {
     try {
       await this.loadCategories();
       category.categoryId = generateId();
@@ -39,7 +36,7 @@ class CategoryRepository {
       const isUnique = this.checkName(category.name);
       if (!isUnique) {
         console.log("Category alerady exists in file");
-        return this.categories;
+        return null;
       } else {
         this.categories.push(category);
         await this.setCategories();
@@ -79,13 +76,13 @@ class CategoryRepository {
   public async updateCategory(
     categoryid: string,
     update: UpdateCategory
-  ): Promise<Category[]> {
+  ): Promise<Category[] | null> {
     try {
       await this.loadCategories();
       const categorIndex = this.getCategoryIndex(categoryid);
       if (categorIndex < 0) {
         console.log("No category found to update");
-        return this.categories;
+        return null;
       }
       const { name, description, parentId, isActive } = update;
       const category = this.categories[categorIndex];
@@ -97,7 +94,7 @@ class CategoryRepository {
       }
       if (!isUnique) {
         console.log("Category with same name already exists");
-        return this.categories;
+        return null;
       }
       if (name) category.name = name;
       if (description) category.description = description;
@@ -114,13 +111,13 @@ class CategoryRepository {
     }
   }
 
-  public async deleteCategory(categoryid: string): Promise<Category[]> {
+  public async deleteCategory(categoryid: string): Promise<Category[] | null> {
     try {
       await this.loadCategories();
       const categorIndex = this.getCategoryIndex(categoryid);
       if (categorIndex < 0) {
         console.log("No Category found to remove");
-        return this.categories;
+        return null;
       }
       this.categories.splice(categorIndex, 1);
       await this.setCategories();

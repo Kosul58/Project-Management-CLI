@@ -1,11 +1,9 @@
-import orderServices from "../services/orderServices.js";
-import { OrderResponse } from "../common/types/responseType.js";
+import orderServices from "../../services/orderServices.js";
+import { OrderResponse } from "../../common/types/responseType.js";
 
-export const viewOrders = async (
-  userid: string
-): Promise<OrderResponse | []> => {
+export const viewOrders = async (userid: string) => {
   try {
-    const result = await orderServices.getOrder(userid);
+    const result = await orderServices.getOrder(userid, "api");
     if (!result) {
       throw new Error("error fetching order data");
     }
@@ -15,17 +13,14 @@ export const viewOrders = async (
     };
   } catch (err) {
     console.log("Failed to search for orders", err);
-    return [];
+    return null;
   }
 };
 
-export const createOrder = async (
-  userid: string,
-  productid: string
-): Promise<OrderResponse | []> => {
+export const createOrder = async (userid: string, productid: string) => {
   try {
     if (!userid) return { message: "Userid required", response: [] };
-    const result = await orderServices.addOrder(userid, productid);
+    const result = await orderServices.addOrder(userid, productid, "api");
     if (!result || Object.keys(result).length === 0) {
       return { message: "Order creation unsuccessfull", response: [] };
     }
@@ -37,15 +32,12 @@ export const createOrder = async (
 };
 
 // products = [productId1 , productId2]
-export const createOrders = async (
-  userid: string,
-  products: string[]
-): Promise<OrderResponse | []> => {
+export const createOrders = async (userid: string, products: string[]) => {
   try {
     if (!userid || products.length < 1)
       return { message: "Userid and products array required", response: [] };
 
-    const result = await orderServices.addOrders(userid, products);
+    const result = await orderServices.addOrders(userid, products, "api");
 
     if (!result || Object.keys(result).length === 0) {
       return { message: "Order creation unsuccessfull", response: [] };
@@ -61,7 +53,7 @@ export const updateOrderStatus = async (
   orderid: string,
   userid: string,
   status: string
-): Promise<OrderResponse | []> => {
+) => {
   try {
     if (!orderid || !userid || !status) {
       return {
@@ -72,17 +64,18 @@ export const updateOrderStatus = async (
     const result = await orderServices.updateOrderStatus(
       orderid,
       userid,
-      status
+      status,
+      "api"
     );
-    if (result.length > 0) {
-      return {
-        message: "Order status update successfull",
-        response: result,
-      };
-    } else {
+    if (!result || result.length === 0) {
       return {
         message: "Order status update unsuccessfull",
         response: [],
+      };
+    } else {
+      return {
+        message: "Order status update successfull",
+        response: result,
       };
     }
   } catch (err) {
@@ -92,27 +85,24 @@ export const updateOrderStatus = async (
 };
 
 //cancels all orders for a given orderid
-export const cancelWholeOrder = async (
-  orderid: string,
-  userid: string
-): Promise<OrderResponse | []> => {
+export const cancelWholeOrder = async (orderid: string, userid: string) => {
   try {
     if (!userid || !orderid)
       return {
         message: "Enter all fields",
         response: [],
       };
-    const result = await orderServices.removeOrders(orderid, userid);
+    const result = await orderServices.removeOrders(orderid, userid, "api");
     // console.log(result);
-    if (result.length >= 0) {
-      return {
-        message: "Order removal successfull",
-        response: result,
-      };
-    } else {
+    if (!result || result.length === 0) {
       return {
         message: "Order removal unsuccessfull",
         response: [],
+      };
+    } else {
+      return {
+        message: "Order removal successfull",
+        response: result,
       };
     }
   } catch (err) {
@@ -126,7 +116,7 @@ export const cancelSingleOrder = async (
   orderid: string,
   userid: string,
   productid: string
-): Promise<OrderResponse | []> => {
+) => {
   try {
     if (!orderid || !userid || !productid) {
       return {
@@ -134,16 +124,21 @@ export const cancelSingleOrder = async (
         response: [],
       };
     }
-    const result = await orderServices.removeOrder(orderid, userid, productid);
-    if (result.length > 0) {
-      return {
-        message: "Order of a product canceled successfully",
-        response: result,
-      };
-    } else {
+    const result = await orderServices.removeOrder(
+      orderid,
+      userid,
+      productid,
+      "api"
+    );
+    if (!result || result.length === 0) {
       return {
         message: "Cancelation of a product order unsuccessfull",
         response: [],
+      };
+    } else {
+      return {
+        message: "Order of a product canceled successfully",
+        response: result,
       };
     }
   } catch (err) {

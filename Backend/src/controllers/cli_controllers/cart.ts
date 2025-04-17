@@ -1,10 +1,9 @@
-import cartServices from "../services/cartServices.js";
-import { Cart, UpdateCart } from "../common/types/cartType.js";
-import { CartResponse } from "../common/types/responseType.js";
+import cartServices from "../../services/cartServices.js";
+import { Cart, UpdateCart } from "../../common/types/cartType.js";
 
-export const viewCart = async (): Promise<CartResponse | []> => {
+export const viewCartProducts = async () => {
   try {
-    const data = await cartServices.getProducts();
+    const data = await cartServices.getProducts("cli");
     if (data.length > 0)
       return {
         message: "Cart search successful",
@@ -22,13 +21,10 @@ export const viewCart = async (): Promise<CartResponse | []> => {
   }
 };
 
-export const viewCartProduct = async (
-  productid: string,
-  userid: string
-): Promise<CartResponse | []> => {
+export const viewCartProduct = async (productid: string, userid: string) => {
   try {
-    const data = await cartServices.getProductById(productid, userid);
-    if (!data)
+    const data = await cartServices.getProductById(productid, userid, "cli");
+    if (!data || Object.keys(data).length === 0)
       return {
         message: "Product search unsuccessfull",
         response: [],
@@ -50,20 +46,18 @@ export const viewCartProduct = async (
   }
 };
 
-export const viewCartProducts = async (
-  userid: string
-): Promise<CartResponse | []> => {
+export const viewCart = async (userid: string) => {
   try {
-    const data = await cartServices.getProduct(userid);
-    if (data.length > 0)
-      return {
-        message: "Cart search successful",
-        response: data,
-      };
-    else {
+    const data = await cartServices.getProduct(userid, "cli");
+    if (!data || Object.keys(data).length === 0)
       return {
         message: "Cart search unsuccessful",
         response: [],
+      };
+    else {
+      return {
+        message: "Cart search successful",
+        response: data,
       };
     }
   } catch (err) {
@@ -76,7 +70,7 @@ export const addProduct = async (
   userid: string,
   productId: string,
   quantity: number
-): Promise<CartResponse | []> => {
+) => {
   try {
     if (!userid || !productId || !quantity) {
       return {
@@ -84,17 +78,22 @@ export const addProduct = async (
         response: [],
       };
     }
-    const result = await cartServices.addProduct(userid, productId, quantity);
+    const result = await cartServices.addProduct(
+      userid,
+      productId,
+      quantity,
+      "cli"
+    );
 
-    if (result.length > 0) {
-      return {
-        message: "Product addition to cart successfully",
-        response: result,
-      };
-    } else {
+    if (!result || result.length === 0) {
       return {
         message: "Product addition to cart unsuccessfully",
         response: [],
+      };
+    } else {
+      return {
+        message: "Product addition to cart successfully",
+        response: result,
       };
     }
   } catch (err) {
@@ -103,10 +102,7 @@ export const addProduct = async (
   }
 };
 
-export const removeProduct = async (
-  userid: string,
-  productid: string
-): Promise<CartResponse | []> => {
+export const removeProduct = async (userid: string, productid: string) => {
   try {
     if (!userid) {
       return {
@@ -114,17 +110,17 @@ export const removeProduct = async (
         response: [],
       };
     }
-    const result = await cartServices.removeProduct(userid, productid);
+    const result = await cartServices.removeProduct(userid, productid, "cli");
 
-    if (result.length > 0) {
-      return {
-        message: "Product removal successfull",
-        response: result,
-      };
-    } else {
+    if (!result || result.length === 0) {
       return {
         message: "Product removal unsuccessfull",
         response: [],
+      };
+    } else {
+      return {
+        message: "Product removal successfull",
+        response: result,
       };
     }
   } catch (err) {
@@ -134,10 +130,7 @@ export const removeProduct = async (
 };
 
 // products = [productid1 , productid2 , ...]
-export const removeProducts = async (
-  userid: string,
-  productids: string[]
-): Promise<CartResponse | []> => {
+export const removeProducts = async (userid: string, productids: string[]) => {
   try {
     if (!userid || productids.length === 0) {
       return {
@@ -145,16 +138,16 @@ export const removeProducts = async (
         response: [],
       };
     }
-    const result = await cartServices.removeProducts(userid, productids);
-    if (result.length > 0) {
-      return {
-        message: "Products removal successfull",
-        response: result,
-      };
-    } else {
+    const result = await cartServices.removeProducts(userid, productids, "cli");
+    if (!result || result.length === 0) {
       return {
         message: "Products removal unsuccessfull",
         response: [],
+      };
+    } else {
+      return {
+        message: "Products removal successfull",
+        response: result,
       };
     }
   } catch (err) {
@@ -204,16 +197,21 @@ export const updateProduct = async (
         response: [],
       };
     }
-    const result = await cartServices.updateProduct(userid, productid, update);
-    if (result.length > 0) {
-      return {
-        message: "Product update successfull",
-        response: result,
-      };
-    } else {
+    const result = await cartServices.updateProduct(
+      userid,
+      productid,
+      update,
+      "cli"
+    );
+    if (!result || result.length === 0) {
       return {
         message: "Product update unsuccessfull",
         response: [],
+      };
+    } else {
+      return {
+        message: "Product update successfull",
+        response: result,
       };
     }
   } catch (err) {
@@ -229,7 +227,7 @@ export const calcTotal = async (userid: string) => {
         message: "enter userid",
         response: [],
       };
-    const total = await cartServices.cartTotal(userid);
+    const total = await cartServices.cartTotal(userid, "cli");
     if (total) {
       return { message: "Total of all products in the cart", response: total };
     } else {

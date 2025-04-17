@@ -21,6 +21,14 @@ export interface Product {
   category?: string;
 }
 
+export interface AddProduct {
+  name: string;
+  price: number;
+  inventory: number;
+  description?: string;
+  category?: string;
+}
+
 //update product
 export interface UpdateProdcut {
   name?: string;

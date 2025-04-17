@@ -4,11 +4,11 @@ import {
   getProductById,
   getProducts,
   updateProduct,
-} from "../controllers/product.js";
+} from "../../controllers/cli_controllers/product.js";
 
-import { parseOptions } from "../utils/utils.js";
+import { parseOptions } from "../../utils/utils.js";
 
-import { ProductOptions } from "../common/types/productType.js";
+import { AddProduct, ProductOptions } from "../../common/types/productType.js";
 
 const productRouter = async (Command_Prompt: string[]): Promise<void> => {
   const values: ProductOptions = parseOptions(Command_Prompt.slice(2));
@@ -25,7 +25,7 @@ const productRouter = async (Command_Prompt: string[]): Promise<void> => {
       console.log(list);
       break;
     case "add":
-      const add = await addProduct(restData);
+      const add = await addProduct(restData as AddProduct);
       console.log(add);
       break;
 

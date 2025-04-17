@@ -7,11 +7,11 @@ import {
   viewCartProducts,
   updateProduct,
   viewCart,
-} from "../controllers/cart.js";
+} from "../../controllers/cli_controllers/cart.js";
 
-import { ProductOptions } from "../common/types/productType.js";
-import { UpdateCart } from "../common/types/cartType.js";
-import { parseOptions } from "../utils/utils.js";
+import { ProductOptions } from "../../common/types/productType.js";
+import { UpdateCart } from "../../common/types/cartType.js";
+import { parseOptions } from "../../utils/utils.js";
 
 const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
   console.log(Command_Prompt);
@@ -40,10 +40,10 @@ const cartRouter = async (Command_Prompt: string[]): Promise<void> => {
       break;
     case "view":
       let viewResult;
-      if (!productid && !userid) viewResult = await viewCart();
+      if (!productid && userid) viewResult = await viewCart(userid);
       if (userid && productid)
         viewResult = await viewCartProduct(productid, userid);
-      if (userid && !productid) viewResult = await viewCartProducts(userid);
+      if (!userid && !productid) viewResult = await viewCartProducts();
       console.log(viewResult);
       break;
     case "total":

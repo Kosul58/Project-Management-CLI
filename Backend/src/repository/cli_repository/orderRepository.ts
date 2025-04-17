@@ -1,19 +1,13 @@
-import FileManager from "../utils/fileManager.js";
+import FileManager from "../../utils/fileManager.js";
 
-import {
-  cartPath,
-  orderPath,
-  generateId,
-  getCurrentDateTimeStamp,
-} from "../utils/utils.js";
-import { Status } from "../common/types/orderType.js";
-
-import { removeProduct } from "../controllers/cart.js";
-
-import { modifyInventory } from "../controllers/product.js";
-import { Cart, CartProduct } from "../common/types/cartType.js";
-import { Order } from "../common/types/orderType.js";
-import fileManager from "../utils/fileManager.js";
+import { generateId, getCurrentDateTimeStamp } from "../../utils/utils.js";
+import { cartPath, orderPath } from "../../utils/constants.js";
+import { Status } from "../../common/types/orderType.js";
+import { removeProduct } from "../../controllers/cli_controllers/cart.js";
+import { modifyInventory } from "../../controllers/cli_controllers/product.js";
+import { Cart, CartProduct } from "../../common/types/cartType.js";
+import { Order } from "../../common/types/orderType.js";
+import fileManager from "../../utils/fileManager.js";
 
 class OrderRepository {
   private readonly orderPath: string;
@@ -102,13 +96,13 @@ class OrderRepository {
     };
   }
 
-  public async getOrder(userid: string): Promise<Order[]> {
+  public async getOrder(userid: string): Promise<Order[] | null> {
     try {
       await this.loadOrders();
       const userdata = this.orders.filter((order) => order.userid === userid);
       if (userdata.length === 0) {
         console.log("No Order Found for the User");
-        return [];
+        return null;
       }
       console.log("Order search complete");
       return userdata;
@@ -163,7 +157,7 @@ class OrderRepository {
     orderid: string,
     userid: string,
     productid: string
-  ): Promise<Order[]> {
+  ): Promise<Order[] | null> {
     try {
       await this.loadOrders();
       let order = this.orders.filter(
@@ -174,7 +168,10 @@ class OrderRepository {
       let canceledItems = order[0].items.filter(
         (item) => item.productid === productid
       );
-
+      if (canceledItems.length === 0) {
+        console.log("No product order found to be canceled");
+        return null;
+      }
       // console.log(items, canceledItems);
       if (items.length !== 0) {
         this.orders = this.orders.map((order) => {
@@ -198,13 +195,16 @@ class OrderRepository {
     }
   }
 
-  public async removeOrders(orderid: string, userid: string): Promise<Order[]> {
+  public async removeOrders(
+    orderid: string,
+    userid: string
+  ): Promise<Order[] | null> {
     try {
       await this.loadOrders();
       const order = this.orders.find((o) => o.orderid === orderid);
       if (!order) {
         console.log("No order to cancel");
-        return this.orders;
+        return null;
       }
       this.orders = this.orders.filter((o) => o.orderid !== orderid);
       await this.modifyInventory(order.items, "increase");
@@ -222,10 +222,15 @@ class OrderRepository {
     orderid: string,
     userid: string,
     status: Status
-  ): Promise<Order[]> {
+  ): Promise<Order[] | null> {
     try {
       await this.loadOrders();
-      this.orders = this.orderFilter(orderid, userid, status);
+      const order = this.orders.find((o) => o.orderid === orderid);
+      if (!order) {
+        console.log("No order found to update");
+        return null;
+      }
+      order.status = status;
       await this.setOrders();
       console.log(
         `order status updated of order id ${orderid} and user id ${userid}`

@@ -1,14 +1,13 @@
-import { Cart, CartProduct, UpdateCart } from "../common/types/cartType.js";
-import { Product } from "../common/types/productType.js";
-import FileManager from "../utils/fileManager.js";
-import { cartPath, productPath } from "../utils/utils.js";
+import { Cart, CartProduct, UpdateCart } from "../../common/types/cartType.js";
+import { Product } from "../../common/types/productType.js";
+import FileManager from "../../utils/fileManager.js";
+import { cartPath, productPath } from "../../utils/constants.js";
 
 class CartRepository {
   private readonly cartPath: string;
   private readonly productPath: string;
   private cart: Cart[] = [];
   private products: Product[] = [];
-
   constructor() {
     this.productPath = productPath;
     this.cartPath = cartPath;
@@ -31,14 +30,13 @@ class CartRepository {
   private async productAvailable(
     productid: string,
     quantity: number
-  ): Promise<Product> {
+  ): Promise<Product | null> {
     const productToAdd: Product | undefined = this.products.find(
       (product) => product.productid === productid
     );
     if (!productToAdd) {
-      throw new Error(
-        "No matching products found in products.json to add to cart"
-      );
+      console.log("No matching products found in products.json to add to cart");
+      return null;
     }
     if (productToAdd.inventory < Number(quantity)) {
       throw new Error("Not enough inventory");
@@ -47,13 +45,8 @@ class CartRepository {
   }
 
   // check if the cart exists
-  private cartCheck(userid: string): Cart | undefined {
-    // get all products form the cart.json file
-    // search for a product to add in cart
+  private cartSearch(userid: string): Cart | undefined {
     const cart = this.cart.find((product) => product.userid === userid);
-    if (!cart) {
-      console.log("No cart found for the user");
-    }
     return cart;
   }
 
@@ -71,18 +64,21 @@ class CartRepository {
   public async getProductById(
     productid: string,
     userid: string
-  ): Promise<CartProduct | undefined> {
+  ): Promise<CartProduct | null> {
     try {
       await this.loadCart();
-      const userCart = this.cart.find((entry) => entry.userid === userid);
+      const userCart = this.cartSearch(userid);
       if (!userCart) {
         console.log("No Cart Found for the given user");
-        return userCart;
+        return null;
       }
       const userProduct = userCart.products.find(
         (product) => product.productid === productid
       );
-
+      if (!userProduct) {
+        console.log("No product found in the cart of the user");
+        return null;
+      }
       return userProduct;
     } catch (err) {
       console.log("Failed to get product by id for a user from cart", err);
@@ -90,31 +86,38 @@ class CartRepository {
     }
   }
 
-  public async getProduct(userid: string): Promise<Cart[]> {
+  public async getProduct(userid: string): Promise<Cart | null> {
     try {
       await this.loadCart();
-      console.log("Product search in cart complete");
-      return this.cart.filter((p) => p.userid === userid);
+      const userCart = this.cartSearch(userid);
+      if (!userCart) {
+        console.log("No cart found for the user");
+        return null;
+      }
+      console.log("Cart search complete");
+      return userCart;
     } catch (err) {
       console.log("failed to get the products of a user in cart", err);
       throw err;
     }
   }
 
-  public async addProduct(userid: string, productId: string, quantity: number) {
+  public async addProduct(
+    userid: string,
+    productId: string,
+    quantity: number
+  ): Promise<Cart[] | null> {
     try {
       await this.loadCart();
       await this.loadProduct();
-
       // Check if product is available in product list
-      const productToAdd: Product = await this.productAvailable(
-        productId,
-        quantity
-      );
-
+      const productToAdd = await this.productAvailable(productId, quantity);
+      if (!productToAdd) {
+        console.log("No product to add to cart");
+        return null;
+      }
       // Find user cart entry
-      let userCart = this.cartCheck(userid);
-
+      let userCart = this.cartSearch(userid);
       if (!userCart) {
         const newCart: Cart = {
           userid,
@@ -162,23 +165,23 @@ class CartRepository {
   public async removeProduct(
     userid: string,
     productid: string
-  ): Promise<Cart[]> {
+  ): Promise<Cart[] | null> {
     try {
       await this.loadCart();
-      let userCart = this.cartCheck(userid);
+      let userCart = this.cartSearch(userid);
       if (!userCart) {
         console.log("no cart found for the user");
-        return [];
+        return null;
       }
-      let length1 = userCart?.products.length;
+      let length1 = userCart.products.length;
       userCart.products = userCart.products.filter((item) => {
         if (item.productid !== productid) return item;
       });
-      let length2 = userCart?.products.length;
+      let length2 = userCart.products.length;
       if (length1 === length2) {
-        throw new Error("No Items to remove from the cart");
+        console.log("No Items to remove from the cart");
+        return this.cart;
       }
-      console.log(userCart.products.length);
       if (userCart.products.length === 0) {
         this.cart = this.cart.filter((c) => c.userid !== userid);
       }
@@ -195,21 +198,18 @@ class CartRepository {
   public async removeProducts(
     userid: string,
     products: string[]
-  ): Promise<Cart[]> {
+  ): Promise<Cart[] | null> {
     try {
       await this.loadCart();
-
-      const userCart = this.cartCheck(userid);
+      const userCart = this.cartSearch(userid);
       if (!userCart) {
         console.log("no cart found for the user");
-        return [];
+        return null;
       }
       let length1 = userCart.products.length;
-
       userCart.products = userCart.products.filter((item) => {
         if (!products.includes(item.productid)) return item;
       });
-
       let length2 = userCart.products.length;
       if (length1 === length2) {
         console.log("No Items to remove from the cart");
@@ -234,18 +234,18 @@ class CartRepository {
     uid: string,
     pid: string,
     update: UpdateCart
-  ): Promise<Cart[]> {
+  ): Promise<Cart[] | null> {
     try {
       await this.loadCart();
       let { quantity } = update;
-      let cartToUpdate = this.cartCheck(uid);
+      let cartToUpdate = this.cartSearch(uid);
       if (!cartToUpdate) throw new Error("No Cart to update");
       const productIndex = cartToUpdate.products.findIndex(
         (product) => product.productid === pid
       );
-
       if (productIndex === -1) {
-        throw new Error("Product not found in user's cart");
+        console.log("Product not found in user's cart");
+        return null;
       }
       // Update product details
       cartToUpdate.products[productIndex] = {
@@ -261,13 +261,13 @@ class CartRepository {
     }
   }
 
-  public async totalCartPrice(userid: string): Promise<number> {
+  public async totalCartPrice(userid: string): Promise<number | null> {
     try {
       await this.loadCart();
-      const userCart = this.cartCheck(userid);
+      const userCart = this.cartSearch(userid);
       if (!userCart) {
         console.log("no cart found for the user");
-        return 0;
+        return null;
       }
       const total = userCart.products.reduce((a, item) => {
         return (a = a + item.quantity * item.price);
