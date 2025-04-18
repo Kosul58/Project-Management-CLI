@@ -88,7 +88,7 @@ class UserRepository {
         const check = await this.usernameCheck(update.username, userid);
         if (check) return null;
       }
-      console.log(update);
+      // console.log(update);
       const user = await UserSchema.findByIdAndUpdate(
         userid,
         { $set: update },
