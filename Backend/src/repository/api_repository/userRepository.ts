@@ -88,6 +88,7 @@ class UserRepository {
         const check = await this.usernameCheck(update.username, userid);
         if (check) return null;
       }
+      console.log(update);
       const user = await UserSchema.findByIdAndUpdate(
         userid,
         { $set: update },
@@ -97,22 +98,6 @@ class UserRepository {
         return undefined; // User not found
       }
       return user;
-
-      // const user = await UserSchema.findByIdAndUpdate(
-      //   userid,
-      //   {
-      //     $set: {
-      //       firstname: update.firstname,
-      //       lastname: update.lastname,
-      //       username: update.username,
-      //     },
-      //   },
-      //   { new: true }
-      // );
-      // if (!user) {
-      //   return undefined;
-      // }
-      // return user;
     } catch (err) {
       console.log("failed to update user information", err);
       throw err;

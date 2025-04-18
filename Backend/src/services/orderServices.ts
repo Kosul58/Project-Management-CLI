@@ -42,7 +42,9 @@ class OrderServices {
           userid,
           "api"
         );
-        if (!product) return "noproduct";
+        if (!product) {
+          return "noproduct";
+        }
         const data = await apiOrderRepository.addOrder(userid, product);
         await this.manageCart(data.items, userid);
         return data;

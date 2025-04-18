@@ -78,7 +78,6 @@ class UserServices {
       ) as Partial<UpdateUser>;
 
       const repository = this.getRepository(target);
-
       return await repository.updateUserInfo(userid, updateFields);
     } catch (err) {
       console.log("Failed to update user info.", err);

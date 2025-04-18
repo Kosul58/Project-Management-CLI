@@ -75,7 +75,12 @@ class CartRepository {
       );
       if (productIndex < 0) return null;
       cart.products.splice(productIndex, 1);
-      return await cart.save();
+      const result = await cart.save();
+      if (cart.products.length === 0) {
+        console.log("cart deleted");
+        await CartSchema.findOneAndDelete({ userid });
+      }
+      return result;
     } catch (err) {
       console.log("Failed to remove a product from the cart of a user", err);
       throw err;
@@ -92,7 +97,12 @@ class CartRepository {
           cart.products.splice(i, 1);
         }
       }
-      return await cart.save();
+      const result = await cart.save();
+      if (cart.products.length === 0) {
+        console.log("cart deleted");
+        await CartSchema.findOneAndDelete({ userid });
+      }
+      return result;
     } catch (err) {
       console.log(
         "Failed to remove multiple products from the cart of a user",

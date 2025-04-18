@@ -31,6 +31,11 @@ export const createOrder: RequestHandler = async (req, res) => {
       return;
     }
     const result = await orderServices.addOrder(userid, productid, "api");
+    if (result === "noproduct") {
+      res.status(404).json({
+        message: "No Product found",
+      });
+    }
     if (!result || Object.keys(result).length === 0) {
       res
         .status(400)
